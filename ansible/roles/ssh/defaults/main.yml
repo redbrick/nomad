@@ -1,0 +1,11 @@
+---
+
+# a current listing of all admins who have ssh access to Redbrick.
+
+github_users:
+  - user: mojito
+    # omitting account variable won't add any github keys to the user.
+    account: DistroByte 
+    groups: [sudo, docker]
+
+github_url: https://github.com

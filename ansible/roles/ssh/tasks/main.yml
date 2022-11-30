@@ -1,0 +1,27 @@
+---
+- include_tasks: creategroups.yml
+  loop: "{{ github_users }}"
+  loop_control:
+    loop_var: user_data
+
+- name: Ensure user accounts are present
+  user:
+    name: "{{ item.user | default(item) }}"
+    shell: /bin/bash
+    createhome: true
+    groups: "{{ item.groups | default(item) }}"
+    append: yes
+    home: /home/{{ item.user | default(item) }}
+    state: present
+  with_items: "{{ github_users }}"
+
+- name: Ensure authorized_keys for GitHub user accounts are present
+  authorized_key:
+    user: "{{ item.user | default(item) }}"
+    key: "{{ github_url }}/{{ item.account | default('') }}.keys"
+    manage_dir: true
+    exclusive: False
+  with_items: "{{ github_users }}"
+  ignore_errors: yes
+  register: task_result
+  failed_when: "'blah' in task_result"

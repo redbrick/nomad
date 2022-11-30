@@ -1,0 +1,6 @@
+---
+- name: Ensure user groups are present
+  group:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ user_data.groups | default(user_data) }}"

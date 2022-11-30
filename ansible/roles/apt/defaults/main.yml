@@ -1,0 +1,13 @@
+---
+apt_packages:
+  - cron
+  - curl
+  - git
+  - htop
+  - net-tools
+  - nmap
+  - sysstat
+  - vim
+
+apt_install_packages: false
+apt_update_packages: true

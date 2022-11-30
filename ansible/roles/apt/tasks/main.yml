@@ -1,0 +1,13 @@
+---
+- name: apt update packages to their latest version and autoclean
+  become: true
+  apt:
+    upgrade: yes
+    update_cache: yes  
+  when: ansible_os_family == "Debian" and apt_update_packages
+
+- name: install common tools
+  ansible.builtin.apt:
+    name: "{{ item }}"
+  with_items: "{{ apt_packages }}"
+  when: ansible_os_family == "Debian" and apt_install_packages
