@@ -3,8 +3,19 @@
   become: true
   apt:
     upgrade: yes
+    autoclean: yes
+    autoremove: yes
     update_cache: yes  
   when: ansible_os_family == "Debian" and apt_update_packages
+  register: result
+
+- name: List installed and updated packages
+  shell: 
+    cmd: 'grep -E "^$(date +%Y-%m-%d).+ (install|upgrade) " /var/log/dpkg.log | cut -d " " -f 3-5'
+  register: result
+
+- name: Show Output
+  debug: msg= '{{ result.stdout_lines }}'
 
 - name: install common tools
   ansible.builtin.apt:

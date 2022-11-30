@@ -1,0 +1,8 @@
+---
+
+- name: Redbrick Nomad, Consul and general management
+  hosts: all
+  gather_facts: true
+  roles:
+    - { role: apt } # update all packages, equivalent to `apt update && apt upgrade`
+    - { role: ssh } # add users defined in roles/defaults/main.yml

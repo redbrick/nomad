@@ -36,7 +36,12 @@ This will plan and run the job file without the need for you to copy and paste t
 
 Ansible can be used to provision a new host, connect a host to the cluster, run new jobs and more.
 
-In order to use ansible from your local machine, you must have access to the admin vpn. This will allow you direct connection to each of the hosts.
+Install ansible from [here](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html).
 
-Change the `ansible/hosts.sample` file to your local username before you run any of these playbooks. Your local user should have an SSH key in its home dir, which can be configured with the `ssh` playbook.
+In order to use ansible from your local machine, you must have access to the admin VPN. This will allow you direct connection to each of the hosts.
 
+Move the `ansible/group_vars/all.yml.sample` file to `ansible/group_vars/all.yml` and change your local username before you run any of these playbooks. Your local user should have an SSH key in its home dir, which can be configured with the `ssh` playbook.
+
+```bash
+$ ansible-playbook -i hosts redbrick-ansible.yml 
+```
