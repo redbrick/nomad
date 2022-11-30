@@ -1,0 +1,17 @@
+[sshd]
+enabled = true
+port = ssh
+filter = sshd
+
+# the length of time between login attempts for maxretry.
+findtime = 600
+
+# attempts from a single ip before a ban is imposed.
+maxretry = 8
+
+# the number of seconds that a host is banned for.
+bantime = 3600
+
+bantime.increment = true
+bantime.factor = 1
+bantime.formula = ban.Time * (1<<(ban.Count if ban.Count<20 else 20)) * banFactor

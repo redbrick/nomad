@@ -1,0 +1,19 @@
+---
+- name: Install fail2ban from apt
+  become: true
+  ansible.builtin.apt:
+    name: fail2ban
+    state: latest
+
+- name: Copy configuraion to host
+  become: true
+  ansible.builtin.copy:
+    src: templates/fail2ban.jail
+    dest: /etc/fail2ban/jail.local
+    force: true
+
+- name: Restart fail2ban to apply config
+  become: true
+  ansible.builtin.service:
+    name: fail2ban
+    state: restarted
