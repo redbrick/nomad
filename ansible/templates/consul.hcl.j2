@@ -4,7 +4,7 @@ encrypt = "{{ consul_generated_encrypt_key }}"
 verify_incoming = true
 verify_outgoing = true
 verify_server_hostname = true
-bind_addr = "{{ GetPrivateInterfaces | include \"network\" \"10.10.0.0/24\" | attr \"address\" }}"
+bind_addr = "{% raw %}{{ GetPrivateInterfaces | include \"network\" \"10.10.0.0/24\" | attr \"address\" }}{% endraw %}"
 client_addr = "0.0.0.0"
 
 ca_file = "/etc/consul.d/consul-agent-ca.pem"
@@ -15,8 +15,9 @@ auto_encrypt {
   allow_tls = true
 }
 
-# TODO: add jinja template to add all except destination host address here
-retry_join = []
+# This ugly line is to get the IP addresses of the other consul servers, excluding the current host.
+# Consul cannot join itself, so we need to exclude the current host.
+retry_join = ["{{ groups.nomad|difference([inventory_hostname])| map('extract', hostvars, ['ansible_host'])|join('","') }}"]
 
 acl {
   enabled = false
