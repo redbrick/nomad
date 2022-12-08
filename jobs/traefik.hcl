@@ -37,8 +37,13 @@ job "traefik" {
 [entryPoints]
   [entryPoints.web]
   address = ":80"
+  [entryPoints.web.http.redirections.entryPoint]
+    to = "websecure"
+    scheme = "https"
+
   [entryPoints.websecure]
   address = ":443"
+
   [entryPoints.traefik]
   address = ":8080"
 
@@ -59,6 +64,11 @@ job "traefik" {
 #  [providers.nomad.endpoint]
 #    address = "127.0.0.1:4646"
 #    scheme = "http"
+
+[certificatesResolvers.lets-encrypt.acme]
+  email = "elected-admins@redbrick.dcu.ie"
+  storage = "local/acme.json"
+  [certificatesResolvers.lets-encrypt.acme.tlsChallenge]
 EOF
         destination = "/local/traefik.toml"
       }
