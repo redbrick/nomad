@@ -1,1 +1,3 @@
 ansible_user: CHANGEME
+nomad_datacenter_name: "aperture"
+nomad_server_bootstrap_expect: 3

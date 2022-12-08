@@ -1,3 +1,8 @@
 glados ansible_host=10.10.0.4
 wheatley ansible_host=10.10.0.5
 chell ansible_host=10.10.0.6
+
+[nomad]
+glados
+wheatley
+chell
