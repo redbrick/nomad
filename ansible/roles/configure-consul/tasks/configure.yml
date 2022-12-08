@@ -1,0 +1,28 @@
+---
+
+- name: Copy consul base configuration
+  become: true
+  template:
+    src: consul.hcl.j2
+    dest: /etc/consul.d/consul.hcl
+    owner: consul
+    group: consul
+    mode: 0640
+
+- name: Copy consul-server configuration
+  become: true
+  template:
+    src: consul-server.hcl.j2
+    dest: /etc/consul.d/consul-server.hcl
+    owner: consul
+    group: consul
+    mode: 0640
+
+- name: Copy consul systemd unit file
+  become: true
+  template:
+    src: consul.service
+    dest: /etc/systemd/system/consul.service
+    owner: root
+    group: root
+    mode: 0644

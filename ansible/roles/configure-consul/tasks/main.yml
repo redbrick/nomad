@@ -1,0 +1,43 @@
+---
+- name: Install or update consul
+  become: true
+  apt:
+    name: consul
+    state: latest
+    update_cache: yes
+
+- name: Add consul user
+  become: true
+  user:
+    name: consul
+    system: yes
+    shell: /bin/false
+
+- name: Create consul directories
+  become: true
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: consul
+    group: consul
+  with_items:
+    - /etc/consul.d
+    - /opt/consul
+
+- include_tasks: configure.yml
+
+- name: Enable and start consul
+  become: true
+  systemd:
+    name: consul
+    enabled: yes
+    state: started
+
+- name: Check if consul is running
+  become: true
+  shell: consul members
+  register: consul_members
+
+- name: Print consul members
+  debug:
+    msg: "{{ consul_members.stdout_lines }}"
