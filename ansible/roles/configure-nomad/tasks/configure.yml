@@ -1,0 +1,37 @@
+---
+
+- name: Copy nomad base configuration
+  become: true
+  template:
+    src: nomad-base.hcl.j2
+    dest: /etc/nomad.d/nomad.hcl
+    owner: nomad
+    group: nomad
+    mode: 0640
+
+- name: Copy nomad-client configuration
+  become: true
+  template:
+    src: nomad-client.hcl
+    dest: /etc/nomad.d/nomad-client.hcl
+    owner: nomad
+    group: nomad
+    mode: 0640
+
+- name: Copy nomad-server configuration
+  become: true
+  template:
+    src: nomad-server.hcl.j2
+    dest: /etc/nomad.d/nomad-server.hcl
+    owner: nomad
+    group: nomad
+    mode: 0640
+
+- name: Copy nomad systemd unit file
+  become: true
+  template:
+    src: nomad.service
+    dest: /etc/systemd/system/nomad.service
+    owner: root
+    group: root
+    mode: 0644

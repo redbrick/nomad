@@ -1,0 +1,59 @@
+---
+- name: Install or update nomad
+  become: true
+  apt:
+    name: nomad
+    state: latest
+    update_cache: yes
+
+- name: Add nomad user
+  become: true
+  user:
+    name: nomad
+    shell: /bin/false
+    system: yes
+
+- name: Create nomad group
+  become: true
+  group:
+    name: nomad
+    system: yes
+
+- name: Create nomad directories
+  become: true
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: nomad
+    group: nomad
+    mode: 0750
+  with_items:
+    - /etc/nomad.d
+    - /opt/nomad
+
+- include_tasks: configure.yml
+
+- name: Enable and start nomad
+  become: true
+  systemd:
+    name: nomad
+    enabled: yes
+    state: started
+
+- name: Check nomad status
+  become: true
+  shell: nomad status
+  register: nomad_status
+
+- name: Print nomad status
+  debug:
+    msg: '{{ nomad_status.stdout }}'
+
+- name: Check nomad members
+  become: true
+  shell: nomad members
+  register: nomad_members
+
+- name: Print nomad members
+  debug:
+    msg: '{{ nomad_members.stdout }}'
