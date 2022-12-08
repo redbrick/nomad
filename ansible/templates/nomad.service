@@ -1,0 +1,25 @@
+[Unit]
+Wants=network-online.target
+After=network-online.target
+
+Wants=consul.service
+After=consul.service
+
+[Service]
+User=root
+Group=root
+
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart=/usr/bin/nomad agent -config /etc/nomad.d
+KillMode=process
+KillSignal=SIGINT
+LimitNOFILE=65536
+LimitNPROC=infinity
+Restart=on-failure
+RestartSec=2
+
+TasksMax=infinity
+OOMScoreAdjust=-1000
+
+[Install]
+WantedBy=multi-user.target
