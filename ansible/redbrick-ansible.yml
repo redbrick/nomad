@@ -8,7 +8,9 @@
     #- { role: ssh } # add users defined in roles/defaults/main.yml
     #- { role: fail2ban } # add and configure fail2ban with jail file located in `templates/fail2ban.jail`
 
-- name: Configure Nomad
+- name: Configure Nomad & Consul
   hosts: nomad
   roles:
-    - { role: configure-nomad } # install nomad, configure the client & server based on `templates/` and vars on nomad group
+    # - { role: hashicorp-apt } # add hashicorp apt repo to apt sources
+    # - { role: configure-nomad } # install nomad, configure and start the client & server based on `templates/` on nomad group
+    # - { role: configure-consul } # install consul, configure and start the client & server based on `templates/` on nomad group

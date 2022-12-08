@@ -1,3 +1,4 @@
 ansible_user: CHANGEME
 nomad_datacenter_name: "aperture"
 nomad_server_bootstrap_expect: 3
+consul_generated_encrypt_key: CHANGEME
