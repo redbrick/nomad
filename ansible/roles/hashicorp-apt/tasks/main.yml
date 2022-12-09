@@ -1,12 +1,46 @@
 ---
-- name: Add hashicorp GPG key
-  become: true
-  apt_key:
-    url: https://apt.releases.hashicorp.com/gpg
-    state: present
+#- name: Add hashicorp GPG key
+#  become: true
+#  apt_key:
+#    url: https://apt.releases.hashicorp.com/gpg
+#    state: present
+#
+#- name: Add hashicorp repository
+#  become: true
+#  apt_repository:
+#    repo: deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main
+#    state: present
 
-- name: Add hashicorp repository
+#- name: Add Vault/Hashicorp apt key
+#  apt_key:
+#    url: "https://apt.releases.hashicorp.com/gpg"
+#    state: present
+#  become: true
+#  when: ansible_pkg_mgr == 'apt'
+#
+#- name: Add Vault/Hashicorp apt repo
+#  apt_repository:
+#    repo: "deb https://apt.releases.hashicorp.com/gpg {{ ansible_distribution_release }} main"
+#    state: present
+#  become: true
+#  when: ansible_pkg_mgr == 'apt'
+
+- name: Add Hashicorp apt key
   become: true
-  apt_repository:
-    repo: deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main
-    state: present
+  shell:
+    cmd: "curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -"
+  register: result
+
+- name: Print out result
+  debug:
+    msg: "{{ result.stdout }}"
+
+- name: Add Hashicorp repository
+  become: true
+  shell:
+    cmd: 'sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"'
+  register: result
+
+- name: Print out results
+  debug:
+    msg: "{{ result.stdout }}"

@@ -1,16 +1,16 @@
 ---
 
-- name: Redbrick Nomad, Consul and general management
+- name: Redbrick general management
   hosts: all
   gather_facts: true
   roles:
-    #- { role: apt } # update all packages, equivalent to `apt update && apt upgrade`
+    - { role: apt } # update all packages, equivalent to `apt update && apt upgrade`
     #- { role: ssh } # add users defined in roles/defaults/main.yml
     #- { role: fail2ban } # add and configure fail2ban with jail file located in `templates/fail2ban.jail`
 
 - name: Configure Nomad & Consul
   hosts: nomad
   roles:
-    # - { role: hashicorp-apt } # add hashicorp apt repo to apt sources
-    # - { role: configure-nomad } # install nomad, configure and start the client & server based on `templates/` on nomad group
-    # - { role: configure-consul } # install consul, configure and start the client & server based on `templates/` on nomad group
+    #- { role: hashicorp-apt } # add hashicorp apt repo to apt sources
+    #- { role: configure-nomad } # install nomad, configure and start the client & server based on `templates/` on nomad group
+    #- { role: configure-consul } # install consul, configure and start the client & server based on `templates/` on nomad group
