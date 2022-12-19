@@ -29,6 +29,7 @@ job "nginx" {
         "traefik.enable=true",
         "traefik.http.routers.nginx-aperture.rule=Host(`aperture.redbrick.dcu.ie`)",   
         "traefik.http.routers.nginx-aperture.entrypoints=web,websecure",
+        "traefik.http.routers.nginx-aperture.tls.certresolver=lets-encrypt"
       ]
     }
 
@@ -44,7 +45,7 @@ job "nginx" {
       }
 
       artifact {
-        source = "https://raw.githubusercontent.com/redbrick/nomad/master/nginx/index.html"
+        source = "https://raw.githubusercontent.com/redbrick/nomad/master/jobs/nginx/index.html"
       }
 
       template {
@@ -80,6 +81,7 @@ job "nginx" {
         "traefik.enable=true",
         "traefik.http.routers.nginx-glados.rule=Host(`glados.redbrick.dcu.ie`)",   
         "traefik.http.routers.nginx-glados.entrypoints=web,websecure",
+        "traefik.http.routers.nginx-glados.tls.certresolver=lets-encrypt"
       ]
     }
 
@@ -99,7 +101,7 @@ job "nginx" {
       }
 
       artifact {
-        source = "https://raw.githubusercontent.com/redbrick/nomad/master/nginx/glados.html"
+        source = "https://raw.githubusercontent.com/redbrick/nomad/master/jobs/nginx/glados.html"
       }
 
       template {
@@ -135,6 +137,7 @@ job "nginx" {
         "traefik.enable=true",
         "traefik.http.routers.nginx-wheatley.rule=Host(`wheatley.redbrick.dcu.ie`)",   
         "traefik.http.routers.nginx-wheatley.entrypoints=web,websecure",
+        "traefik.http.routers.nginx-wheatley.tls.certresolver=lets-encrypt"
       ]
     }
 
@@ -155,7 +158,7 @@ job "nginx" {
       }
 
       artifact {
-        source = "https://raw.githubusercontent.com/redbrick/nomad/master/nginx/wheatley.html"
+        source = "https://raw.githubusercontent.com/redbrick/nomad/master/jobs/nginx/wheatley.html"
       }
 
       template {
@@ -191,6 +194,7 @@ job "nginx" {
         "traefik.enable=true",
         "traefik.http.routers.nginx-chell.rule=Host(`chell.redbrick.dcu.ie`)",   
         "traefik.http.routers.nginx-chell.entrypoints=web,websecure",
+        "traefik.http.routers.nginx-chell.tls.certresolver=lets-encrypt"
       ]
     }
 
@@ -211,7 +215,7 @@ job "nginx" {
       }
 
       artifact {
-        source = "https://raw.githubusercontent.com/redbrick/nomad/master/nginx/chell.html"
+        source = "https://raw.githubusercontent.com/redbrick/nomad/master/jobs/nginx/chell.html"
       }
 
       template {
