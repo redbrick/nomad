@@ -1,10 +1,17 @@
 ---
+# check local head is the same as remote head
+# fail if not
+# this is to ensure that the local repository is up to date
+# before running the playbook, ignores uncommitted changes
+- name: Check local repository is up to date
+  hosts: localhost
+  roles: 
+    - { role: git-compare-head } # Prevent execution on out-of-date or divergent branches
 
 - name: Redbrick general management
   hosts: all
-  gather_facts: true
   roles:
-    - { role: apt } # update all packages, equivalent to `apt update && apt upgrade`
+    #- { role: apt } # update all packages, equivalent to `apt update && apt upgrade`
     #- { role: ssh } # add users defined in roles/defaults/main.yml
     #- { role: fail2ban } # add and configure fail2ban with jail file located in `templates/fail2ban.jail`
 

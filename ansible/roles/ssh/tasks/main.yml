@@ -25,3 +25,7 @@
   ignore_errors: yes
   register: task_result
   failed_when: "'blah' in task_result"
+
+- name: Tell user to generate openVPN configuration for users
+  debug:
+    msg: "Please generate openVPN configuration for users: {{ task_result.results | map(attribute='item') | map(attribute='user') | list | join(', ') }}. See https://docs.redbrick.dcu.ie/aperture/vpn/ for more information."

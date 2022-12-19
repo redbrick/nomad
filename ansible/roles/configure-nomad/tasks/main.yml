@@ -5,6 +5,7 @@
     name: nomad
     state: latest
     update_cache: yes
+  when: ansible_check_mode == false
 
 - name: Add nomad user
   become: true
@@ -39,21 +40,26 @@
     name: nomad
     enabled: yes
     state: started
+  when: ansible_check_mode == false
 
 - name: Check nomad status
   become: true
   shell: nomad status
   register: nomad_status
+  when: ansible_check_mode == false
 
 - name: Print nomad status
   debug:
     msg: '{{ nomad_status.stdout }}'
+  when: ansible_check_mode == false
 
 - name: Check nomad members
   become: true
   shell: nomad members
   register: nomad_members
+  when: ansible_check_mode == false
 
 - name: Print nomad members
   debug:
     msg: '{{ nomad_members.stdout }}'
+  when: ansible_check_mode == false
