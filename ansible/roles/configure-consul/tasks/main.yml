@@ -5,6 +5,7 @@
     name: consul
     state: latest
     update_cache: yes
+  when: ansible_check_mode == false
 
 - name: Add consul user
   become: true
@@ -32,12 +33,16 @@
     name: consul
     enabled: yes
     state: started
+  when: ansible_check_mode == false
 
 - name: Check if consul is running
   become: true
   shell: consul members
   register: consul_members
+  when: ansible_check_mode == false
 
 - name: Print consul members
   debug:
     msg: "{{ consul_members.stdout_lines }}"
+  when: ansible_check_mode == false
+  
