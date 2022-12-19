@@ -1,0 +1,13 @@
+---
+- name: Get local HEAD id
+  local_action: command git rev-parse HEAD
+  register: local_head
+
+- name: Get remote HEAD id
+  local_action: command git ls-remote origin HEAD
+  register: remote_head
+
+- name: Compare local and remote
+  fail:
+    msg: "Local repository is not up to date. Please pull latest changes from remote or push your local changes."
+  when: (local_head.stdout != (remote_head.stdout | split('\t') | first)) and ansible_check_mode == false
