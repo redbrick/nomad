@@ -26,3 +26,8 @@
     owner: root
     group: root
     mode: 0644
+
+- name: Reload systemd daemon
+  become: true
+  systemd:
+    daemon_reload: true

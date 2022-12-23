@@ -35,7 +35,7 @@
     state: started
   when: ansible_check_mode == false
 
-- name: Check if consul is running
+- name: Check if consul is running with `consul members`
   become: true
   shell: consul members
   register: consul_members

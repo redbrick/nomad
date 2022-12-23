@@ -55,7 +55,7 @@
 
 - name: Check nomad members
   become: true
-  shell: nomad members
+  shell: nomad server members
   register: nomad_members
   when: ansible_check_mode == false
 
