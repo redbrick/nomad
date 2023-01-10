@@ -20,6 +20,7 @@
     msg: "{{ result.stdout_lines }}"
 
 - name: install common tools
+  become: true
   ansible.builtin.apt:
     name: "{{ item }}"
   with_items: "{{ apt_packages }}"
