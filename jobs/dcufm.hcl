@@ -67,11 +67,11 @@ job "dcufm" {
     </limits>
 
     <authentication>
-        <source-password>{{ key dcufm/passwords/source }}</source-password>
-        <relay-password>{{ key dcufm/passwords/relay }}</relay-password>
+        <source-password>{{ key "dcufm/passwords/source" }}</source-password>
+        <relay-password>{{ key "dcufm/passwords/relay" }}</relay-password>
 
-        <admin-user>{{ key dcufm/users/admin }}</admin-user>
-        <admin-password>{{ key dcufm/passwords/admin }}</admin-password>
+        <admin-user>{{ key "dcufm/users/admin" }}</admin-user>
+        <admin-password>{{ key "dcufm/passwords/admin" }}</admin-password>
     </authentication>
 
     <hostname>dcufm.redbrick.dcu.ie</hostname>
