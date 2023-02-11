@@ -1,5 +1,6 @@
 ---
 - name: Ensure user groups are present
+  become: true
   group:
     name: "{{ item }}"
     state: present

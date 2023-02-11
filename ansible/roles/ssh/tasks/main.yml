@@ -5,6 +5,7 @@
     loop_var: user_data
 
 - name: Ensure user accounts are present
+  become: true
   user:
     name: "{{ item.user | default(item) }}"
     shell: /bin/bash
