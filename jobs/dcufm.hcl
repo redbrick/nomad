@@ -103,13 +103,25 @@ job "dcufm" {
     <logging>
         <accesslog>access.log</accesslog>
         <errorlog>error.log</errorlog>
-        <loglevel>3</loglevel> <!-- 4 Debug, 3 Info, 2 Warn, 1 Error -->
+        <loglevel>4</loglevel> <!-- 4 Debug, 3 Info, 2 Warn, 1 Error -->
         <logsize>10000</logsize> <!-- Max size of a logfile -->
     </logging>
 </icecast>
 EOH
 
         destination = "local/icecast_dcufm.xml"
+        perms = "755"
+      }
+
+      template {
+        data = <<EOH
+ICECAST_SOURCE_PASSWORD="{{ key "dcufm/passwords/source" }}"
+ICECAST_ADMIN_PASSWORD="{{ key "dcufm/passwords/admin" }}"
+ICECAST_RELAY_PASSOWRD="{{ key "dcufm/passwords/relay" }}"
+ICECAST_HOSTNAME="dcufm.redbrick.dcu.ie"
+EOH
+        destination = "local/file.env"
+        env = true
       }
     }
   }
