@@ -4,10 +4,6 @@ job "distro-vm" {
   group "distro-vm" {
 
     network {
-      port "ssh" {
-        to = -1
-      }
-
       mode = "host"
     }
 
@@ -16,6 +12,11 @@ job "distro-vm" {
     }
 
     task "distro-vm" {
+      constraint {
+        attribute = "${attr.unique.hostname}"
+        value = "wheatley"
+      }
+
       resources {
         cpu = 1000
         memory = 1024
@@ -36,17 +37,13 @@ job "distro-vm" {
 
         drive_interface = "virtio"
 
-        port_map {
-          ssh = 22
-        }
-        
         args = [
-          "-net",
-          "nic,model=virtio",
-          "-net",
-          "user",
+          "-netdev",
+          "bridge,id=hn0",
+          "-device",
+          "virtio-net-pci,netdev=hn0,id=nic1",
           "-smbios",
-          "type=1,serial=ds=nocloud-net;s=http://10.10.0.4:8000/",
+          "type=1,serial=ds=nocloud-net;s=http://136.206.16.5:8000/",
         ]
       }
     }
