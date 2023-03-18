@@ -34,7 +34,7 @@ You'll need to assign an IP address to the bridge interface. This will be used a
 for the host. You can do this with DHCP or by assigning a static IP address. The best way to do this
 is to create a DHCP static lease on the UDM for the bridge interface MAC address.
 
-::: note
+:::note
 TODO: Find out why connectivity seems to be lost when the bridge interface receives an address before
 the physical interface.
 
@@ -54,6 +54,9 @@ For others looking, this configuration is specific to QEMU only.
 ```bash
 qemu-system-x86_64 ... -netdev bridge,id=hn0 -device virtio-net-pci,netdev=hn0,id=nic1
 ```
+
+This will assign the VM an address on the external network. The VM will be able to communicate with
+the host and other VMs in the network.
 
 You must also add `allow br0` to `/etc/qemu/bridge.conf` to allow qemu to add the tap interfaces to
 the bridge. [Source](https://wiki.qemu.org/Features/HelperNetworking)
