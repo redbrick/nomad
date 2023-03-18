@@ -68,7 +68,7 @@ the address of a VM by checking the nomad alloc logs for that VM and searching f
 ```bash
 $ nomad job status distro-vm | grep "Node ID" -A 1 | tail -n 1 | cut -d " " -f 1
 # <alloc-id>
-$ nomad alloc logs <alloc-id> | grep -E "ens3.*global"
+$ nomad alloc logs <alloc-id> | grep -E "ens3.*global" | cut -d "|" -f 4 | xargs
 # cloud init... ens3: <ip-address> global
 ```
 
