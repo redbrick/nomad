@@ -6,6 +6,9 @@ github_users:
   - user: mojito
     # omitting account variable won't add any github keys to the user.
     account: DistroByte 
-    groups: [sudo, docker]
+    groups: [sudo]
+  - user: slatt
+    account: cawnj
+    groups: [sudo]
 
 github_url: https://github.com

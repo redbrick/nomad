@@ -8,6 +8,11 @@ apt_packages:
   - nmap
   - sysstat
   - vim
+  - gnupg
+  - software-properties-common
+  - psmisc
+  - sudo
+  - mosh
 
 apt_install_packages: false
 apt_update_packages: true

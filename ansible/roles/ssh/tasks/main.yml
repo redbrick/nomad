@@ -17,16 +17,39 @@
   with_items: "{{ github_users }}"
 
 - name: Ensure authorized_keys for GitHub user accounts are present
+  become: true
   authorized_key:
     user: "{{ item.user | default(item) }}"
     key: "{{ github_url }}/{{ item.account | default('') }}.keys"
     manage_dir: true
+    state: present
     exclusive: False
   with_items: "{{ github_users }}"
-  ignore_errors: yes
+  ignore_errors: true
   register: task_result
   failed_when: "'blah' in task_result"
 
 - name: Tell user to generate openVPN configuration for users
   debug:
     msg: "Please generate openVPN configuration for users: {{ task_result.results | map(attribute='item') | map(attribute='user') | list | join(', ') }}. See https://docs.redbrick.dcu.ie/aperture/vpn/ for more information."
+
+- name: Copy configuraion to host
+  become: true
+  ansible.builtin.copy:
+    src: templates/sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    force: true
+
+- name: Restart sshd
+  become: true
+  service:
+    name: sshd
+    state: restarted
+
+- name: Inform user to add password for account
+  debug:
+    msg: "Please add a password for the following accounts: {{ github_users | map(attribute='user') | list | join(', ') }}. See https://docs.redbrick.dcu.ie/aperture/ssh/ for more information."
+
+# - name: Remove user account
+#   debug:
+#     msg: 'ansible -i hosts all -m user -a "name={{ user }} state=absent remove=true" --become"'

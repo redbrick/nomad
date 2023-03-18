@@ -1,0 +1,22 @@
+Include /etc/ssh/sshd_config.d/*.conf
+
+ChallengeResponseAuthentication no
+
+UsePAM no
+
+X11Forwarding yes
+PrintMotd no
+AcceptEnv LANG LC_*
+Subsystem       sftp    /usr/lib/openssh/sftp-server
+Port 22
+
+PermitRootLogin no
+PubkeyAuthentication yes
+AuthorizedKeysFile %h/.ssh/authorized_keys
+PasswordAuthentication yes
+PermitEmptyPasswords no
+GSSAPIAuthentication no
+AuthenticationMethods publickey,password
+
+Match address 10.10.0.0/24,10.8.0.0/24,10.230.0.0/16,136.206.15.0/24,136.206.16.0/24
+  AuthenticationMethods publickey password
