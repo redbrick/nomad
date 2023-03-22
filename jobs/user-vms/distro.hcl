@@ -18,8 +18,8 @@ job "distro-vm" {
       }
 
       resources {
-        cpu = 1000
-        memory = 1024
+        cpu = 12000
+        memory = 4096
       }
 
       artifact {
@@ -41,7 +41,7 @@ job "distro-vm" {
           "-netdev",
           "bridge,id=hn0",
           "-device",
-          "virtio-net-pci,netdev=hn0,id=nic1",
+          "virtio-net-pci,netdev=hn0,id=nic1,mac=52:54:84:ba:49:01",
           "-smbios",
           "type=1,serial=ds=nocloud-net;s=http://136.206.16.5:8000/distro-vm/",
         ]
