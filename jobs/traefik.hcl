@@ -35,11 +35,11 @@ job "traefik" {
       template {
         data = <<EOF
 [entryPoints]
-  [entryPoints.web]
-  address = ":80"
-  [entryPoints.web.http.redirections.entryPoint]
-    to = "websecure"
-    scheme = "https"
+#  [entryPoints.web]
+#  address = ":80"
+#  [entryPoints.web.http.redirections.entryPoint]
+#    to = "websecure"
+#    scheme = "https"
 
   [entryPoints.websecure]
   address = ":443"

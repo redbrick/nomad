@@ -1,8 +1,8 @@
-job "create-astral" {
+job "minecraft" {
   datacenters = ["aperture"]
   type = "service"
 
-  group "mc" {
+  group "vanilla" {
     constraint {
         attribute = "${attr.unique.hostname}"
         value = "glados"
@@ -29,6 +29,9 @@ job "create-astral" {
       config {
         image = "itzg/minecraft-server"
         ports = ["mc-vanilla-port","mc-vanilla-rcon"]
+        volumes = [
+          "/storage/nomad/${NOMAD_TASK_NAME}:/data/world"
+        ]
       }
 
       resources {
@@ -43,12 +46,7 @@ job "create-astral" {
     }
   }
 
-  group "mc-astral" {
-    constraint {
-        attribute = "${attr.unique.hostname}"
-        value = "glados"
-    }
-
+  group "create-astral" {
     count = 1
     network {
       port "mc-astral-port" {
@@ -68,32 +66,21 @@ job "create-astral" {
     task "minecraft-astral" {
       driver = "docker"
       config {
-        image = "itzg/minecraft-server"
+        image = "ghcr.io/maxi0604/create-astral:main"
         ports = ["mc-astral-port","mc-astral-rcon"]
         volumes = [
-          "data:/data"
+          "/storage/nomad/${NOMAD_TASK_NAME}:/data/world"
         ]
       }
 
       resources {
         cpu    = 3000 # 500 MHz
-        memory = 6144 # 6gb
+        memory = 8168 # 8gb
       }
 
       env {
         EULA = "TRUE"
         MEMORY = "6G"
-        TYPE = "FORGE"
-        VERSION = "1.18.2"
-        CF_SERVER_MOD = "modpack.zip"
-      }
-
-      artifact {
-        source = "http://10.10.0.5:8000/modpack.zip"
-        destination = "/data"
-        options {
-          archive = false
-        }
       }
     }
   }
