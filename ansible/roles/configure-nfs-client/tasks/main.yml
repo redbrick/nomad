@@ -1,0 +1,31 @@
+---
+- name: install nfs client
+  become: true
+  ansible.builtin.apt:
+    name:
+      - nfs-common
+  when: ansible_os_family == "Debian"
+
+- name: create mount point
+  become: true
+  ansible.builtin.file:
+    path: /storage
+    state: directory
+    mode: "0755"
+  when: ansible_os_family == "Debian"
+
+- name: add nfs entry to fstab
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    line: "{{ item }}"
+    state: present
+    create: yes
+  with_items:
+    - "10.10.0.7:/storage /storage nfs defaults 0 0"
+
+- name: mount nfs
+  become: true
+  ansible.builtin.shell:
+    cmd: "mount -a"
+  when: ansible_os_family == "Debian"

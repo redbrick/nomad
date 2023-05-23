@@ -1,0 +1,28 @@
+---
+- name: install nfsd
+  become: true
+  ansible.builtin.apt:
+    name:
+      - nfs-kernel-server
+      - nfs-common
+  when: ansible_os_family == "Debian"
+
+- name: configure nfsd
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/exports
+    line: "{{ item }}"
+    state: present
+    create: yes
+  with_items:
+    - "/storage 10.10.0.4(rw,sync,no_subtree_check,no_root_squash)"
+    - "/storage 10.10.0.5(rw,sync,no_subtree_check,no_root_squash)"
+    - "/storage 10.10.0.6(rw,sync,no_subtree_check,no_root_squash)"
+
+- name: restart nfsd
+  become: true
+  ansible.builtin.service:
+    name: nfs-kernel-server
+    state: restarted
+    enabled: yes
+  when: ansible_os_family == "Debian"

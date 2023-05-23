@@ -1,0 +1,29 @@
+---
+- name: Ensure required packages are installed
+  become: true
+  apt:
+    name: "{{ item }}"
+  with_items: ["software-properties-common", "gnupg"]
+  when: ansible_os_family == "Debian"
+
+- name: Add Elastic apt key
+  become: true
+  shell:
+    cmd: "wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elastic-keyring.gpg"
+  register: result
+  when: ansible_os_family == "Debian"
+
+- name: Print out result
+  debug:
+    msg: "{{ result.stdout }}"
+
+- name: Add Elastic repository
+  become: true
+  shell:
+    cmd: 'echo "deb [signed-by=/usr/share/keyrings/elastic-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-8.x.list'
+  register: result
+  when: ansible_os_family == "Debian"
+
+- name: Print out results
+  debug:
+    msg: "{{ result.stdout }}"
