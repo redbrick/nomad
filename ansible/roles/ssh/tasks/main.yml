@@ -49,7 +49,6 @@
 - name: Inform user to add password for account
   debug:
     msg: "Please add a password for the following accounts: {{ github_users | map(attribute='user') | list | join(', ') }}. See https://docs.redbrick.dcu.ie/aperture/ssh/ for more information."
-
 # - name: Remove user account
 #   debug:
 #     msg: 'ansible -i hosts all -m user -a "name={{ user }} state=absent remove=true" --become"'

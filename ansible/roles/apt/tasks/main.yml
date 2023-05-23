@@ -5,13 +5,13 @@
     upgrade: yes
     autoclean: yes
     autoremove: yes
-    update_cache: yes  
+    update_cache: yes
   when: ansible_os_family == "Debian" and apt_update_packages
   register: result
 
 - name: List installed and updated packages
   become: true
-  shell: 
+  shell:
     cmd: 'grep -E "^$(date +%Y-%m-%d).+ (install|upgrade) " /var/log/dpkg.log | cut -d " " -f 3-5'
   register: result
 
@@ -22,6 +22,14 @@
 - name: install common tools
   become: true
   ansible.builtin.apt:
-    name: "{{ item }}"
-  with_items: "{{ apt_packages }}"
+    name:
+      - cron
+      - curl
+      - git
+      - htop
+      - net-tools
+      - nmap
+      - sysstat
+      - vim
+      - webhook
   when: ansible_os_family == "Debian" and apt_install_packages

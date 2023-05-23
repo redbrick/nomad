@@ -45,4 +45,4 @@
   debug:
     msg: "{{ consul_members.stdout_lines }}"
   when: ansible_check_mode == false
-  
+# TODO: CONFIGURE CONSUL DNS

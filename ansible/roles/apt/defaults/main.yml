@@ -1,4 +1,3 @@
----
 apt_packages:
   - cron
   - curl
@@ -13,6 +12,7 @@ apt_packages:
   - psmisc
   - sudo
   - mosh
+  - logstash
 
-apt_install_packages: false
+apt_install_packages: true
 apt_update_packages: true

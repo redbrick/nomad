@@ -5,19 +5,35 @@
 # before running the playbook, ignores uncommitted changes
 - name: Check local repository is up to date
   hosts: localhost
-  roles: 
-    - { role: git-compare-head } # Prevent execution on out-of-date or divergent branches
-
-- name: Redbrick general management
-  hosts: all
   roles:
-    #- { role: apt } # update all packages, equivalent to `apt update && apt upgrade`
-    #- { role: ssh } # add users defined in roles/defaults/main.yml
-    #- { role: fail2ban } # add and configure fail2ban with jail file located in `templates/fail2ban.jail`
+      - { role: git-compare-head } # Prevent execution on out-of-date or divergent branches
 
-- name: Configure Nomad & Consul
-  hosts: nomad
-  roles:
-    #- { role: hashicorp-apt } # add hashicorp apt repo to apt sources
-    #- { role: configure-nomad } # install nomad, configure and start the client & server based on `templates/` on nomad group
-    #- { role: configure-consul } # install consul, configure and start the client & server based on `templates/` on nomad group
+# - name: Redbrick general management
+#   hosts: all
+#   roles:
+#- { role: apt } # update all packages, equivalent to `apt update && apt upgrade`
+#- { role: ssh } # add users defined in roles/defaults/main.yml
+#- { role: fail2ban } # add and configure fail2ban with jail file located in `templates/fail2ban.jail`
+
+# - name: Configure Nomad & Consul
+#   hosts: nomad
+#   roles:
+#- { role: hashicorp-apt } # add hashicorp apt repo to apt sources
+#- { role: configure-nomad } # install nomad, configure and start the client & server based on `templates/` on nomad group
+#- { role: configure-consul } # install consul, configure and start the client & server based on `templates/` on nomad group
+
+# - name: Configure NFS server
+#   hosts: nfs_servers
+#   roles:
+#       - { role: configure-nfs-server } # install nfs server and configure based on `templates/` on nfs group
+
+# - name: Configure NFS client
+#   hosts: nfs_clients
+#   roles:
+#       - { role: configure-nfs-client } # install nfs client and configure based on `templates/` on nfs_clients group
+
+# - name: Configure logging stack
+#   hosts: all
+#   roles:
+# - { role: elastic-apt } # add elastic apt repo to apt sources
+# - { role: logging } # install and configure logging stack based on `templates/` on all hosts
