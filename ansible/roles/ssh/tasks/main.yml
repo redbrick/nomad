@@ -29,26 +29,12 @@
   register: task_result
   failed_when: "'blah' in task_result"
 
-- name: Tell user to generate openVPN configuration for users
-  debug:
-    msg: "Please generate openVPN configuration for users: {{ task_result.results | map(attribute='item') | map(attribute='user') | list | join(', ') }}. See https://docs.redbrick.dcu.ie/aperture/vpn/ for more information."
-
-- name: Copy configuraion to host
+- name: Set passwordless sudo
   become: true
-  ansible.builtin.copy:
-    src: templates/sshd_config.j2
-    dest: /etc/ssh/sshd_config
-    force: true
-
-- name: Restart sshd
-  become: true
-  service:
-    name: sshd
-    state: restarted
-
-- name: Inform user to add password for account
-  debug:
-    msg: "Please add a password for the following accounts: {{ github_users | map(attribute='user') | list | join(', ') }}. See https://docs.redbrick.dcu.ie/aperture/ssh/ for more information."
-# - name: Remove user account
-#   debug:
-#     msg: 'ansible -i hosts all -m user -a "name={{ user }} state=absent remove=true" --become"'
+  lineinfile:
+    dest: /etc/sudoers
+    line: "{{ item.user | default(item) }} ALL=(ALL) NOPASSWD:ALL"
+    state: present
+    validate: "visudo -cf %s"
+  with_items: "{{ github_users }}"
+  when: item.user is defined and item.passwordless_sudo is true

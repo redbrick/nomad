@@ -41,7 +41,7 @@
     path: /etc/systemd/resolved.conf.d
     state: directory
 
-- name: Configure Consul DNS
+- name: Configure Consul DNS in systemd-resolved
   become: true
   copy:
     dest: /etc/systemd/resolved.conf.d/consul.conf
