@@ -11,8 +11,6 @@ apt_packages:
   - software-properties-common
   - psmisc
   - sudo
-  - mosh
-  - logstash
-
+  - dnsutils
 apt_install_packages: true
 apt_update_packages: true

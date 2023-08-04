@@ -1,0 +1,47 @@
+---
+# ansible role to install docker-ce onto various operating systems
+- name: Ensure required packages are installed
+  become: true
+  apt:
+    name: "{{ item }}"
+  with_items: ["ca-certificates", "curl", "gnupg"]
+  when: ansible_os_family == "Debian"
+
+# Add docker's key
+#  sudo
+#  curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+#  sudo chmod a+r /etc/apt/keyrings/docker.gpg
+- name: Install the keyring
+  become: true
+  shell:
+    cmd: "install -m 0755 -d /etc/apt/keyrings"
+
+- name: Get the key
+  become: true
+  shell:
+    cmd: "curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --batch --yes --dearmor -o /etc/apt/keyrings/docker.gpg"
+
+- name: Set permissions
+  become: true
+  shell:
+    cmd: "chmod a+r /etc/apt/keyrings/docker.gpg"
+
+# Set up the stable repository
+#  echo \
+# "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+# "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+# sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+- name: Set up the stable repository
+  become: true
+  shell:
+    cmd: 'echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null'
+
+- name: Install Docker
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+    force_apt_get: yes
+  with_items: ["docker-ce", "docker-ce-cli", "containerd.io", "docker-compose"]
+  when: ansible_os_family == "Debian"

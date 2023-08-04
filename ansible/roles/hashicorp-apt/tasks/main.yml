@@ -1,5 +1,4 @@
 ---
-
 - name: Ensure required packages are installed
   become: true
   apt:
@@ -17,12 +16,26 @@
   debug:
     msg: "{{ result.stdout }}"
 
-- name: Add Hashicorp repository
+- name: Add Hashicorp repository (pis only)
   become: true
   shell:
-    cmd: 'sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"'
+    cmd: 'sudo apt-add-repository -y "deb [arch=arm64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"'
   register: result
+  when: "'pis' in group_names"
 
 - name: Print out results
   debug:
     msg: "{{ result.stdout }}"
+  when: "'pis' in group_names"
+
+- name: Add Hashicorp repository (amd64)
+  become: true
+  shell:
+    cmd: 'sudo apt-add-repository -y "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"'
+  register: result
+  when: "'homelab' in group_names"
+
+- name: Print out results
+  debug:
+    msg: "{{ result.stdout }}"
+  when: "'homelab' in group_names"

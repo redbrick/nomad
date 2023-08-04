@@ -35,14 +35,39 @@
     state: started
   when: ansible_check_mode == false
 
-- name: Check if consul is running with `consul members`
+- name: Ensure systemd-resolved config directory exists
   become: true
-  shell: consul members
-  register: consul_members
+  file:
+    path: /etc/systemd/resolved.conf.d
+    state: directory
+
+- name: Configure Consul DNS
+  become: true
+  copy:
+    dest: /etc/systemd/resolved.conf.d/consul.conf
+    content: |
+      [Resolve]
+      DNS=127.0.0.1:8600
+      DNSSEC=false
+      Domains=~consul node.consul service.consul
+
+- name: Restart systemd-resolved
+  become: true
+  systemd:
+    name: systemd-resolved
+    enabled: yes
+    state: restarted
   when: ansible_check_mode == false
 
-- name: Print consul members
-  debug:
-    msg: "{{ consul_members.stdout_lines }}"
-  when: ansible_check_mode == false
-# TODO: CONFIGURE CONSUL DNS
+- name: Remove resolv.conf symlink
+  become: true
+  file:
+    path: /etc/resolv.conf
+    state: absent
+
+- name: Create resolv.conf symlink
+  become: true
+  file:
+    src: /run/systemd/resolve/stub-resolv.conf
+    dest: /etc/resolv.conf
+    state: link
