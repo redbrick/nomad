@@ -4,7 +4,7 @@ encrypt = "{{ consul_generated_encrypt_key }}"
 verify_incoming = true
 verify_outgoing = true
 verify_server_hostname = true
-bind_addr = "{% raw %}{{ GetPrivateInterfaces | include \"network\" \"10.0.0.0/8\" | attr \"address\" }}{% endraw %}"
+bind_addr = "{% raw %}{{ GetPrivateInterfaces | include \"network\" \"192.168.1.0/24\" | attr \"address\" }}{% endraw %}"
 client_addr = "0.0.0.0"
 
 ca_file = "/etc/consul.d/consul-agent-ca.pem"
@@ -15,9 +15,9 @@ auto_encrypt {
   allow_tls = true
 }
 
-# This ugly line is to get the IP addresses of the other consul servers, excluding the current host.
+# This ugly line is to get the hostnames of the other consul servers, excluding the current host.
 # Consul cannot join itself, so we need to exclude the current host.
-retry_join = ["{{ groups.nomad|difference([inventory_hostname])| map('extract', hostvars, ['ansible_host'])|join('","') }}"]
+retry_join = ["{{ groups.nomad|difference([inventory_hostname]) | join('", "')}}"]
 
 acl {
   enabled = false
@@ -30,4 +30,4 @@ performance {
 }
 
 # TODO: change once DNS is running on a host
-recursors = ["10.10.0.1"] # adds DNS forwarding for non-`.consul` domains
+recursors = ["192.168.1.6"] # adds DNS forwarding for non-`.consul` domains
