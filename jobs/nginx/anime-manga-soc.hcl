@@ -38,7 +38,7 @@ job "nginx-ams" {
       driver = "docker"
 
       config {
-        image = "ghcr.io/dcuams/amikon-website-v2"
+        image = "ghcr.io/dcuams/amikon-site-v2:latest"
         ports = ["http", "https"]
       }
     }
