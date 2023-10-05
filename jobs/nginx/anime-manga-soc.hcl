@@ -8,11 +8,13 @@ job "nginx-ams" {
 
     network {
       port "http" {
-        to = "80"
+        static = 80
+        to = 3000
       }
 
       port "https" {
-        to = "443"
+        static = 443
+        to = 3000
       }
     }
 
@@ -37,7 +39,7 @@ job "nginx-ams" {
       driver = "docker"
 
       config {
-        image = "ghcr.io/dcuams/amikon-website"
+        image = "ghcr.io/dcuams/amikon-website-v2"
         ports = ["http", "https"]
       }
     }
