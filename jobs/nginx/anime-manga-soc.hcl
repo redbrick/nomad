@@ -8,12 +8,10 @@ job "nginx-ams" {
 
     network {
       port "http" {
-        static = 80
         to = 3000
       }
 
       port "https" {
-        static = 443
         to = 3000
       }
     }
@@ -32,6 +30,7 @@ job "nginx-ams" {
         "traefik.http.routers.nginx-ams.rule=Host(`amikon.me`,`www.amikon.me`)",
         "traefik.http.routers.nginx-ams.entrypoints=web,websecure",
         "traefik.http.routers.nginx-ams.tls.certresolver=lets-encrypt"
+        "traefik.http.routers.nginx-ams.loadbalancer.server.port=${NOMAD_PORT_http}"
       ]
     }
 
