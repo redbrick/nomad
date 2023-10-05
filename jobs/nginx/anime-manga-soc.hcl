@@ -30,7 +30,7 @@ job "nginx-ams" {
         "traefik.http.routers.nginx-ams.rule=Host(`amikon.me`,`www.amikon.me`)",
         "traefik.http.routers.nginx-ams.entrypoints=web,websecure",
         "traefik.http.routers.nginx-ams.tls.certresolver=lets-encrypt",
-        "traefik.http.routers.nginx-ams.loadbalancer.server.port=${NOMAD_PORT_http}"
+        "traefik.http.routers.nginx-ams.loadbalancer.server.port=3000"
       ]
     }
 
@@ -40,6 +40,11 @@ job "nginx-ams" {
       config {
         image = "ghcr.io/dcuams/amikon-site-v2:latest"
         ports = ["http", "https"]
+      }
+
+      resources {
+        cpu    = 100
+        memory = 500
       }
     }
   }
