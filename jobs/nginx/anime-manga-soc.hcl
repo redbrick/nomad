@@ -30,7 +30,7 @@ job "nginx-ams" {
         "traefik.http.routers.nginx-ams.rule=Host(`amikon.me`,`www.amikon.me`)",
         "traefik.http.routers.nginx-ams.entrypoints=web,websecure",
         "traefik.http.routers.nginx-ams.tls.certresolver=lets-encrypt",
-        "traefik.http.routers.nginx-ams.loadbalancer.server.port=3000"
+        "traefik.http.routers.nginx-ams.loadbalancer.server.port=${NOMAD_PORT_http}"
       ]
     }
 
