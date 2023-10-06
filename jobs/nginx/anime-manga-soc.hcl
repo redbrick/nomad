@@ -10,10 +10,6 @@ job "nginx-ams" {
       port "http" {
         to = 3000
       }
-
-      port "https" {
-        to = 3000
-      }
     }
 
     service {
@@ -38,7 +34,7 @@ job "nginx-ams" {
 
       config {
         image = "ghcr.io/dcuams/amikon-site-v2:latest"
-        ports = ["http", "https"]
+        ports = "http"
       }
 
       resources {
