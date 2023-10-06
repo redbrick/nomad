@@ -8,11 +8,7 @@ job "nginx-ams" {
 
     network {
       port "http" {
-        to = "80"
-      }
-
-      port "https" {
-        to = "443"
+        to = 3000
       }
     }
 
@@ -29,7 +25,7 @@ job "nginx-ams" {
         "traefik.enable=true",
         "traefik.http.routers.nginx-ams.rule=Host(`amikon.me`,`www.amikon.me`)",
         "traefik.http.routers.nginx-ams.entrypoints=web,websecure",
-        "traefik.http.routers.nginx-ams.tls.certresolver=lets-encrypt"
+        "traefik.http.routers.nginx-ams.tls.certresolver=lets-encrypt",
       ]
     }
 
@@ -37,8 +33,13 @@ job "nginx-ams" {
       driver = "docker"
 
       config {
-        image = "ghcr.io/dcuams/amikon-website"
-        ports = ["http", "https"]
+        image = "ghcr.io/dcuams/amikon-site-v2:latest"
+        ports = ["http"]
+      }
+
+      resources {
+        cpu    = 100
+        memory = 500
       }
     }
   }
