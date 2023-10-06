@@ -34,7 +34,7 @@ job "nginx-ams" {
 
       config {
         image = "ghcr.io/dcuams/amikon-site-v2:latest"
-        ports = "http"
+        ports = ["http"]
       }
 
       resources {
