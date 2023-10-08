@@ -24,7 +24,7 @@ job "traefik" {
     task "traefik" {
       driver = "docker"
       config {
-        image = "traefik:2.8"
+        image = "traefik"
         network_mode = "host"
         
         volumes = [

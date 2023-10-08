@@ -15,17 +15,12 @@ job "nova-timetable" {
     service {
       port = "http"
       name = "nova-timetable"
-      check {
-        type = "http"
-        path = "/"
-        interval = "10s"
-        timeout = "2s"
-      }
 
       tags = [
         "traefik.enable=true",
         "traefik.http.routers.nova-timetable.rule=Host(`timetable.redbrick.dcu.ie`)",
-        "traefik.http.routers.nova-timetable.tls=true",
+        "traefik.http.routers.nova-timetable.entrypoints=web,websecure",
+        "traefik.http.routers.nova-timetable.tls.certresolver=lets-encrypt",
       ]
     }
 
