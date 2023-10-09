@@ -8,7 +8,7 @@ job "nginx-ams" {
 
     network {
       port "http" {
-        to = 3000
+        to = 80
       }
     }
 
