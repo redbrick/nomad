@@ -15,6 +15,12 @@ job "nova-timetable" {
     service {
       port = "http"
       name = "nova-timetable"
+      check {
+        type = "http"
+        path = "/healthcheck"
+        interval = "10s"
+        timeout = "2s"
+      }
 
       tags = [
         "traefik.enable=true",
