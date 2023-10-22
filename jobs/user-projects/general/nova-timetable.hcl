@@ -10,11 +10,16 @@ job "nova-timetable" {
       port "http" {
         to = 80
       }
+
+      port "db" {
+        to = 6379
+      }
     }
 
     service {
-      port = "http"
       name = "nova-timetable"
+      port = "http"
+
       check {
         type = "http"
         path = "/healthcheck"
@@ -32,9 +37,23 @@ job "nova-timetable" {
 
     task "python-application" {
       driver = "docker"
+
+      env {
+        REDIS_ADDRESS = "${NOMAD_ADDR_db}"
+      }
+
       config {
         image = "novanai/timetable-sync"
         ports = ["http"]
+      }
+    }
+
+    task "redis-db" {
+      driver = "docker"
+
+      config {
+        image = "redis:latest"
+        ports = ["db"]
       }
     }
   }
