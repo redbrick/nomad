@@ -11,7 +11,6 @@ job "blockbot" {
 
       config {
         image = "ghcr.io/redbrick/blockbot"
-        entrypoint = ["python3", "src/main.py"]
       }
 
       resources {
