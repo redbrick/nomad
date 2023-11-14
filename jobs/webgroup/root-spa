@@ -1,0 +1,45 @@
+job "root-spa" {
+  datacenters = ["aperture"]
+
+  type = "service"
+
+  group "root-spa" {
+    count = 1
+
+    network {
+      port "http" {
+        to = "80"
+      }
+
+      port "https" {
+        to = "443"
+      }
+    }
+
+    service {
+      port = "http"
+
+      check {
+        type = "http"
+        path = "/"
+        interval = "10s"
+        timeout = "2s"
+      }
+      tags = [
+        "traefik.enable=true",
+        "traefik.http.routers.root-spa.rule=Host(`redbrick.dcu.ie`)",
+        "traefik.http.routers.root-spa.entrypoints=web,websecure",
+        "traefik.http.routers.root-spa.tls.certresolver=lets-encrypt"
+      ]
+    }
+
+    task "webserver" {
+      driver = "docker"
+
+      config {
+        image = "ghcr.io/redbrick/root-spa"
+        ports = ["http", "https"]
+      }
+    }
+  }
+}
