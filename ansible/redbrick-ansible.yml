@@ -8,12 +8,12 @@
   roles:
       - { role: git-compare-head } # Prevent execution on out-of-date or divergent branches
 
-# - name: Redbrick general management
-#   hosts: all
-#   roles:
-#- { role: apt } # update all packages, equivalent to `apt update && apt upgrade`
-#- { role: ssh } # add users defined in roles/defaults/main.yml
-#- { role: fail2ban } # add and configure fail2ban with jail file located in `templates/fail2ban.jail`
+- name: Redbrick general management
+  hosts: all
+  roles:
+      - { role: apt } # update all packages, equivalent to `apt update && apt upgrade`
+      - { role: ssh } # add users defined in roles/defaults/main.yml
+      - { role: fail2ban } # add and configure fail2ban with jail file located in `templates/fail2ban.jail`
 
 # - name: Configure Nomad & Consul
 #   hosts: nomad
