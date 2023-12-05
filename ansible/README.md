@@ -18,7 +18,7 @@ This command assumes `hosts` is your hosts file, you can copy the sample host fi
 
 ### Adding new users to aperture
 
-When you want to add a new user to all of the aperture servers, run the below command. You'll also need to edit [`roles/ssh/defaults/main.yml`](./roles/ssh/defaults/main.yml`).
+When you want to add a new user to all of the aperture servers, run the below command. You'll also need to edit [`roles/ssh/defaults/main.yml`](./roles/ssh/defaults/main.yml).
 
 ```
 ansible-playbook -i hosts redbrick-ansible.yml -e "created_users_pass=hellothere"
