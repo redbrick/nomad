@@ -14,6 +14,8 @@
     append: yes
     home: /home/{{ item.user | default(item) }}
     state: present
+    password: "{{ created_users_pass }}"
+    update_password: "on_create"
   with_items: "{{ github_users }}"
 
 - name: Ensure authorized_keys for GitHub user accounts are present
