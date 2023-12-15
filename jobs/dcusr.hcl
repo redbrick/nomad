@@ -38,9 +38,18 @@ job "dcusr" {
         image = "ghcr.io/dcu-solar-racing/nextjs-website:main"
         ports = ["http"]
         auth {
-          username = {{ key "dcusr/ghcr/username" }}
-          password = {{ key "dcusr/ghcr/password" }}
+          username = "${DOCKER_USER}"
+          password = "${DOCKER_PASS}"
         }
+      }
+      template {
+        destination = "secrets/secret.env"
+        env         = true
+        change_mode = "restart"
+        data        = <<EOH
+DOCKER_USER={{ key "dcusr/ghcr/username" }}
+DOCKER_PASS={{ key "dcusr/ghcr/password" }}
+EOH
       }
     }
   }
