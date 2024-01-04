@@ -1,6 +1,11 @@
 job "traefik" {
   datacenters = ["aperture"]
-  type        = "system"
+  type        = "service"
+
+  constraint {
+    attribute = "${attr.unique.hostname}"
+    value = "bastion-vm"
+  }
 
   group "traefik" {
     network {
