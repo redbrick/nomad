@@ -23,7 +23,7 @@ job "distro-vm" {
       }
 
       artifact {
-        source = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2"
+        source = "http://136.206.16.5:8000/base-images/debian-12-genericcloud-amd64-30G.qcow2"
         destination = "local/distro-vm.qcow2"
         mode = "file"
       }
@@ -32,9 +32,7 @@ job "distro-vm" {
 
       config {
         image_path = "local/distro-vm.qcow2"
-
         accelerator = "kvm"
-
         drive_interface = "virtio"
 
         args = [
