@@ -52,7 +52,9 @@ config:
 
     routes:
       - host: fugitives.rb.dcu.ie
-        backend: fugitives-mc.service.consul:25566      
+        backend: fugitives-mc.service.consul:25566
+      - host: mc.rb.dcu.ie
+        backend: vanilla-mc.service.consul:25567
 EOH
         destination = "local/file.conf"
       }
