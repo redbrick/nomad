@@ -55,6 +55,8 @@ config:
         backend: fugitives-mc.service.consul:25566
       - host: mc.rb.dcu.ie
         backend: vanilla-mc.service.consul:25567
+      - host: shemek.rb.dcu.ie
+        backend: shemek-mc.service.consul:25568
 EOH
         destination = "local/file.conf"
       }
