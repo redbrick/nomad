@@ -19,11 +19,14 @@ job "minecraft" {
       name = "vanilla-mc"
     }
 
-    task "minecraft-server" {
+    task "minecraft-vanilla" {
       driver = "docker"
       config {
         image = "itzg/minecraft-server"
         ports = ["mc-vanilla-port","mc-vanilla-rcon"]
+        volumes = [
+          "/storage/nomad/${NOMAD_TASK_NAME}:/data"
+        ]
       }
 
       resources {
@@ -33,7 +36,10 @@ job "minecraft" {
 
       env {
         EULA = "TRUE"
+        TYPE = "PAPER"
+        ICON = "https://docs.redbrick.dcu.ie/assets/logo.png"
         MEMORY = "6G"
+        MOTD = "LONG LIVE THE REDBRICK"
       }
     }
   }
