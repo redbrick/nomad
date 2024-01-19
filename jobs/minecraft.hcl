@@ -44,6 +44,51 @@ job "minecraft" {
     }
   }
 
+  group "games-mc" {
+    count = 1
+
+    network {
+      port "mc-games-port" {
+        static = 25569
+        to = 25565
+      }
+
+      port "mc-games-rcon" {
+        to = 25575
+      }
+    }
+
+    service {
+      name = "games-mc"
+    }
+
+    task "minecraft-games" {
+      driver = "docker"
+
+      config {
+        image = "itzg/minecraft-server"
+        ports = ["mc-games-port","mc-games-rcon"]
+
+        volumes = [
+          "/storage/nomad/${NOMAD_TASK_NAME}:/data"
+        ]
+      }
+
+      resources {
+        cpu    = 7000 # 7000 MHz
+        memory = 17408 # 17GB
+      }
+
+      env {
+        EULA = "TRUE"
+        TYPE = "PURPUR"
+        VERSION = "1.20.1"
+        MOTD = "DCU Games Minecraft Server"
+        OPS = ""
+      }
+    }
+  }
+
   group "fugitives-mc" {
     count = 1
 

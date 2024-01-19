@@ -57,6 +57,8 @@ config:
         backend: vanilla-mc.service.consul:25567
       - host: shemek.rb.dcu.ie
         backend: shemek-mc.service.consul:25568
+      - host: games.rb.dcu.ie
+        backend: games-mc.service.consul:25569
 EOH
         destination = "local/file.conf"
       }
