@@ -77,20 +77,12 @@
     state: restarted
   when: ansible_check_mode == false
 
-# this is to stop bind9 from conflicting with systemd-resolved
-- name: Remove bind9
-  become: true
-  ansible.builtin.apt:
-    name: bind9
-    state: absent
-    purge: true
-  when: ansible_os_family == "Debian"
-
-# this is to stop pdns from conflicting with systemd-resolved
-- name: Remove pdns
+# this is to stop bind9 and pdns from conflicting with systemd-resolved
+- name: Remove bind9 and pdns
   become: true
   ansible.builtin.apt:
     name:
+      - bind9
       - pdns-backend-bind
       - pdns-recursor
       - pdns-server
