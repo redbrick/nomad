@@ -27,7 +27,7 @@ job "nginx-karting" {
       }
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.nginx-karting.rule=Host(`dcukartingsociety.ie`)",
+        "traefik.http.routers.nginx-karting.rule=Host(`karting.rb.dcu.ie`)",
         "traefik.http.routers.nginx-karting.entrypoints=web,websecure",
         "traefik.http.routers.nginx-karting.tls.certresolver=lets-encrypt"
       ]
