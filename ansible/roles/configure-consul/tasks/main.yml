@@ -51,6 +51,45 @@
       DNSSEC=false
       Domains=~consul node.consul service.consul
 
+- name: Configure Docker to use systemd-resolved
+  become: true
+  copy:
+    dest: /etc/systemd/resolved.conf.d/docker.conf
+    content: |
+      [Resolve]
+      DNSStubListener=yes
+      DNSStubListenerExtra=172.17.0.1
+
+- name: Configure Docker to use systemd-resolved
+  become: true
+  copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+        "dns": ["172.17.0.1"]
+      }
+
+- name: Restart docker daemon
+  become: true
+  systemd:
+    name: docker
+    enabled: yes
+    state: restarted
+  when: ansible_check_mode == false
+
+# this is to stop bind9 and pdns from conflicting with systemd-resolved
+- name: Remove bind9 and pdns
+  become: true
+  ansible.builtin.apt:
+    name:
+      - bind9
+      - pdns-backend-bind
+      - pdns-recursor
+      - pdns-server
+    state: absent
+    purge: true
+  when: ansible_os_family == "Debian"
+
 - name: Restart systemd-resolved
   become: true
   systemd:
@@ -58,16 +97,3 @@
     enabled: yes
     state: restarted
   when: ansible_check_mode == false
-
-- name: Remove resolv.conf symlink
-  become: true
-  file:
-    path: /etc/resolv.conf
-    state: absent
-
-- name: Create resolv.conf symlink
-  become: true
-  file:
-    src: /run/systemd/resolve/stub-resolv.conf
-    dest: /etc/resolv.conf
-    state: link
