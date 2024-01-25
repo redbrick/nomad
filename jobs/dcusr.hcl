@@ -25,7 +25,7 @@ job "dcusr" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.dcusr.rule=Host(`dcusr.aperture.redbrick.dcu.ie`,`solarracing.rb.dcu.ie`)",
+        "traefik.http.routers.dcusr.rule=Host(`dcusr.aperture.redbrick.dcu.ie`,`solarracing.rb.dcu.ie`,`preview.solarracing.ie`)",
         "traefik.http.routers.dcusr.entrypoints=web,websecure",
         "traefik.http.routers.dcusr.tls.certresolver=lets-encrypt",
       ]
@@ -37,6 +37,7 @@ job "dcusr" {
       config {
         image = "ghcr.io/dcu-solar-racing/nextjs-website:main"
         ports = ["http"]
+        force_pull = true
         auth {
           username = "${DOCKER_USER}"
           password = "${DOCKER_PASS}"
@@ -49,6 +50,9 @@ job "dcusr" {
         data        = <<EOH
 DOCKER_USER={{ key "dcusr/ghcr/username" }}
 DOCKER_PASS={{ key "dcusr/ghcr/password" }}
+TO_EMAIL={{ key "dcusr/nodemailer/to" }}
+EMAIL={{ key "dcusr/nodemailer/from" }}
+EMAIL_PASS={{ key "dcusr/nodemailer/password" }}
 EOH
       }
     }
