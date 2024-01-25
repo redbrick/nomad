@@ -31,7 +31,7 @@ job "minecraft" {
 
       resources {
         cpu    = 3000 # 3000 MHz
-        memory = 7168 # 7gb
+        memory = 8192 # 8gb
       }
 
       env {
@@ -39,6 +39,7 @@ job "minecraft" {
         TYPE = "PAPER"
         ICON = "https://docs.redbrick.dcu.ie/assets/logo.png"
         MEMORY = "6G"
+        USE_AIKAR_FLAGS=true
         MOTD = "LONG LIVE THE REDBRICK"
       }
     }
@@ -84,6 +85,7 @@ job "minecraft" {
         TYPE = "PURPUR"
         VERSION = "1.20.1"
         MOTD = "DCU Games Minecraft Server"
+        USE_AIKAR_FLAGS=true
         OPS = ""
       }
     }
@@ -123,6 +125,7 @@ job "minecraft" {
       env {
         EULA = "TRUE"
         MEMORY = "6G"
+        USE_AIKAR_FLAGS=true
       }
     }
   }
@@ -169,6 +172,7 @@ job "minecraft" {
         FORGE_INSTALLER = "forge-1.20.1-47.2.19-installer.jar"
         OVERRIDE_SERVER_PROPERTIES = "TRUE"
         JVM_XX_OPTS = "-Xms12G -Xmx16G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1"
+        USE_AIKAR_FLAGS=true
         MAX_MEMORY = "16G"
         MAX_PLAYERS = "5"
         MOTD = "Minecraft ATM 9"

@@ -1,14 +1,9 @@
-job "mc-router" {
+job "gate-proxy" {
   datacenters = ["aperture"]
-
+  node_pool = "ingress"
   type = "service"
 
-  constraint {
-    attribute = "${attr.unique.hostname}"
-    value = "bastion-vm"
-  }
-
-  group "mc-router" {
+  group "gate-proxy" {
     count = 1
 
     network {
@@ -27,7 +22,7 @@ job "mc-router" {
       }
     }
 
-    task "webserver" {
+    task "gate-proxy" {
       driver = "docker"
 
       config {
@@ -47,9 +42,11 @@ job "mc-router" {
 config:
   bind: 0.0.0.0:4501
 
+  forwarding:
+    mode: legacy
+
   lite:
     enabled: true
-
     routes:
       - host: fugitives.rb.dcu.ie
         backend: fugitives-mc.service.consul:25566
