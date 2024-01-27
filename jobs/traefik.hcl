@@ -1,11 +1,7 @@
 job "traefik" {
   datacenters = ["aperture"]
+  node_pool = "ingress"
   type        = "service"
-
-  constraint {
-    attribute = "${attr.unique.hostname}"
-    value = "bastion-vm"
-  }
 
   group "traefik" {
     network {
