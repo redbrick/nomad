@@ -10,6 +10,7 @@ job "ayden-discord-bot" {
 
       config {
         image = "ghcr.io/aydenjahola/discordbotgoml:main"
+        force_pull = true
         auth {
           username = "${DOCKER_USER}"
           password = "${DOCKER_PASS}"
