@@ -81,11 +81,15 @@ files can be served by any HTTP server, and the address is placed into the job f
 ...
         args = [
           ...
+          "virtio-net-pci,netdev=hn0,id=nic1,mac=52:54:84:ba:49:22",
           "-smbios",
           "type=1,serial=ds=nocloud-net;s=http://136.206.16.5:8000/",
         ]
 ...
 ```
+
+> [!NOTE] Note!
+> If you're running multiple VMS on the same host make sure to set different MAC addresses for each VM, otherwise you'll have a bad time.
 
 ## Creating a new VM
 
