@@ -67,7 +67,7 @@ opendiscussion = false
 
 password = true
 
-fileupload = false
+fileupload = true
 
 burnafterreadingselected = false
 
@@ -87,7 +87,7 @@ template = "bootstrap-dark"
 ;info = "More information on the <a href='https://privatebin.info/'>project page</a>."
 
 ; (optional) notice to display
-notice = "Note: Distro is a Goombean."
+; notice = "Note: Distro is a Goombean."
 
 languageselection = false
 
@@ -139,6 +139,7 @@ default = "1week"
 1hour = 3600
 1day = 86400
 1week = 604800
+2week = 1209600
 ; Well this is not *exactly* one month, it's 30 days:
 1month = 2592000
 1year = 31536000
@@ -189,7 +190,7 @@ dsn = "pgsql:host=postgres.service.consul;dbname={{ key "privatebin/db/name" }}"
 tbl = "privatebin_"     ; table prefix
 usr = "{{ key "privatebin/db/user" }}"
 pwd = "{{ key "privatebin/db/password" }}"
-opt[12] = true    ; PDO::ATTR_PERSISTENT
+opt[12] = true    ; PDO::ATTR_PERSISTENT ; use persistent connections - default
 
 [yourls]
 ; When using YOURLS as a "urlshortener" config item:
