@@ -96,7 +96,7 @@ languagedefault = "en"
 ; (optional) URL shortener address to offer after a new paste is created.
 ; It is suggested to only use this with self-hosted shorteners as this will leak
 ; the pastes encryption key.
-; urlshortener = "https://shortener.example.com/api?link="
+urlshortener = "https://s.rb.dcu.ie/rest/v1/short-urls/shorten?apiKey={{ key "privatebin/shlink/api" }}&format=txt&longUrl="
 
 qrcode = true
 email = true
@@ -149,7 +149,6 @@ never = 0
 plaintext = "Plain Text"
 markdown = "Markdown"
 syntaxhighlighting = "Source Code"
-syntaxhighlightingtheme = "sons-of-obsidian"
 
 [traffic]
 ; time limit between calls from the same IP address in seconds
@@ -191,23 +190,6 @@ tbl = "privatebin_"     ; table prefix
 usr = "{{ key "privatebin/db/user" }}"
 pwd = "{{ key "privatebin/db/password" }}"
 opt[12] = true    ; PDO::ATTR_PERSISTENT ; use persistent connections - default
-
-[yourls]
-; When using YOURLS as a "urlshortener" config item:
-; - By default, "urlshortener" will point to the YOURLS API URL, with or without
-;   credentials, and will be visible in public on the PrivateBin web page.
-;   Only use this if you allow short URL creation without credentials.
-; - Alternatively, using the parameters in this section ("signature" and
-;   "apiurl"), "urlshortener" needs to point to the base URL of your PrivateBin
-;   instance with "shortenviayourls?link=" appended. For example:
-;   urlshortener = "${basepath}shortenviayourls?link="
-;   This URL will in turn call YOURLS on the server side, using the URL from
-;   "apiurl" and the "access signature" from the "signature" parameters below.
-
-; (optional) the "signature" (access key) issued by YOURLS for the using account
-; signature = ""
-; (optional) the URL of the YOURLS API, called to shorten a PrivateBin URL
-; apiurl = "https://yourls.example.com/yourls-api.php"
 EOH
       }
     }
