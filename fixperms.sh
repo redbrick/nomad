@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo chown -R root:nomad ./jobs
+sudo chown -R root:nomad ./
 
 sudo find . -type d -exec chmod 775 {} \;
 
