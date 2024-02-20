@@ -25,7 +25,7 @@ job "privatebin" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.privatebin.rule=Host(`paste.rb.dcu.ie`)",
+        "traefik.http.routers.privatebin.rule=Host(`paste.rb.dcu.ie`) || Host(`paste.redbrick.dcu.ie`)",
         "traefik.http.routers.privatebin.entrypoints=web,websecure",
         "traefik.http.routers.privatebin.tls.certresolver=lets-encrypt",
       ]
