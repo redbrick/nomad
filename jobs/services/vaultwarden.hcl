@@ -48,6 +48,7 @@ EOF
         destination = "local/env"
         env         = true
       }
+# These yubico variables are not necessary for yubikey support, only to verify the keys with yubico.
 #YUBICO_CLIENT_ID={{ key "vaultwarden/yubico/client_id" }}
 #YUBICO_SECRET_KEY={{ key "vaultwarden/yubico/secret_key" }}
 #SMTP_HOST={{ key "vaultwarden/smtp/host" }}
