@@ -28,7 +28,7 @@ job "atlas" {
         "traefik.http.routers.nginx-atlas.tls.certresolver=lets-encrypt",
         "traefik.http.routers.nginx-atlas.middlewares=redirect-user-web",
         "traefik.http.middlewares.redirect-user-web.redirectregex.permanent=true",
-        "traefik.http.middlewares.redirect-user-web.redirectregex.regex=https://redbrick\\.dcu\\.ie/~([^/]*)(/)?(.*)?",
+        "traefik.http.middlewares.redirect-user-web.redirectregex.regex=https://redbrick\\.dcu\\.ie/~([^/]*)/?([^/].*)?",
         "traefik.http.middlewares.redirect-user-web.redirectregex.replacement=https://$1.redbrick.dcu.ie/$2",
       ]
     }
