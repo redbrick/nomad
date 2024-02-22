@@ -2,6 +2,10 @@ job "atlas" {
   datacenters = ["aperture"]
   type = "service"
 
+  meta {
+    git-sha = ""
+  }
+
   group "nginx-atlas" {
     count = 1
 
@@ -42,7 +46,7 @@ job "atlas" {
 
       resources {
         cpu    = 100
-        memory = 500
+        memory = 50
       }
     }
   }
