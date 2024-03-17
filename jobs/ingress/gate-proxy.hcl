@@ -48,12 +48,10 @@ config:
   lite:
     enabled: true
     routes:
-      - host: fugitives.rb.dcu.ie
-        backend: fugitives-mc.service.consul:25566
       - host: mc.rb.dcu.ie
         backend: vanilla-mc.service.consul:25567
-      - host: shemek.rb.dcu.ie
-        backend: shemek-mc.service.consul:25568
+      - host: olim909.rb.dcu.ie
+        backend: olim909-mc.service.consul:25568
       - host: games.rb.dcu.ie
         backend: games-mc.service.consul:25569
 EOH

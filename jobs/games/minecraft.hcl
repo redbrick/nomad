@@ -31,16 +31,16 @@ job "minecraft" {
 
       resources {
         cpu    = 3000 # 3000 MHz
-        memory = 8192 # 8gb
+        memory = 8192 # 8GB
       }
 
       env {
         EULA = "TRUE"
         TYPE = "PAPER"
         ICON = "https://docs.redbrick.dcu.ie/assets/logo.png"
-        MEMORY = "6G"
         USE_AIKAR_FLAGS=true
         MOTD = "LONG LIVE THE REDBRICK"
+        MAX_PLAYERS = "20"
       }
     }
   }
@@ -76,111 +76,63 @@ job "minecraft" {
       }
 
       resources {
-        cpu    = 7000 # 7000 MHz
-        memory = 17408 # 17GB
+        cpu    = 3000 # 3000 MHz
+        memory = 8192 # 8GB
       }
 
       env {
         EULA = "TRUE"
         TYPE = "PURPUR"
         VERSION = "1.20.1"
-        MOTD = "DCU Games Minecraft Server"
+        MOTD = "DCU Games Soc Minecraft Server"
         USE_AIKAR_FLAGS=true
         OPS = ""
+        MAX_PLAYERS = "20"
       }
     }
   }
-
-  group "fugitives-mc" {
+  group "olim909-mc" {
     count = 1
 
     network {
-      port "mc-fugitives-port" {
-        static = 25566
-        to = 25565
-      }
-
-      port "mc-fugitives-rcon" {
-        to = 25575
-      }
-    }
-
-    service {
-      name = "fugitives-mc"
-    }
-
-    task "minecraft-fugitives" {
-      driver = "docker"
-
-      config {
-        image = "itzg/minecraft-server"
-        ports = ["mc-fugitives-port","mc-fugitives-rcon"]
-      }
-
-      resources {
-        cpu    = 3000 # 3000 MHz
-        memory = 8168 # 8gb
-      }
-
-      env {
-        EULA = "TRUE"
-        MEMORY = "6G"
-        USE_AIKAR_FLAGS=true
-      }
-    }
-  }
-
-  group "shemek-mc" {
-    count = 1
-
-    network {
-      port "mc-shemek-port" {
+      port "mc-olim909-port" {
         static = 25568
         to = 25565
       }
 
-      port "mc-shemek-rcon" {
+      port "mc-olim909-rcon" {
         to = 25575
       }
     }
 
     service {
-      name = "shemek-mc"
+      name = "olim909-mc"
     }
 
-    task "minecraft-shemek" {
+    task "minecraft-olim909" {
       driver = "docker"
 
       config {
         image = "itzg/minecraft-server"
-        ports = ["mc-shemek-port","mc-shemek-rcon"]
-        
+        ports = ["mc-olim909-port","mc-olim909-rcon"]
+
         volumes = [
           "/storage/nomad/${NOMAD_TASK_NAME}:/data"
         ]
       }
 
       resources {
-        cpu    = 7000 # 7000 MHz
-        memory = 17408 # 17GB
+        cpu    = 3000 # 3000 MHz
+        memory = 4096 # 4GB
       }
 
       env {
         EULA = "TRUE"
-        TYPE = "FORGE"
-        VERSION = "1.20.1"
-        FORGE_INSTALLER = "forge-1.20.1-47.2.19-installer.jar"
-        OVERRIDE_SERVER_PROPERTIES = "TRUE"
-        JVM_XX_OPTS = "-Xms12G -Xmx16G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1"
+        TYPE = "PAPER"
+        VERSION = "1.20.4"
         USE_AIKAR_FLAGS=true
-        MAX_MEMORY = "16G"
+        OPS = "Olim909"
         MAX_PLAYERS = "5"
-        MOTD = "Minecraft ATM 9"
-        DIFFICULTY = "normal"
-        SPAWN_PROTECTION = "0"
-        ENFORCE_WHITELIST = "true"
-        WHITELIST = "Shmickey02"
-        OPS = "Shmickey02"
       }
     }
   }
