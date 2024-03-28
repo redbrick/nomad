@@ -14,7 +14,7 @@
     mode: "0755"
   when: ansible_os_family == "Debian"
 
-- name: create /oldstorage mount point
+- name: create /oldstorage mount directory
   become: true
   ansible.builtin.file:
     path: /oldstorage
