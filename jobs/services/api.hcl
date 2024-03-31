@@ -70,7 +70,7 @@ EOH
 
     template {
         destination = "local/ldap.secret"
-        data = "{{ key \"api/ldap/secret\" }}"
+        data = "{{ key \"api/ldap/secret\" }}" # this is necessary as the secret has no EOF
       }
 
       resources {
