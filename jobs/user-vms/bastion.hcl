@@ -23,7 +23,7 @@ job "bastion-vm" {
       }
 
       artifact {
-        source = "http://10.10.0.5:8000/base-images/debian-12-genericcloud-amd64-30G.qcow2"
+        source = "http://10.10.0.5:8000/base-images/bastion-vm-latest.qcow2"
         destination = "local/bastion-vm.qcow2"
         mode = "file"
       }
@@ -41,7 +41,8 @@ job "bastion-vm" {
           "-device",
           "virtio-net-pci,netdev=hn0,id=nic1,mac=52:54:84:ba:49:02",
           "-smbios",
-          "type=1,serial=ds=nocloud-net;s=http://10.10.0.5:8000/bastion-vm/",
+          #"type=1,serial=ds=nocloud-net;s=http://10.10.0.5:8000/bastion-vm/",
+          "type=1",
         ]
       }
     }
