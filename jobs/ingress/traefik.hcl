@@ -27,7 +27,7 @@ job "traefik" {
       config {
         image = "traefik"
         network_mode = "host"
-        
+
         volumes = [
           "local/traefik.toml:/etc/traefik/traefik.toml",
         ]

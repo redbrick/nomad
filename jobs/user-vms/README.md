@@ -64,12 +64,15 @@ The VMs are configured with cloud-init. Their [docs](https://cloudinit.readthedo
 ...
         args = [
           ...
+
           "virtio-net-pci,netdev=hn0,id=nic1,mac=52:54:84:ba:49:22", # make sure this MAC address is unique!!
+
           "-smbios",
           "type=1,serial=ds=nocloud-net;s=http://136.206.16.5:8000/",
         ]
 ...
 ```
+
 
 Here in the args block:
 
@@ -82,4 +85,5 @@ Here in the args block:
 ## Creating a New VM
 
 To create a new VM, you'll need to create a new job file and a cloud-init configuration file. Copy any of the existing job files and modify them to suit your needs. The cloud-init configuration files can be copied and changed based on the user also. **Remember to ensure the MAC addresses are unique!**
+
 

@@ -6,10 +6,18 @@
       - nfs-common
   when: ansible_os_family == "Debian"
 
-- name: create mount point
+- name: create /storage mount point
   become: true
   ansible.builtin.file:
     path: /storage
+    state: directory
+    mode: "0755"
+  when: ansible_os_family == "Debian"
+
+- name: create /oldstorage mount directory
+  become: true
+  ansible.builtin.file:
+    path: /oldstorage
     state: directory
     mode: "0755"
   when: ansible_os_family == "Debian"
@@ -23,6 +31,7 @@
     create: yes
   with_items:
     - "10.10.0.7:/storage /storage nfs defaults 0 0"
+    - "192.168.0.150:/zbackup /oldstorage nfs defaults 0 0"
 
 - name: mount nfs
   become: true

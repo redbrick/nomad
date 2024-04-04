@@ -28,6 +28,7 @@ DISCORD_TOKEN={{ key "user-projects/ayden/gomlbot/discord/token" }}
 DOCKER_USER={{ key "user-projects/ayden/ghcr/username" }}
 DOCKER_PASS={{ key "user-projects/ayden/ghcr/password" }}
 DEBUG=false
+MONGO_DB={{ key "user-projects/ayden/gomlbot/mongo/db" }}
 EOH
         destination = "local/.env"
         env = true
