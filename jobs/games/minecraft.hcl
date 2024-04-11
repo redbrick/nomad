@@ -146,6 +146,9 @@ job "minecraft" {
       port "mc-olim909-rcon" {
         to = 25575
       }
+      port "mc-olim909-geyser" {
+        to = 19132
+      }
     }
 
     service {
@@ -157,7 +160,7 @@ job "minecraft" {
 
       config {
         image = "itzg/minecraft-server"
-        ports = ["mc-olim909-port","mc-olim909-rcon"]
+        ports = ["mc-olim909-port","mc-olim909-rcon","mc-olim909-geyser"]
 
         volumes = [
           "/storage/nomad/${NOMAD_TASK_NAME}:/data"
