@@ -52,6 +52,8 @@ config:
         backend: vanilla-mc.service.consul:25567
       - host: olim909.rb.dcu.ie
         backend: olim909-mc.service.consul:25568
+      - host: regaus.rb.dcu.ie
+        backend: regaus-mc.service.consul:25566
       - host: games.rb.dcu.ie
         backend: games-mc.service.consul:25569
 EOH
@@ -60,3 +62,4 @@ EOH
     }
   }
 }
+
