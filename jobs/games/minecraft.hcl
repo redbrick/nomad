@@ -45,6 +45,49 @@ job "minecraft" {
     }
   }
 
+  group "fugitives-mc" {
+    count = 1
+
+    network {
+      port "mc-fugitives-port" {
+        static = 25570
+        to = 25565
+      }
+      port "mc-fugitives-rcon" {
+        to = 25575
+      }
+    }
+
+    service {
+      name = "fugitives-mc"
+    }
+
+    task "minecraft-fugitives" {
+      driver = "docker"
+      config {
+        image = "itzg/minecraft-server"
+        ports = ["mc-fugitives-port","mc-fugitives-rcon"]
+        volumes = [
+          "/storage/nomad/${NOMAD_TASK_NAME}:/data"
+        ]
+      }
+
+      resources {
+        cpu    = 3000 # 3000 MHz
+        memory = 8192 # 8GB
+      }
+
+      env {
+        EULA = "TRUE"
+        TYPE = "PAPER"
+        USE_AIKAR_FLAGS=true
+        MOTD = "Fugitives"
+        MAX_PLAYERS = "20"
+        MEMORY = "6G"
+      }
+    }
+  }
+
   group "games-mc" {
     count = 1
 
@@ -103,6 +146,9 @@ job "minecraft" {
       port "mc-olim909-rcon" {
         to = 25575
       }
+      port "mc-olim909-geyser" {
+        to = 19132
+      }
     }
 
     service {
@@ -114,7 +160,7 @@ job "minecraft" {
 
       config {
         image = "itzg/minecraft-server"
-        ports = ["mc-olim909-port","mc-olim909-rcon"]
+        ports = ["mc-olim909-port","mc-olim909-rcon","mc-olim909-geyser"]
 
         volumes = [
           "/storage/nomad/${NOMAD_TASK_NAME}:/data"
@@ -136,4 +182,51 @@ job "minecraft" {
       }
     }
   }
+
+  group "regaus-mc" {
+    count = 1
+
+    network {
+      port "mc-regaus-port" {
+        static = 25566
+        to = 25565
+      }
+
+      port "mc-regaus-rcon" {
+        to = 25575
+      }
+    }
+
+    service {
+      name = "regaus-mc"
+    }
+
+    task "minecraft-regaus" {
+      driver = "docker"
+
+      config {
+        image = "itzg/minecraft-server"
+        ports = ["mc-regaus-port","mc-regaus-rcon"]
+
+        volumes = [
+          "/storage/nomad/${NOMAD_TASK_NAME}:/data"
+        ]
+      }
+
+      resources {
+        cpu    = 3000 # 3000 MHz
+        memory = 4096 # 4GB
+      }
+
+      env {
+        EULA = "TRUE"
+        TYPE = "PAPER"
+        VERSION = "1.20.4"
+        USE_AIKAR_FLAGS=true
+        OPS = "regaus"
+        MAX_PLAYERS = "5"
+      }
+    }
+  }
 }
+
