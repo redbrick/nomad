@@ -48,18 +48,20 @@ config:
   lite:
     enabled: true
     routes:
+      - host: regaus.rb.dcu.ie
+        backend: regaus-mc.service.consul:25566
       - host: mc.rb.dcu.ie
         backend: vanilla-mc.service.consul:25567
       - host: olim909.rb.dcu.ie
         backend: olim909-mc.service.consul:25568
       - host: olim909-geyser.rb.dcu.ie
         backend: olim909-mc.service.consul:19132
-      - host: fugatives.rb.dcu.ie
-        backend: fugatives-mc.service.consul:25570
-      - host: regaus.rb.dcu.ie
-        backend: regaus-mc.service.consul:25566
       - host: games.rb.dcu.ie
         backend: games-mc.service.consul:25569
+      - host: fugatives.rb.dcu.ie
+        backend: fugatives-mc.service.consul:25570
+      - host: cjaran-mc.rb.dcu.ie
+        backend: cjaran-mc.service.consul:25571
 EOH
         destination = "local/file.conf"
       }
