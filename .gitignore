@@ -1,3 +1,5 @@
 ansible/hosts
 ansible/group_vars/all.yml
 .vscode/
+**/*.ovpn
+**/*.sql
