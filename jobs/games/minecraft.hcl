@@ -228,5 +228,52 @@ job "minecraft" {
       }
     }
   }
+
+  group "cjaran-mc" {
+    count = 1
+
+    network {
+      port "mc-cjaran-port" {
+        static = 25571
+        to = 25565
+      }
+
+      port "mc-cjaran-rcon" {
+        to = 25575
+      }
+    }
+
+    service {
+      name = "cjaran-mc"
+    }
+
+    task "minecraft-cjaran" {
+      driver = "docker"
+
+      config {
+        image = "itzg/minecraft-server"
+        ports = ["mc-cjaran-port","mc-cjaran-rcon"]
+
+        volumes = [
+          "/storage/nomad/${NOMAD_TASK_NAME}:/data"
+        ]
+      }
+
+      resources {
+        cpu    = 3000 # 3000 MHz
+        memory = 4096 # 4GB
+      }
+
+      env {
+        EULA = "TRUE"
+        TYPE = "PAPER"
+        ICON = "https://i.imgur.com/HC9cRNf.png"
+        VERSION = "1.20.4"
+        USE_AIKAR_FLAGS=true
+        OPS = "BloThen"
+        MAX_PLAYERS = "10"
+      }
+    }
+  }
 }
 
