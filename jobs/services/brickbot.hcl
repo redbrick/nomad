@@ -48,6 +48,7 @@ SMTP_SENDER={{ key "brickbot/smtp/sender" }}
 API_USERNAME={{ key "brickbot/api/username" }}
 API_PASSWORD={{ key "brickbot/api/password" }}
 VERIFIED_ROLE={{ key "brickbot/discord/verified_role" }}
+USER=brickbot
 EOH
       }
     }
