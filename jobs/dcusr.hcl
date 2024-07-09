@@ -25,7 +25,7 @@ job "dcusr" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.dcusr.rule=Host(`solarracing.rb.dcu.ie`,`solarracing.ie`,`www.solarracing.ie`)",
+        "traefik.http.routers.dcusr.rule=Host(`solarracing.rb.dcu.ie`) || Host(`solarracing.ie`) || Host(`www.solarracing.ie`)",
         "traefik.http.routers.dcusr.entrypoints=web,websecure",
         "traefik.http.routers.dcusr.tls.certresolver=lets-encrypt",
       ]
