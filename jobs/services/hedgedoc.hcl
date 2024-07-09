@@ -33,7 +33,7 @@ job "hedgedoc" {
         "traefik.frontend.headers.customResponseHeaders=alt-svc:h2=l3sb47bzhpbelafss42pspxzqo3tipuk6bg7nnbacxdfbz7ao6semtyd.onion:443; ma=2592000",
         "traefik.enable=true",
         "traefik.port=${NOMAD_PORT_http}",
-        "traefik.http.routers.md.rule=Host(`md.redbrick.dcu.ie`,`md.rb.dcu.ie`)",
+        "traefik.http.routers.md.rule=Host(`md.redbrick.dcu.ie`) || Host(`md.rb.dcu.ie`)",
         "traefik.http.routers.md.tls=true",
         "traefik.http.routers.md.tls.certresolver=lets-encrypt",
       ]
