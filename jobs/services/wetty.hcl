@@ -25,7 +25,7 @@ job "wetty" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.wetty.rule=Host(`wetty.rb.dcu.ie`)",
+        "traefik.http.routers.wetty.rule=Host(`wetty.rb.dcu.ie`) || Host(`wetty.redbrick.dcu.ie`) || Host(`term.redbrick.dcu.ie`) || Host(`anyterm.redbrick.dcu.ie`) || Host(`ajaxterm.redbrick.dcu.ie`)",
         "traefik.http.routers.wetty.entrypoints=web,websecure",
         "traefik.http.routers.wetty.tls.certresolver=lets-encrypt",
       ]
@@ -44,6 +44,7 @@ job "wetty" {
         data        = <<EOH
 SSHHOST={{ key "wetty/ssh/host" }}
 SSHPORT=22
+BASE=/
 EOH
       }
     }
