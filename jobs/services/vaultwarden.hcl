@@ -41,8 +41,15 @@ DOMAIN=https://vault.redbrick.dcu.ie
 DATABASE_URL=postgresql://{{ key "vaultwarden/db/user" }}:{{ key "vaultwarden/db/password" }}@postgres.service.consul:5432/{{ key "vaultwarden/db/name" }}
 SIGNUPS_ALLOWED=false
 INVITATIONS_ALLOWED=true
+
 # This is not the actual token, but a hash of it. Vaultwarden does not like the actual token.
 ADMIN_TOKEN={{ key "vaultwarden/admin/hash" }}
+SMTP_HOST={{ key "vaultwarden/smtp/host" }}
+SMTP_FROM={{ key "vaultwarden/smtp/from" }}
+SMTP_PORT={{ key "vaultwarden/smtp/port" }}
+SMTP_SECURITY=starttls
+SMTP_USERNAME={{ key "vaultwarden/smtp/username" }}
+SMTP_PASSWORD={{ key "vaultwarden/smtp/password" }}
 EOF
 
         destination = "local/env"
@@ -51,12 +58,6 @@ EOF
 # These yubico variables are not necessary for yubikey support, only to verify the keys with yubico.
 #YUBICO_CLIENT_ID={{ key "vaultwarden/yubico/client_id" }}
 #YUBICO_SECRET_KEY={{ key "vaultwarden/yubico/secret_key" }}
-#SMTP_HOST={{ key "vaultwarden/smtp/host" }}
-#SMTP_FROM={{ key "vaultwarden/smtp/from" }}
-#SMTP_PORT={{ key "vaultwarden/smtp/port" }}
-#SMTP_SECURITY=force_tls
-#SMTP_USERNAME={{ key "vaultwarden/smtp/username" }}
-#SMTP_PASSWORD={{ key "vaultwarden/smtp/password" }}
 
       resources {
         cpu    = 500
@@ -65,4 +66,3 @@ EOF
     }
   }
 }
-
