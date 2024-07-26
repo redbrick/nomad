@@ -35,7 +35,7 @@ job "plausible" {
       driver = "docker"
 
       config {
-        image = "plausible/analytics:latest"
+        image = "ghcr.io/plausible/community-edition:v2.1.1"
         ports = ["http"]
 
         command = "/bin/sh"
@@ -46,15 +46,37 @@ job "plausible" {
         data = <<EOH
 BASE_URL=https://plausible.redbrick.dcu.ie
 SECRET_KEY_BASE={{ key "plausible/secret" }}
+TOTP_VAULT_KEY={{ key "plausible/totp/key" }}
+
+# Maxmind/GeoIP settings (for regions/cities)
+MAXMIND_LICENSE_KEY={{ key "plausible/maxmind/license" }}
+MAXMIND_EDITION=GeoLite2-City
+
+# Google search console integration
+GOOGLE_CLIENT_ID={{ key "plausible/google/client_id" }}
+GOOGLE_CLIENT_SECRET={{ key "plausible/google/client_secret" }}
+
+# Database settings
 DATABASE_URL=postgres://{{ key "plausible/db/user" }}:{{ key "plausible/db/password" }}@postgres.service.consul:5432/{{ key "plausible/db/name" }}
 CLICKHOUSE_DATABASE_URL=http://{{ env "NOMAD_ADDR_db" }}/plausible_events_db
+
+# Email settings
+MAILER_NAME="Redbrick Plausible"
+MAILER_EMAIL={{ key "plausible/smtp/from" }}
+MAILER_ADAPTER=Bamboo.SMTPAdapter
+SMTP_HOST_ADDR={{ key "plausible/smtp/host" }}
+SMTP_HOST_PORT={{ key "plausible/smtp/port" }}
+SMTP_USER_NAME={{ key "plausible/smtp/user" }}
+SMTP_USER_PWD={{ key "plausible/smtp/password" }}
+
+DISABLE_REGISTRATION=invite_only
 EOH
         destination = "local/file.env"
         env = true
       }
 
       resources {
-        memory = 500
+        memory = 1000
       }
     }
 
@@ -72,7 +94,7 @@ EOH
       driver = "docker"
 
       config {
-        image = "clickhouse/clickhouse-server:23.3.7.5-alpine"
+        image = "clickhouse/clickhouse-server:24.3.3.102-alpine"
         ports = ["db"]
         volumes = [
           "/opt/plausible/clickhouse:/var/lib/clickhouse",
