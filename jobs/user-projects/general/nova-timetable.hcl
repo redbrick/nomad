@@ -14,28 +14,46 @@ job "nova-timetable" {
       port "db" {
         to = 6379
       }
-    }
 
-    service {
-      name = "nova-timetable"
-      port = "http"
-
-      check {
-        type = "http"
-        path = "/healthcheck"
-        interval = "10s"
-        timeout = "2s"
+      port "frontend" {
+        to = 3000
       }
 
-      tags = [
-        "traefik.enable=true",
-        "traefik.http.routers.nova-timetable.rule=Host(`timetable.redbrick.dcu.ie`)",
-        "traefik.http.routers.nova-timetable.entrypoints=web,websecure",
-        "traefik.http.routers.nova-timetable.tls.certresolver=lets-encrypt",
-      ]
+      port "backend" {
+        to = 4000
+      }
     }
 
-    task "python-application" {
+    task "frontend" {
+      driver = "docker"
+
+      config {
+        image = "ghcr.io/novanai/timetable-sync-frontend:latest"
+        ports = ["frontend"]
+      }
+
+      service {
+        name = "nova-timetable-frontend"
+        port = "http"
+
+        check {
+          type = "http"
+          path = "/"
+          interval = "10s"
+          timeout = "2s"
+        }
+
+        tags = [
+          "traefik.enable=true",
+          "traefik.http.routers.nova-timetable-frontend.rule=Host(`timetable.redbrick.dcu.ie`)",
+          "traefik.http.routers.nova-timetable-frontend.entrypoints=web,websecure",
+          "traefik.http.routers.nova-timetable-frontend.tls.certresolver=lets-encrypt",
+          "traefik.http.services.nova-timetable-frontend.loadbalancer.server.port=3000"
+        ]
+      }
+    }
+
+    task "backend" {
       driver = "docker"
 
       env {
@@ -43,8 +61,28 @@ job "nova-timetable" {
       }
 
       config {
-        image = "novanai/timetable-sync"
-        ports = ["http"]
+        image = "ghcr.io/novanai/timetable-sync-backend:latest"
+        ports = ["backend"]
+      }
+
+      service {
+        name = "nova-timetable-backend"
+        port = "http"
+
+        check {
+          type = "http"
+          path = "/api/healthcheck"
+          interval = "10s"
+          timeout = "2s"
+        }
+
+        tags = [
+          "traefik.enable=true",
+          "traefik.http.routers.nova-timetable-backend.rule=Host(`timetable.redbrick.dcu.ie`) && PathPrefix(`/api`)",
+          "traefik.http.routers.nova-timetable-backend.entrypoints=web,websecure",
+          "traefik.http.routers.nova-timetable-backend.tls.certresolver=lets-encrypt",
+          "traefik.http.services.nova-timetable-backend.loadbalancer.server.port=4000"
+        ]
       }
     }
 
