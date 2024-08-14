@@ -7,38 +7,36 @@ job "minio" {
     count = 1
 
     network {
-      port "cdn" {
-        static = 9000
+      port "api" {
       }
-      port "http" {
-        static = 9001
+      port "console" {
       }
     }
 
     service {
-      name = "minio-web"
-      port = "http"
+      name = "minio-console"
+      port = "console"
 
       check {
-        type = "http"
-        path = "/"
+        type     = "http"
+        path     = "/"
         interval = "10s"
-        timeout = "2s"
+        timeout  = "2s"
       }
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.minio-cdn.service=minio-cdn",
-        "traefik.http.services.minio-cdn.loadbalancer.server.port=${NOMAD_PORT_cdn}",
-        "traefik.http.routers.minio-cdn.rule=Host(`cdn.redbrick.dcu.ie`)",
-        "traefik.http.routers.minio-cdn.entrypoints=web,websecure",
-        "traefik.http.routers.minio-cdn.tls.certresolver=lets-encrypt",
+        "traefik.http.routers.minio-api.service=minio-api",
+        "traefik.http.services.minio-api.loadbalancer.server.port=${NOMAD_PORT_api}",
+        "traefik.http.routers.minio-api.rule=Host(`cdn.redbrick.dcu.ie`)",
+        "traefik.http.routers.minio-api.entrypoints=web,websecure",
+        "traefik.http.routers.minio-api.tls.certresolver=lets-encrypt",
 
-        "traefik.http.routers.minio-web.service=minio-web",
-        "traefik.http.services.minio-web.loadbalancer.server.port=${NOMAD_PORT_http}",
-        "traefik.http.routers.minio-web.rule=Host(`minio.rb.dcu.ie`)",
-        "traefik.http.routers.minio-web.entrypoints=web,websecure",
-        "traefik.http.routers.minio-web.tls.certresolver=lets-encrypt",
+        "traefik.http.routers.minio-console.service=minio-console",
+        "traefik.http.services.minio-console.loadbalancer.server.port=${NOMAD_PORT_console}",
+        "traefik.http.routers.minio-console.rule=Host(`minio.rb.dcu.ie`)",
+        "traefik.http.routers.minio-console.entrypoints=web,websecure",
+        "traefik.http.routers.minio-console.tls.certresolver=lets-encrypt",
       ]
     }
 
@@ -47,10 +45,10 @@ job "minio" {
 
       config {
         image = "quay.io/minio/minio"
-        ports = ["cdn","http"]
+        ports = ["api", "console"]
 
         command = "server"
-        args = ["/data", "--console-address", ":9001"]
+        args    = ["/data", "--address", ":${NOMAD_PORT_api}", "--console-address", ":${NOMAD_PORT_console}"]
 
         volumes = [
           "/storage/nomad/minio:/data",
