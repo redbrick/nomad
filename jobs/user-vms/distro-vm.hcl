@@ -12,10 +12,6 @@ job "distro-vm" {
     }
 
     task "distro-vm" {
-      constraint {
-        attribute = "${attr.unique.hostname}"
-        value = "wheatley"
-      }
 
       resources {
         cpu = 12000
@@ -23,7 +19,7 @@ job "distro-vm" {
       }
 
       artifact {
-        source = "http://136.206.16.5:8000/base-images/debian-12-genericcloud-amd64-30G.qcow2"
+        source = "http://vm-resources.service.consul:8000/res/base-images/debian-12-genericcloud-amd64-30G.qcow2"
         destination = "local/distro-vm.qcow2"
         mode = "file"
       }

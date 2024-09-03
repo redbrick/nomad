@@ -12,18 +12,13 @@ job "bastion-vm" {
     }
 
     task "bastion-vm" {
-      constraint {
-        attribute = "${attr.unique.hostname}"
-        value = "chell"
-      }
-
       resources {
         cpu = 12000
         memory = 4096
       }
 
       artifact {
-        source = "http://10.10.0.5:8000/base-images/bastion-vm-latest.qcow2"
+        source = "http://vm-resources.service.consul:8000/bastion/bastion-vm-latest.qcow2"
         destination = "local/bastion-vm.qcow2"
         mode = "file"
       }

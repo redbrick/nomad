@@ -68,7 +68,7 @@ The VMs are configured with cloud-init. Their [docs](https://cloudinit.readthedo
           "virtio-net-pci,netdev=hn0,id=nic1,mac=52:54:84:ba:49:22", # make sure this MAC address is unique!!
 
           "-smbios",
-          "type=1,serial=ds=nocloud-net;s=http://136.206.16.5:8000/",
+          "type=1,serial=ds=nocloud-net;s=http://vm-resources.service.consul:8000/res/",
         ]
 ...
 ```
@@ -77,7 +77,7 @@ The VMs are configured with cloud-init. Their [docs](https://cloudinit.readthedo
 Here in the args block:
 
 - we define that the VM will have a network device using the `virtio` driver, we pass it an `id` and a random ***unique*** MAC address
-- we tell it to use `smbios` type 1 and to grab its `cloud-init` configs from `http://136.206.16.5:8000/`
+- we tell it to use `smbios` type 1 and to grab its `cloud-init` configs from `http://vm-resources.service.consul:8000/res/`
 
 > [!NOTE]
 > If you're running multiple VMs on the same network make sure to set different MAC addresses for each VM, otherwise you'll have a bad time.
