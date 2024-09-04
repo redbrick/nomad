@@ -12,27 +12,23 @@ job "distro-vm" {
     }
 
     task "distro-vm" {
-      constraint {
-        attribute = "${attr.unique.hostname}"
-        value = "wheatley"
-      }
 
       resources {
-        cpu = 12000
+        cpu    = 12000
         memory = 4096
       }
 
       artifact {
-        source = "http://136.206.16.5:8000/base-images/debian-12-genericcloud-amd64-30G.qcow2"
+        source      = "http://vm-resources.service.consul:8000/res/base-images/debian-12-genericcloud-amd64-30G.qcow2"
         destination = "local/distro-vm.qcow2"
-        mode = "file"
+        mode        = "file"
       }
 
       driver = "qemu"
 
       config {
-        image_path = "local/distro-vm.qcow2"
-        accelerator = "kvm"
+        image_path      = "local/distro-vm.qcow2"
+        accelerator     = "kvm"
         drive_interface = "virtio"
 
         args = [
