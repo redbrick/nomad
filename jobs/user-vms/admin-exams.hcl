@@ -14,21 +14,21 @@ job "admin-exams" {
     task "ayden-vm" {
 
       resources {
-        cpu = 12000
+        cpu    = 12000
         memory = 4096
       }
 
       artifact {
-        source = "http://vm-resources.service.consul:8000/res/base-images/debian-12-genericcloud-amd64-30G.qcow2"
+        source      = "http://vm-resources.service.consul:8000/res/base-images/debian-12-genericcloud-amd64-30G.qcow2"
         destination = "local/ayden-vm.qcow2"
-        mode = "file"
+        mode        = "file"
       }
 
       driver = "qemu"
 
       config {
-        image_path = "local/ayden-vm.qcow2"
-        accelerator = "kvm"
+        image_path      = "local/ayden-vm.qcow2"
+        accelerator     = "kvm"
         drive_interface = "virtio"
 
         args = [
@@ -56,21 +56,21 @@ job "admin-exams" {
     task "hypnoant-vm" {
 
       resources {
-        cpu = 12000
+        cpu    = 12000
         memory = 4096
       }
 
       artifact {
-        source = "http://vm-resources.service.consul:8000/res/base-images/debian-12-genericcloud-amd64-30G.qcow2"
+        source      = "http://vm-resources.service.consul:8000/res/base-images/debian-12-genericcloud-amd64-30G.qcow2"
         destination = "local/hypnoant-vm.qcow2"
-        mode = "file"
+        mode        = "file"
       }
 
       driver = "qemu"
 
       config {
-        image_path = "local/hypnoant-vm.qcow2"
-        accelerator = "kvm"
+        image_path      = "local/hypnoant-vm.qcow2"
+        accelerator     = "kvm"
         drive_interface = "virtio"
 
         args = [

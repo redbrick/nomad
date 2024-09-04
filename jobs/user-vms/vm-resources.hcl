@@ -9,7 +9,7 @@ job "vm-resources" {
     network {
       port "http" {
         static = "8000"
-        to = "80"
+        to     = "80"
       }
     }
 
