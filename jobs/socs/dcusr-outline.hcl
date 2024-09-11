@@ -37,6 +37,7 @@ job "dcusr-outline" {
       tags = [
         "traefik.enable=true",
         "traefik.port=${NOMAD_PORT_http}",
+        "traefik.http.routers.dcusr-outline.entrypoints=web,websecure",
         "traefik.http.routers.dcusr-outline.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.dcusr-outline.tls=true",
         "traefik.http.routers.dcusr-outline.tls.certresolver=lets-encrypt",
