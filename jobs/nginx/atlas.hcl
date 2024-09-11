@@ -1,6 +1,6 @@
 job "atlas" {
   datacenters = ["aperture"]
-  type = "service"
+  type        = "service"
 
   meta {
     git-sha = ""
@@ -19,10 +19,10 @@ job "atlas" {
       port = "http"
 
       check {
-        type = "http"
-        path = "/"
+        type     = "http"
+        path     = "/"
         interval = "10s"
-        timeout = "2s"
+        timeout  = "2s"
       }
 
       tags = [
@@ -40,8 +40,9 @@ job "atlas" {
       driver = "docker"
 
       config {
-        image = "ghcr.io/redbrick/atlas:latest"
-        ports = ["http"]
+        image      = "ghcr.io/redbrick/atlas:latest"
+        ports      = ["http"]
+        force_pull = true
       }
 
       resources {

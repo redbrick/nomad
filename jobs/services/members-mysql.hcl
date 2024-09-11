@@ -38,7 +38,7 @@ EOH
       }
 
       template {
-        data = <<EOH
+        data        = <<EOH
 [server]
 
 [mariadbd]

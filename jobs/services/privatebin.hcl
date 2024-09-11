@@ -17,10 +17,10 @@ job "privatebin" {
       port = "http"
 
       check {
-        type = "http"
-        path = "/"
+        type     = "http"
+        path     = "/"
         interval = "10s"
-        timeout = "2s"
+        timeout  = "2s"
       }
 
       tags = [

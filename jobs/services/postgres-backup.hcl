@@ -17,7 +17,7 @@ job "postgres-backup" {
       }
 
       template {
-        data = <<EOH
+        data        = <<EOH
 #!/bin/bash
 
 file=/storage/backups/nomad/postgres/postgres-$(date +%Y-%m-%d_%H-%M-%S).sql

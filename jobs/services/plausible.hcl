@@ -1,6 +1,6 @@
 job "plausible" {
   datacenters = ["aperture"]
-  type = "service"
+  type        = "service"
 
   group "web" {
     network {
@@ -18,16 +18,16 @@ job "plausible" {
         port = "http"
 
         check {
-          type = "http"
-          path = "/"
+          type     = "http"
+          path     = "/"
           interval = "10s"
-          timeout = "2s"
+          timeout  = "2s"
         }
 
         tags = [
           "traefik.enable=true",
           "traefik.http.routers.plausible.rule=Host(`plausible.redbrick.dcu.ie`)",
-          "traefik.http.routers.plausible.entrypoints=websecure",
+          "traefik.http.routers.plausible.entrypoints=web,websecure",
           "traefik.http.routers.plausible.tls.certresolver=lets-encrypt"
         ]
       }
@@ -39,11 +39,11 @@ job "plausible" {
         ports = ["http"]
 
         command = "/bin/sh"
-        args = ["-c", "sleep 10 && /entrypoint.sh db migrate && /entrypoint.sh run"]
+        args    = ["-c", "sleep 10 && /entrypoint.sh db migrate && /entrypoint.sh run"]
       }
 
       template {
-        data = <<EOH
+        data        = <<EOH
 BASE_URL=https://plausible.redbrick.dcu.ie
 SECRET_KEY_BASE={{ key "plausible/secret" }}
 TOTP_VAULT_KEY={{ key "plausible/totp/key" }}
@@ -72,7 +72,7 @@ SMTP_USER_PWD={{ key "plausible/smtp/password" }}
 DISABLE_REGISTRATION=invite_only
 EOH
         destination = "local/file.env"
-        env = true
+        env         = true
       }
 
       resources {
@@ -104,7 +104,7 @@ EOH
       }
 
       template {
-        data = <<EOH
+        data        = <<EOH
 <clickhouse>
     <logger>
         <level>warning</level>
@@ -126,7 +126,7 @@ EOH
       }
 
       template {
-        data = <<EOH
+        data        = <<EOH
 <clickhouse>
     <profiles>
         <default>

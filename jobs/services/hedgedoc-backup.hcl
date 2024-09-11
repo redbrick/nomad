@@ -17,7 +17,7 @@ job "hedgedoc-backup" {
       }
 
       template {
-        data = <<EOH
+        data        = <<EOH
 #!/bin/bash
 
 file=/storage/backups/nomad/postgres/hedgedoc/postgresql-hedgedoc-$(date +%Y-%m-%d_%H-%M-%S).sql

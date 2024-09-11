@@ -17,7 +17,7 @@ job "members-mysql-backup" {
       }
 
       template {
-        data = <<EOH
+        data        = <<EOH
 #!/bin/bash
 
 file=/storage/backups/nomad/mysql/members/members-mysql-$(date +%Y-%m-%d_%H-%M-%S).sql

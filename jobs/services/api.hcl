@@ -17,10 +17,10 @@ job "api" {
       port = "http"
 
       check {
-        type = "http"
-        path = "/"
+        type     = "http"
+        path     = "/"
         interval = "10s"
-        timeout = "2s"
+        timeout  = "2s"
       }
 
       tags = [
@@ -68,14 +68,14 @@ EMAIL_SENDER={{ key "api/smtp/sender" }}
 EOH
       }
 
-    template {
+      template {
         destination = "local/ldap.secret"
         perms       = "600"
-        data = "{{ key \"api/ldap/secret\" }}" # this is necessary as the secret has no EOF
+        data        = "{{ key \"api/ldap/secret\" }}" # this is necessary as the secret has no EOF
       }
 
       resources {
-        cpu = 300
+        cpu    = 300
         memory = 1024
       }
     }

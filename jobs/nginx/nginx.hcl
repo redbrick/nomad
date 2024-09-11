@@ -5,7 +5,7 @@ job "nginx" {
 
   group "aperture" {
     count = 3
-    
+
     network {
       port "http" {
         to = "80"
@@ -20,14 +20,14 @@ job "nginx" {
       port = "http"
 
       check {
-        type = "http"
-        path = "/"
+        type     = "http"
+        path     = "/"
         interval = "10s"
-        timeout = "2s"
-      } 
+        timeout  = "2s"
+      }
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.nginx-aperture.rule=Host(`aperture.redbrick.dcu.ie`)",   
+        "traefik.http.routers.nginx-aperture.rule=Host(`aperture.redbrick.dcu.ie`)",
         "traefik.http.routers.nginx-aperture.entrypoints=web,websecure",
         "traefik.http.routers.nginx-aperture.tls.certresolver=lets-encrypt"
       ]
@@ -49,7 +49,7 @@ job "nginx" {
       }
 
       template {
-        source = "local/index.html"
+        source      = "local/index.html"
         destination = "local/index.html"
       }
     }
@@ -57,7 +57,7 @@ job "nginx" {
 
   group "glados" {
     count = 1
-    
+
     network {
       port "http" {
         to = "80"
@@ -72,14 +72,14 @@ job "nginx" {
       port = "http"
 
       check {
-        type = "http"
-        path = "/"
+        type     = "http"
+        path     = "/"
         interval = "10s"
-        timeout = "2s"
-      } 
+        timeout  = "2s"
+      }
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.nginx-glados.rule=Host(`glados.redbrick.dcu.ie`)",   
+        "traefik.http.routers.nginx-glados.rule=Host(`glados.redbrick.dcu.ie`)",
         "traefik.http.routers.nginx-glados.entrypoints=web,websecure",
         "traefik.http.routers.nginx-glados.tls.certresolver=lets-encrypt"
       ]
@@ -88,7 +88,7 @@ job "nginx" {
     task "glados" {
       constraint {
         attribute = "${attr.unique.hostname}"
-        value = "glados"
+        value     = "glados"
       }
       driver = "docker"
 
@@ -105,7 +105,7 @@ job "nginx" {
       }
 
       template {
-        source = "local/glados.html"
+        source      = "local/glados.html"
         destination = "local/index.html"
       }
     }
@@ -113,7 +113,7 @@ job "nginx" {
 
   group "wheatley" {
     count = 1
-    
+
     network {
       port "http" {
         to = "80"
@@ -128,14 +128,14 @@ job "nginx" {
       port = "http"
 
       check {
-        type = "http"
-        path = "/"
+        type     = "http"
+        path     = "/"
         interval = "10s"
-        timeout = "2s"
-      } 
+        timeout  = "2s"
+      }
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.nginx-wheatley.rule=Host(`wheatley.redbrick.dcu.ie`)",   
+        "traefik.http.routers.nginx-wheatley.rule=Host(`wheatley.redbrick.dcu.ie`)",
         "traefik.http.routers.nginx-wheatley.entrypoints=web,websecure",
         "traefik.http.routers.nginx-wheatley.tls.certresolver=lets-encrypt"
       ]
@@ -144,7 +144,7 @@ job "nginx" {
     task "wheatley" {
       constraint {
         attribute = "${attr.unique.hostname}"
-        value = "wheatley"
+        value     = "wheatley"
       }
 
       driver = "docker"
@@ -162,7 +162,7 @@ job "nginx" {
       }
 
       template {
-        source = "local/wheatley.html"
+        source      = "local/wheatley.html"
         destination = "local/index.html"
       }
     }
@@ -170,7 +170,7 @@ job "nginx" {
 
   group "chell" {
     count = 1
-    
+
     network {
       port "http" {
         to = "80"
@@ -185,14 +185,14 @@ job "nginx" {
       port = "http"
 
       check {
-        type = "http"
-        path = "/"
+        type     = "http"
+        path     = "/"
         interval = "10s"
-        timeout = "2s"
-      } 
+        timeout  = "2s"
+      }
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.nginx-chell.rule=Host(`chell.redbrick.dcu.ie`)",   
+        "traefik.http.routers.nginx-chell.rule=Host(`chell.redbrick.dcu.ie`)",
         "traefik.http.routers.nginx-chell.entrypoints=web,websecure",
         "traefik.http.routers.nginx-chell.tls.certresolver=lets-encrypt"
       ]
@@ -201,7 +201,7 @@ job "nginx" {
     task "chell" {
       constraint {
         attribute = "${attr.unique.hostname}"
-        value = "chell"
+        value     = "chell"
       }
 
       driver = "docker"
@@ -219,7 +219,7 @@ job "nginx" {
       }
 
       template {
-        source = "local/chell.html"
+        source      = "local/chell.html"
         destination = "local/index.html"
       }
     }

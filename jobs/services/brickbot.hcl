@@ -23,7 +23,7 @@ job "brickbot2" {
       template {
         destination = "local/ldap.secret"
         perms       = "600"
-        data = "{{ key \"api/ldap/secret\" }}" # this is necessary as the secret has no EOF
+        data        = "{{ key \"api/ldap/secret\" }}" # this is necessary as the secret has no EOF
       }
 
       template {
