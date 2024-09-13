@@ -1,7 +1,7 @@
 job "gate-proxy" {
   datacenters = ["aperture"]
-  node_pool = "ingress"
-  type = "service"
+  node_pool   = "ingress"
+  type        = "service"
 
   group "gate-proxy" {
     count = 1
@@ -16,9 +16,9 @@ job "gate-proxy" {
       port = "mc"
 
       check {
-        type = "tcp"
+        type     = "tcp"
         interval = "10s"
-        timeout = "2s"
+        timeout  = "2s"
       }
     }
 
@@ -35,7 +35,7 @@ job "gate-proxy" {
       }
 
       template {
-        data = <<EOH
+        data        = <<EOH
 # This is a simplified config where the rest of the
 # settings are omitted and will be set by default.
 # See config.yml for the full configuration options.
@@ -58,10 +58,12 @@ config:
         backend: olim909-mc.service.consul:19132
       - host: games.rb.dcu.ie
         backend: games-mc.service.consul:25569
-      - host: fugatives.rb.dcu.ie
-        backend: fugatives-mc.service.consul:25570
+      - host: fugitives.rb.dcu.ie
+        backend: fugitives-mc.service.consul:25570
       - host: cjaran-mc.rb.dcu.ie
         backend: cjaran-mc.service.consul:25571
+      - host: magma-mc.rb.dcu.ie
+        backend: minecraft-magma.service.consul:25572
 EOH
         destination = "local/file.conf"
       }
