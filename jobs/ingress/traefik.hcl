@@ -1,40 +1,65 @@
 job "traefik" {
   datacenters = ["aperture"]
-  node_pool = "ingress"
+  node_pool   = "ingress"
   type        = "service"
 
   group "traefik" {
     network {
-      port "http"{
+      port "http" {
         static = 80
       }
       port "https" {
         static = 443
       }
-      port "admin"{
+      port "admin" {
         static = 8080
+      }
+      port "smtp" {
+        static = 25
+      }
+      port "submission" {
+        static = 587
+      }
+      port "submissions" {
+        static = 465
+      }
+      port "imap" {
+        static = 143
+      }
+      port "imaps" {
+        static = 993
+      }
+      port "pop3" {
+        static = 110
+      }
+      port "pop3s" {
+        static = 995
+      }
+      port "managesieve" {
+        static = 4190
       }
     }
 
     service {
-      name = "traefik-http"
+      name     = "traefik-http"
       provider = "nomad"
-      port = "https"
+      port     = "https"
     }
 
     task "traefik" {
       driver = "docker"
       config {
-        image = "traefik"
+        image        = "traefik"
         network_mode = "host"
 
         volumes = [
           "local/traefik.toml:/etc/traefik/traefik.toml",
+          "/storage/nomad/traefik/acme/acme.json:/acme.json",
         ]
       }
 
       template {
-        data = <<EOF
+        data        = <<EOF
 [entryPoints]
   [entryPoints.web]
   address = ":80"
@@ -47,6 +72,30 @@ job "traefik" {
 
   [entryPoints.traefik]
   address = ":8080"
+
+  [entryPoints.smtp]
+  address = ":25"
+
+  [entryPoints.submission]
+  address = ":587"
+
+  [entryPoints.submissions]
+  address = ":465"
+
+  [entryPoints.imap]
+  address = ":143"
+
+  [entryPoints.imaps]
+  address = ":993"
+
+  [entryPoints.pop3]
+  address = ":110"
+
+  [entryPoints.pop3s]
+  address = ":995"
+
+  [entryPoints.managesieve]
+  address = ":4190"
 
 [tls.options]
   [tls.options.default]
@@ -80,7 +129,7 @@ job "traefik" {
 
 [certificatesResolvers.lets-encrypt.acme]
   email = "elected-admins@redbrick.dcu.ie"
-  storage = "local/acme.json"
+  storage = "acme.json"
   [certificatesResolvers.lets-encrypt.acme.tlsChallenge]
 EOF
         destination = "/local/traefik.toml"
