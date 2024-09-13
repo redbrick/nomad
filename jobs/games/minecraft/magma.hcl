@@ -6,28 +6,38 @@ job "minecraft-magma" {
     count = 1
 
     network {
-      port "minecraft" {
+      port "mc" {
         static = 25572
         to     = 25565
       }
       port "rcon" {
         to = 25575
       }
-      port "voicechat" {
+      port "voice" {
         to = 24454
       }
     }
 
     service {
-      name = "minecraft-magma"
-      port = "minecraft"
+      name = "magma-mc"
+      port = "mc"
+    }
+
+    service {
+      name = "magma-mc-rcon"
+      port = "rcon"
+    }
+
+    service {
+      name = "magma-mc-voice"
+      port = "voice"
     }
 
     task "minecraft-magma" {
       driver = "docker"
       config {
         image = "itzg/minecraft-server:java17-alpine"
-        ports = ["minecraft", "rcon", "voicechat"]
+        ports = ["mc", "rcon", "voice"]
         volumes = [
           "/storage/nomad/${NOMAD_TASK_NAME}:/data"
         ]
