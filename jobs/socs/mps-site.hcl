@@ -69,7 +69,7 @@ ff00::0	ip6-mcastprefix
 ff02::1	ip6-allnodes
 ff02::2	ip6-allrouters
 172.17.0.17	{{ env "NOMAD_TASK_NAME" }}
-# user internal IP for thecollegeview.ie as external IP isn't routable
+# use internal IP for thecollegeview.ie as external IP isn't routable
 192.168.0.158 thecollegeview.ie
 192.168.0.158 www.thecollegeview.ie
 EOF
