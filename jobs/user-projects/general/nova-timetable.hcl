@@ -89,5 +89,23 @@ job "nova-timetable" {
         ports = ["db"]
       }
     }
+
+
+    task "timetablebot" {
+      driver = "docker"
+
+      config {
+        image = "ghcr.io/novanai/timetable-sync-bot:latest"
+      }
+
+      template {
+        data        = <<EOH
+BOT_TOKEN={{ key "user-projects/nova/timetablebot/token" }}
+REDIS_ADDRESS={{ env "NOMAD_ADDR_db" }}
+EOH
+        destination = "local/.env"
+        env         = true
+      }
+    }
   }
 }
