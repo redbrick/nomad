@@ -90,7 +90,6 @@ job "nova-timetable" {
       }
     }
 
-
     task "timetablebot" {
       driver = "docker"
 
