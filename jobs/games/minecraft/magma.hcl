@@ -7,15 +7,17 @@ job "minecraft-magma" {
 
     network {
       port "mc" {
-        static = 25572
-        to     = 25565
+        to = 25565
       }
-      port "rcon" {
-        to = 25575
-      }
+      port "rcon" {}
       port "voice" {
-        to = 24454
+        to = 4503
+        static = 4503
       }
+      port "rcon-ssh" {
+        to = 2222
+      }
+      port "rcon-web" {}
     }
 
     service {
@@ -31,6 +33,12 @@ job "minecraft-magma" {
     service {
       name = "magma-mc-voice"
       port = "voice"
+      tags = [
+        "traefik.enable=true",
+        "traefik.tcp.routers.magma-mc-voice.rule=HostSNI(`magma-mc.rb.dcu.ie`)",
+        "traefik.tcp.routers.magma-mc-voice.tls.passthrough=true",
+        "traefik.udp.routers.magma-mc-voice.entrypoints=voice-udp",
+      ]
     }
 
     task "minecraft-magma" {
@@ -48,15 +56,39 @@ job "minecraft-magma" {
         memory = 10240 # 10GB
       }
 
-      env {
-        EULA            = "TRUE"
-        TYPE            = "FABRIC"
-        VERSION         = "1.20.4"
-        ICON            = "https://raw.githubusercontent.com/redbrick/design-system/main/assets/logos/logo.png"
-        MEMORY          = "8G"
-        USE_AIKAR_FLAGS = true
-        JVM_XX_OPTS     = "-XX:+AlwaysPreTouch -XX:+DisableExplicitGC -XX:+ParallelRefProcEnabled -XX:+PerfDisableSharedMem -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1HeapRegionSize=8M -XX:G1HeapWastePercent=5 -XX:G1MaxNewSizePercent=40 -XX:G1MixedGCCountTarget=4 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1NewSizePercent=30 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:G1ReservePercent=20 -XX:InitiatingHeapOccupancyPercent=15 -XX:MaxGCPauseMillis=200 -XX:MaxTenuringThreshold=1 -XX:SurvivorRatio=32"
+      template {
+        data        = <<EOF
+EULA            = "TRUE"
+TYPE            = "FABRIC"
+VERSION         = "1.20.4"
+ICON            = "https://raw.githubusercontent.com/redbrick/design-system/main/assets/logos/logo.png"
+MEMORY          = "8G"
+USE_AIKAR_FLAGS = true
+JVM_XX_OPTS     = "-XX:+AlwaysPreTouch -XX:+DisableExplicitGC -XX:+ParallelRefProcEnabled -XX:+PerfDisableSharedMem -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1HeapRegionSize=8M -XX:G1HeapWastePercent=5 -XX:G1MaxNewSizePercent=40 -XX:G1MixedGCCountTarget=4 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1NewSizePercent=30 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:G1ReservePercent=20 -XX:InitiatingHeapOccupancyPercent=15 -XX:MaxGCPauseMillis=200 -XX:MaxTenuringThreshold=1 -XX:SurvivorRatio=32"
+ENABLE_RCON=true
+RCON_PASSWORD="habibi"
+RCON_PORT={{ env "NOMAD_PORT_rcon" }}
+EOF
+        destination = "local/.env"
+        env         = true
       }
+    }
+
+    task "rcon-hub" {
+      driver = "docker"
+      config {
+      image = "itzg/rcon-hub"
+      ports = ["rcon-ssh"]
+      }
+      template {
+        data = <<EOF
+RH_USER=testing
+RH_PASSWORD=pw
+RH_CONNECTION="mc={{ env "NOMAD_HOST_IP_rcon"}}@mc:{{ env "NOMAD_PORT_rcon" }}"
+EOF
+        destination = "local/.env"
+        env         = true
+    }
     }
   }
 }

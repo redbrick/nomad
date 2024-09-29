@@ -7,7 +7,6 @@ job "minecraft-regaus" {
 
     network {
       port "mc" {
-        static = 25566
         to     = 25565
       }
 

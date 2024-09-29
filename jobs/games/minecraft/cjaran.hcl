@@ -7,7 +7,6 @@ job "minecraft-cjaran" {
 
     network {
       port "mc" {
-        static = 25571
         to     = 25565
       }
 
@@ -19,6 +18,11 @@ job "minecraft-cjaran" {
     service {
       name = "cjaran-mc"
       port = "mc"
+    }
+
+    service {
+      name = "cjaran-mc-rcon"
+      port = "rcon"
     }
 
     task "minecraft-cjaran" {

@@ -7,7 +7,6 @@ job "minecraft-vanilla" {
 
     network {
       port "mc" {
-        static = 25567
         to     = 25565
       }
       port "rcon" {

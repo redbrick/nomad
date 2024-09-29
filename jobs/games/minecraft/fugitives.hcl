@@ -7,7 +7,6 @@ job "minecraft-fugitives" {
 
     network {
       port "mc" {
-        static = 25570
         to     = 25565
       }
       port "rcon" {
@@ -18,6 +17,11 @@ job "minecraft-fugitives" {
     service {
       name = "fugitives-mc"
       port = "mc"
+    }
+
+    service {
+      name = "fugitives-mc-rcon"
+      port = "rcon"
     }
 
     task "minecraft-fugitives" {

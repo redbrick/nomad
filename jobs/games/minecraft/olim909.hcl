@@ -7,7 +7,6 @@ job "minecraft-olim909" {
 
     network {
       port "mc" {
-        static = 25568
         to     = 25565
       }
 
@@ -22,6 +21,11 @@ job "minecraft-olim909" {
     service {
       name = "olim909-mc"
       port = "mc"
+    }
+
+    service {
+      name = "olim909-mc-rcon"
+      port = "rcon"
     }
 
     task "minecraft-olim909" {

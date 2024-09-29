@@ -7,8 +7,7 @@ job "minecraft-games" {
 
     network {
       port "mc" {
-        static = 25569
-        to     = 25565
+        to = 25565
       }
 
       port "rcon" {
@@ -19,6 +18,11 @@ job "minecraft-games" {
     service {
       name = "games-mc"
       port = "mc"
+    }
+
+    service {
+      name = "games-mc-rcon"
+      port = "rcon"
     }
 
     task "minecraft-games" {
