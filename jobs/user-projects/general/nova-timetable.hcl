@@ -110,7 +110,7 @@ job "nova-timetable" {
         data        = <<EOH
 POSTGRES_USER={{ key "user-projects/nova/db/user" }}
 POSTGRES_PASSWORD={{ key "user-projects/nova/db/password" }}
-POSTGRES_DB={{ key "user-projects/nova/db/db" }}
+POSTGRES_DB={{ key "user-projects/nova/db/name" }}
 EOH
         destination = "local/db.env"
         env         = true
@@ -130,7 +130,7 @@ BOT_TOKEN={{ key "user-projects/nova/bot/token" }}
 REDIS_ADDRESS={{ env "NOMAD_ADDR_redis" }}
 POSTGRES_USER={{ key "user-projects/nova/db/user" }}
 POSTGRES_PASSWORD={{ key "user-projects/nova/db/password" }}
-POSTGRES_DB={{ key "user-projects/nova/db/db" }}
+POSTGRES_DB={{ key "user-projects/nova/db/name" }}
 POSTGRES_HOST={{ env "NOMAD_IP_db" }}
 POSTGRES_PORT={{ env "NOMAD_PORT_db" }}
 EOH
