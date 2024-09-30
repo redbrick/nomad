@@ -102,7 +102,7 @@ job "nova-timetable" {
         ports = ["db"]
 
         volumes = [
-          "/opt/postgres/nova-timetable:/var/lib/postgresql/data"
+          "/storage/nomad/nova-timetable/db:/var/lib/postgresql/data"
         ]
       }
 
@@ -132,7 +132,7 @@ POSTGRES_USER={{ key "user-projects/nova/db/user" }}
 POSTGRES_PASSWORD={{ key "user-projects/nova/db/password" }}
 POSTGRES_DB={{ key "user-projects/nova/db/name" }}
 POSTGRES_HOST={{ env "NOMAD_IP_db" }}
-POSTGRES_PORT={{ env "NOMAD_PORT_db" }}
+POSTGRES_PORT={{ env "NOMAD_HOST_PORT_db" }}
 EOH
         destination = "local/.env"
         env         = true
