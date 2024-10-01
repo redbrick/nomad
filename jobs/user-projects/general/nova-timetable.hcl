@@ -6,8 +6,12 @@ job "nova-timetable" {
     count = 1
 
     network {
-      port "db" {
+      port "redis" {
         to = 6379
+      }
+
+      port "db" {
+        to = 5432
       }
 
       port "frontend" {
@@ -52,7 +56,7 @@ job "nova-timetable" {
       driver = "docker"
 
       env {
-        REDIS_ADDRESS = "${NOMAD_ADDR_db}"
+        REDIS_ADDRESS = "${NOMAD_ADDR_redis}"
       }
 
       config {
@@ -81,12 +85,57 @@ job "nova-timetable" {
       }
     }
 
-    task "redis-db" {
+    task "redis" {
       driver = "docker"
 
       config {
         image = "redis:latest"
+        ports = ["redis"]
+      }
+    }
+
+    task "timetable-db" {
+      driver = "docker"
+
+      config {
+        image = "postgres:17.0-alpine"
         ports = ["db"]
+
+        volumes = [
+          "/storage/nomad/nova-timetable/db:/var/lib/postgresql/data"
+        ]
+      }
+
+      template {
+        data        = <<EOH
+POSTGRES_USER={{ key "user-projects/nova/db/user" }}
+POSTGRES_PASSWORD={{ key "user-projects/nova/db/password" }}
+POSTGRES_DB={{ key "user-projects/nova/db/name" }}
+EOH
+        destination = "local/db.env"
+        env         = true
+      }
+    }
+
+    task "timetable-bot" {
+      driver = "docker"
+
+      config {
+        image = "ghcr.io/novanai/timetable-sync-bot:latest"
+      }
+
+      template {
+        data        = <<EOH
+BOT_TOKEN={{ key "user-projects/nova/bot/token" }}
+REDIS_ADDRESS={{ env "NOMAD_ADDR_redis" }}
+POSTGRES_USER={{ key "user-projects/nova/db/user" }}
+POSTGRES_PASSWORD={{ key "user-projects/nova/db/password" }}
+POSTGRES_DB={{ key "user-projects/nova/db/name" }}
+POSTGRES_HOST={{ env "NOMAD_IP_db" }}
+POSTGRES_PORT={{ env "NOMAD_HOST_PORT_db" }}
+EOH
+        destination = "local/.env"
+        env         = true
       }
     }
   }
