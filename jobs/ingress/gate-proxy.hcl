@@ -57,7 +57,18 @@ config:
         {{- if .Name | regexMatch ".*-mc$" }}
           {{- range service .Name }}
       - host: {{ .Name }}.rb.dcu.ie
-        backend: {{ .Name }}.service.consul:{{ .Port }}{{ end -}}{{ end -}}{{ end -}}
+        backend: {{ .Name }}.service.consul:{{ .Port }}{{ end -}}{{ end -}}{{ end }}
+        # Fallback route for when any service is unavailable
+      - host: '*'
+        backend: localhost:2000 # backend must exist - this is a dummy value
+        fallback:
+          motd: |
+            §cThis server is offline/does not exist!
+            §eCheck back later!
+          version:
+            name: '§cTry again later!'
+            protocol: -1
+
 EOH
         destination = "local/config.yaml"
       }
