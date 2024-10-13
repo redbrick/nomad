@@ -7,7 +7,7 @@ job "minecraft-fugitives" {
 
     network {
       port "mc" {
-        to     = 25565
+        to = 25565
       }
       port "rcon" {
         to = 25575
@@ -39,13 +39,19 @@ job "minecraft-fugitives" {
         memory = 8192 # 8GB
       }
 
-      env {
-        EULA            = "TRUE"
-        TYPE            = "PAPER"
-        USE_AIKAR_FLAGS = true
-        MOTD            = "Fugitives"
-        MAX_PLAYERS     = "20"
-        MEMORY          = "6G"
+      template {
+        data        = <<EOF
+EULA            = "TRUE"
+TYPE            = "PAPER"
+USE_AIKAR_FLAGS = true
+MOTD            = "Fugitives"
+MAX_PLAYERS     = "20"
+MEMORY          = "6G"
+ENABLE_RCON     = true
+RCON_PASSWORD   = {{ key "games/mc/fugitives-mc/rcon/password" }}
+EOF
+        destination = "local/.env"
+        env         = true
       }
     }
   }

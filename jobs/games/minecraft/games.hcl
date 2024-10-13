@@ -42,14 +42,20 @@ job "minecraft-games" {
         memory = 8192 # 8GB
       }
 
-      env {
-        EULA            = "TRUE"
-        TYPE            = "PURPUR"
-        VERSION         = "1.20.1"
-        MOTD            = "DCU Games Soc Minecraft Server"
-        USE_AIKAR_FLAGS = true
-        OPS             = ""
-        MAX_PLAYERS     = "20"
+      template {
+        data        = <<EOF
+EULA            = "TRUE"
+TYPE            = "PURPUR"
+VERSION         = "1.20.1"
+MOTD            = "DCU Games Soc Minecraft Server"
+USE_AIKAR_FLAGS = true
+OPS             = ""
+MAX_PLAYERS     = "20"
+ENABLE_RCON     = true
+RCON_PASSWORD   = {{ key "games/mc/games-mc/rcon/password" }}
+EOF
+        destination = "local/.env"
+        env         = true
       }
     }
   }

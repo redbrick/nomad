@@ -7,7 +7,7 @@ job "minecraft-vanilla" {
 
     network {
       port "mc" {
-        to     = 25565
+        to = 25565
       }
       port "rcon" {
         to = 25575
@@ -39,13 +39,20 @@ job "minecraft-vanilla" {
         memory = 8192 # 8GB
       }
 
-      env {
-        EULA            = "TRUE"
-        TYPE            = "PAPER"
-        ICON            = "https://docs.redbrick.dcu.ie/assets/logo.png"
-        USE_AIKAR_FLAGS = true
-        MOTD            = "LONG LIVE THE REDBRICK"
-        MAX_PLAYERS     = "20"
+      template {
+        data        = <<EOF
+EULA            = "TRUE"
+TYPE            = "PAPER"
+VERSION         = "1.21.1"
+ICON            = "https://docs.redbrick.dcu.ie/assets/logo.png"
+USE_AIKAR_FLAGS = true
+MOTD            = "LONG LIVE THE REDBRICK"
+MAX_PLAYERS     = "20"
+ENABLE_RCON     = true
+RCON_PASSWORD   = {{ key "games/mc/vanilla-mc/rcon/password" }}
+EOF
+        destination = "local/.env"
+        env         = true
       }
     }
   }
