@@ -14,29 +14,12 @@ job "nova-timetable" {
         to = 5432
       }
 
-      port "cns" {
-        to = 2000
-      }
-
       port "frontend" {
         to = 3000
       }
 
       port "backend" {
         to = 4000
-      }
-    }
-
-    task "cns" {
-      driver = "docker"
-
-      env {
-        PORT = "${NOMAD_PORT_cns}"
-      }
-
-      config {
-        image = "ghcr.io/cheeselad/clubsandsocs-api:latest"
-        ports = ["cns"]
       }
     }
 
@@ -79,8 +62,8 @@ job "nova-timetable" {
       env {
         BACKEND_PORT = "${NOMAD_PORT_backend}"
         REDIS_ADDRESS = "${NOMAD_ADDR_redis}"
-        CNS_HOST = "${NOMAD_IP_cns}"
-        CNS_PORT = "${NOMAD_PORT_cns}"
+        CNS_HOST = "clubsandsocs.jakefarrell.ie"
+        CNS_PORT = "443"
       }
 
       config {
