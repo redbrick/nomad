@@ -62,8 +62,7 @@ job "nova-timetable" {
       env {
         BACKEND_PORT = "${NOMAD_PORT_backend}"
         REDIS_ADDRESS = "${NOMAD_ADDR_redis}"
-        CNS_HOST = "clubsandsocs.jakefarrell.ie"
-        CNS_PORT = "443"
+        CNS_ADDRESS = "https://clubsandsocs.jakefarrell.ie"
       }
 
       config {
@@ -140,6 +139,7 @@ POSTGRES_PASSWORD={{ key "user-projects/nova/db/password" }}
 POSTGRES_DB={{ key "user-projects/nova/db/name" }}
 POSTGRES_HOST={{ env "NOMAD_IP_db" }}
 POSTGRES_PORT={{ env "NOMAD_HOST_PORT_db" }}
+CNS_ADDRESS="https://clubsandsocs.jakefarrell.ie"
 EOH
         destination = "local/.env"
         env         = true
