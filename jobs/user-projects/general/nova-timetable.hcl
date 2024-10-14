@@ -26,6 +26,10 @@ job "nova-timetable" {
     task "frontend" {
       driver = "docker"
 
+      env {
+        PORT = "${NOMAD_PORT_frontend}"
+      }
+
       config {
         image = "ghcr.io/novanai/timetable-sync-frontend:latest"
         ports = ["frontend"]
@@ -56,7 +60,9 @@ job "nova-timetable" {
       driver = "docker"
 
       env {
+        BACKEND_PORT = "${NOMAD_PORT_backend}"
         REDIS_ADDRESS = "${NOMAD_ADDR_redis}"
+        CNS_ADDRESS = "https://clubsandsocs.jakefarrell.ie"
       }
 
       config {
@@ -133,6 +139,7 @@ POSTGRES_PASSWORD={{ key "user-projects/nova/db/password" }}
 POSTGRES_DB={{ key "user-projects/nova/db/name" }}
 POSTGRES_HOST={{ env "NOMAD_IP_db" }}
 POSTGRES_PORT={{ env "NOMAD_HOST_PORT_db" }}
+CNS_ADDRESS="https://clubsandsocs.jakefarrell.ie"
 EOH
         destination = "local/.env"
         env         = true
