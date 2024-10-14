@@ -14,6 +14,10 @@ job "nova-timetable" {
         to = 5432
       }
 
+      port "cns" {
+        to = 2000
+      }
+
       port "frontend" {
         to = 3000
       }
@@ -23,8 +27,25 @@ job "nova-timetable" {
       }
     }
 
+    task "cns" {
+      driver = "docker"
+
+      env {
+        PORT = "${NOMAD_PORT_cns}"
+      }
+
+      config {
+        image = "ghcr.io/cheeselad/clubsandsocs-api:latest"
+        ports = ["cns"]
+      }
+    }
+
     task "frontend" {
       driver = "docker"
+
+      env {
+        PORT = "${NOMAD_PORT_frontend}"
+      }
 
       config {
         image = "ghcr.io/novanai/timetable-sync-frontend:latest"
@@ -56,7 +77,10 @@ job "nova-timetable" {
       driver = "docker"
 
       env {
+        BACKEND_PORT = "${NOMAD_PORT_backend}"
         REDIS_ADDRESS = "${NOMAD_ADDR_redis}"
+        CNS_HOST = "${NOMAD_IP_cns}"
+        CNS_PORT = "${NOMAD_PORT_cns}"
       }
 
       config {
