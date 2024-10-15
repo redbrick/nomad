@@ -20,9 +20,9 @@ job "hedgedoc-backup" {
         data        = <<EOH
 #!/bin/bash
 
-file=/storage/backups/nomad/postgres/hedgedoc/postgresql-hedgedoc-$(date +%Y-%m-%d_%H-%M-%S).sql
+file=/storage/backups/nomad/hedgedoc/postgresql-hedgedoc-$(date +%Y-%m-%d_%H-%M-%S).sql
 
-mkdir -p /storage/backups/nomad/postgres/hedgedoc
+mkdir -p /storage/backups/nomad/hedgedoc
 
 alloc_id=$(nomad job status hedgedoc | grep running | tail -n 1 | cut -d " " -f 1)
 
@@ -30,7 +30,7 @@ job_name=$(echo ${NOMAD_JOB_NAME} | cut -d "/" -f 1)
 
 nomad alloc exec -task hedgedoc-db $alloc_id pg_dumpall -U {{ key "hedgedoc/db/user" }} > "${file}"
 
-find /storage/backups/nomad/postgres/hedgedoc/postgresql-hedgedoc* -ctime +3 -exec rm {} \; || true
+find /storage/backups/nomad/hedgedoc/postgresql-hedgedoc* -ctime +3 -exec rm {} \; || true
 
 if [ -s "$file" ]; then # check if file exists and is not empty
   echo "Backup successful"

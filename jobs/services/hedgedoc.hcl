@@ -21,7 +21,7 @@ job "hedgedoc" {
 
       check {
         type     = "http"
-        path     = "/"
+        path     = "/_health"
         interval = "10s"
         timeout  = "2s"
       }
@@ -41,42 +41,51 @@ job "hedgedoc" {
     task "app" {
       driver = "docker"
 
-      constraint {
-        attribute = "${attr.unique.hostname}"
-        value     = "chell"
-      }
-
       config {
-        image = "quay.io/hedgedoc/hedgedoc:1.6.0"
+        image = "quay.io/hedgedoc/hedgedoc:1.10.0"
         ports = ["http"]
       }
 
       template {
         data        = <<EOH
-CMD_IMAGE_UPLOAD_TYPE    = "imgur"
-CMD_IMGUR_CLIENTID       = "{{ key "hedgedoc/imgur/clientid" }}"
-CMD_IMGUR_CLIENTSECRET   = "{{ key "hedgedoc/imgur/clientsecret" }}"
-CMD_DB_URL               = "postgres://{{ key "hedgedoc/db/user" }}:{{ key "hedgedoc/db/password" }}@{{ env "NOMAD_ADDR_db" }}/{{ key "hedgedoc/db/name" }}"
-CMD_ALLOW_FREEURL        = "false"
-CMD_DEFAULT_PERMISSION   = "private"
-CMD_DOMAIN               = "md.redbrick.dcu.ie"
-CMD_ALLOW_ORIGIN         = ["md.redbrick.dcu.ie", "md.rb.dcu.ie"]
-CMD_HSTS_PRELOAD         = "true"
-CMD_USE_CDN              = "true"
-CMD_PROTOCOL_USESSL      = "true"
-CMD_URL_ADDPORT          = "false"
-CMD_ALLOW_EMAIL_REGISTER = "false"
-CMD_ALLOW_ANONYMOUS      = "false"
-CMD_EMAIL                = "false"
-CMD_LDAP_URL             = "{{ key "hedgedoc/ldap/url" }}"
-CMD_LDAP_SEARCHBASE      = "ou=accounts,o=redbrick"
-CMD_LDAP_SEARCHFILTER    = "{{`(uid={{username}})`}}"
-CMD_LDAP_PROVIDERNAME    = "Redbrick"
-CMD_LDAP_USERIDFIELD     = "uidNumber"
-CMD_LDAP_USERNAMEFIELD   = "uid"
-CMD_ALLOW_GRAVATAR       = "true"
-CMD_SESSION_SECRET       = "{{ key "hedgedoc/session/secret" }}"
-CMD_LOG_LEVEL           = "debug"
+CMD_DB_URL                  = "postgres://{{ key "hedgedoc/db/user" }}:{{ key "hedgedoc/db/password" }}@{{ env "NOMAD_ADDR_db" }}/{{ key "hedgedoc/db/name" }}"
+CMD_ALLOW_FREEURL           = "false"
+CMD_FORBIDDEN_NOTE_IDS      = ['robots.txt', 'favicon.ico', 'api', 'build', 'css', 'docs', 'fonts', 'js', 'uploads', 'vendor', 'views', 'auth']
+CMD_DOMAIN                  = "md.redbrick.dcu.ie"
+CMD_ALLOW_ORIGIN            = ["redbrick.dcu.ie", "rb.dcu.ie"]
+CMD_USE_CDN                 = "true"
+CMD_PROTOCOL_USESSL         = "true"
+CMD_URL_ADDPORT             = "false"
+CMD_LOG_LEVEL               = "debug"
+CMD_ENABLE_STATS_API        = "true"
+
+# Accounts
+CMD_ALLOW_EMAIL_REGISTER    = "false"
+CMD_ALLOW_ANONYMOUS         = "false"
+CMD_ALLOW_ANONYMOUS_EDITS   = "false"
+CMD_EMAIL                   = "false"
+CMD_LDAP_URL                = "{{ key "hedgedoc/ldap/url" }}"
+CMD_LDAP_SEARCHBASE         = "ou=accounts,o=redbrick"
+CMD_LDAP_SEARCHFILTER       = "{{`(uid={{username}})`}}"
+CMD_LDAP_PROVIDERNAME       = "Redbrick"
+CMD_LDAP_USERIDFIELD        = "uidNumber"
+CMD_LDAP_USERNAMEFIELD      = "uid"
+CMD_SESSION_SECRET          = "{{ key "hedgedoc/session/secret" }}"
+CMD_DEFAULT_PERMISSION      = "private"
+
+# Security/Privacy
+CMD_HSTS_PRELOAD            = "true"
+CMD_CSP_ENABLE              = "true"
+CMD_HSTS_INCLUDE_SUBDOMAINS = "true"
+CMD_CSP_ADD_DISQUS          = "false"
+CMD_CSP_ADD_GOOGLE_ANALYTICS= "false"
+CMD_CSP_ALLOW_PDF_EMBED     = "true"
+CMD_ALLOW_GRAVATAR          = "true"
+
+# Uploads
+CMD_IMAGE_UPLOAD_TYPE       = "imgur"
+CMD_IMGUR_CLIENTID          = "{{ key "hedgedoc/imgur/clientid" }}"
+CMD_IMGUR_CLIENTSECRET      = "{{ key "hedgedoc/imgur/clientsecret" }}"
 EOH
         destination = "local/.env"
         env         = true
@@ -86,17 +95,12 @@ EOH
     task "hedgedoc-db" {
       driver = "docker"
 
-      constraint {
-        attribute = "${attr.unique.hostname}"
-        value     = "chell"
-      }
-
       config {
-        image = "postgres:9.6-alpine"
+        image = "postgres:13.4-alpine"
         ports = ["db"]
 
         volumes = [
-          "/opt/postgres/hedgedoc:/var/lib/postgresql/data"
+          "/storage/nomad/hedgedoc:/var/lib/postgresql/data",
         ]
       }
 
