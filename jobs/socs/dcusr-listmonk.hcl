@@ -8,7 +8,6 @@ job "dcusr-listmonk" {
 
   group "listmonk" {
     network {
-      # mode = "bridge"
       port "http" {
       }
 
