@@ -21,12 +21,12 @@ job "dcusr-listmonk" {
       name = "listmonk"
       port = "http"
 
-      #check {
-      #  type     = "http"
-      #  path     = "/"
-      #  interval = "10s"
-      #  timeout  = "2s"
-      #}
+      check {
+        type     = "http"
+        path     = "/"
+        interval = "10s"
+        timeout  = "2s"
+      }
 
       tags = [
         "traefik.enable=true",
@@ -83,7 +83,7 @@ EOH
       }
     }
 
-    task "dcusr-listmonk-db" {
+    task "listmonk-db" {
       driver = "docker"
 
       config {
