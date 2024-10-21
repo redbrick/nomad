@@ -45,7 +45,6 @@ job "dcusr-listmonk" {
         image = "listmonk/listmonk:latest"
         ports = ["http"]
 
-        #entrypoint = ["sh", "-c", "sleep 1000000"]
         entrypoint = ["./listmonk", "--static-dir=/listmonk/static"]
 
         volumes = [
