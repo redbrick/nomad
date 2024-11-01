@@ -10,7 +10,6 @@ job "esports-discord-bot" {
 
       config {
         image = "ghcr.io/aydenjahola/discord-multipurpose-bot:main"
-        force_pull = true
       }
 
       resources {
