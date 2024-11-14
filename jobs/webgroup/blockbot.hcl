@@ -21,6 +21,7 @@ job "blockbot" {
       template {
         data = <<EOF
 TOKEN={{ key "blockbot/discord/token" }}
+DEBUG= # empty means false
 EOF
         destination = "local/.env"
         env = true
