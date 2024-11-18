@@ -57,7 +57,6 @@ LISTMONK_ENDPOINT={{ key "dcusr/listmonk/endpoint" }}
 LISTMONK_USERNAME={{ key "dcusr/listmonk/username" }}
 LISTMONK_PASSWORD={{ key "dcusr/listmonk/password" }}
 LISTMONK_LIST_IDS={{ key "dcusr/listmonk/list/id" }}
-NEXT_PUBLIC_RECAPTCHA_SITE_KEY={{ key "dcusr/recaptcha/site/key" }}
 RECAPTCHA_SECRET_KEY={{ key "dcusr/recaptcha/secret/key" }}
 EOH
       }
