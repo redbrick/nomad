@@ -30,7 +30,7 @@ job_name=$(echo ${NOMAD_JOB_NAME} | cut -d "/" -f 1)
 
 nomad alloc exec $alloc_id pg_dumpall -U {{ key "postgres/username/root" }} > "${file}"
 
-find /storage/backups/nomad/postgres/hedgedoc/postgres* -ctime +3 -exec rm {} \; || true
+find /storage/backups/nomad/postgres/postgres* -ctime +3 -exec rm {} \; || true
 
 if [ -s "$file" ]; then # check if file exists and is not empty
   echo "Backup successful"
