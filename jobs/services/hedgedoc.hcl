@@ -44,6 +44,9 @@ job "hedgedoc" {
       config {
         image = "quay.io/hedgedoc/hedgedoc:1.10.0"
         ports = ["http"]
+        volumes = [
+          "/storage/nomad/hedgedoc/banner:/hedgedoc/public/banner",
+        ]
       }
 
       template {
@@ -71,7 +74,7 @@ CMD_LDAP_PROVIDERNAME       = "Redbrick"
 CMD_LDAP_USERIDFIELD        = "uidNumber"
 CMD_LDAP_USERNAMEFIELD      = "uid"
 CMD_SESSION_SECRET          = "{{ key "hedgedoc/session/secret" }}"
-CMD_DEFAULT_PERMISSION      = "private"
+CMD_DEFAULT_PERMISSION      = "limited"
 
 # Security/Privacy
 CMD_HSTS_PRELOAD            = "true"
