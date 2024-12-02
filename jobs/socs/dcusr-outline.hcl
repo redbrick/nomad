@@ -126,7 +126,7 @@ EOH
       driver = "docker"
 
       config {
-        image = "postgres:alpine"
+        image = "postgres:16-alpine"
         ports = ["db"]
 
         volumes = [

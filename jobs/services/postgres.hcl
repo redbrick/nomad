@@ -27,7 +27,7 @@ EOH
       }
 
       config {
-        image = "postgres:latest"
+        image = "postgres:16-alpine"
         ports = ["db"]
 
         volumes = [
