@@ -41,12 +41,75 @@ job "mps-thecollegeview" {
       ]
     }
 
-    task "tcv-web" {
+
+    task "tcv-nginx" {
+      driver = "docker"
+      config {
+        image = "nginx:alpine"
+        ports = ["http"]
+        volumes = [
+          "local/nginx.conf:/etc/nginx/nginx.conf",
+          "/storage/nomad/mps-thecollegeview:/var/www/html/",
+        ]
+      }
+      resources {
+        cpu    = 200
+        memory = 100
+      }
+      template {
+        data        = <<EOH
+# user www-data www-data;
+error_log /dev/stderr error;
+events {
+    worker_connections 1024;
+}
+http {
+    include /etc/nginx/mime.types;
+    server_tokens off;
+    error_log /dev/stderr error;
+    access_log /dev/stdout;
+    charset utf-8;
+
+    server {
+      server_name {{ env "NOMAD_META_domain" }};
+      listen 80;
+      listen [::]:80;
+      root /var/www/html;
+      index index.php index.html index.htm;
+
+      client_max_body_size 5m;
+      client_body_timeout 60;
+
+      location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|otf|eot|ico)$ {
+        try_files $uri /index.php;
+        expires max;
+        log_not_found off;
+      }
+
+      # Pass the PHP scripts to FastCGI server
+      location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_pass {{ env "NOMAD_ADDR_fpm" }};
+        fastcgi_index index.php;
+      }
+
+      location ~ /\.ht {
+        deny all;
+      }
+    }
+}
+EOH
+        destination = "local/nginx.conf"
+      }
+    }
+
+    task "tcv-phpfpm" {
       driver = "docker"
 
       config {
-        image = "wordpress:php8.3"
-        ports = ["http"]
+        image = "wordpress:php8.3-fpm-alpine"
+        ports = ["fpm"]
 
         volumes = [
           "/storage/nomad/mps-thecollegeview:/var/www/html/",
@@ -72,7 +135,7 @@ EOH
     }
 
     service {
-      name = "rbwiki-db"
+      name = "tcv-db"
       port = "db"
 
       check {
