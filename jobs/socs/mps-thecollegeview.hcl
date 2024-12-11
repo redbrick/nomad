@@ -80,10 +80,9 @@ http {
       client_max_body_size 5m;
       client_body_timeout 60;
 
-      location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|otf|eot|ico)$ {
-        try_files $uri /index.php;
-        expires max;
-        log_not_found off;
+      # Pass all folders to FPM
+      location / {
+        try_files $uri $uri/ /index.php?$args;
       }
 
       # Pass REST API to FPM
