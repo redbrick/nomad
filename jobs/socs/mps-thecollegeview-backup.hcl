@@ -28,7 +28,7 @@ alloc_id=$(nomad job status mps-thecollegeview | grep running | tail -n 1 | cut 
 
 job_name=$(echo ${NOMAD_JOB_NAME} | cut -d "/" -f 1)
 
-nomad alloc exec -task rbwiki-db $alloc_id mariadb-dump -u {{ key "mps/thecollegeview/db/username" }} -p'{{ key "mps/thecollegeview/db/password"}}' {{ key "mps/thecollegeview/db/name" }} > "${file}"
+nomad alloc exec -task tcv-db $alloc_id mariadb-dump -u {{ key "mps/thecollegeview/db/username" }} -p'{{ key "mps/thecollegeview/db/password"}}' {{ key "mps/thecollegeview/db/name" }} > "${file}"
 
 find /storage/backups/nomad/mps-thecollegeview/mysql/tcv-mysql* -ctime +3 -exec rm {} \; || true
 
