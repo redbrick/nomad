@@ -86,6 +86,11 @@ http {
         log_not_found off;
       }
 
+      # Pass REST API to FPM
+      location /wp-json/ {
+          try_files $uri $uri/ /index.php?$args;
+      }
+
       # Pass the PHP scripts to FastCGI server
       location ~ \.php$ {
         include fastcgi_params;
