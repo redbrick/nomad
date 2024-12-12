@@ -50,7 +50,7 @@ job "minecraft-vanilla" {
 
       resources {
         cpu    = 5000  # 5000 MHz
-        memory = 12288 # 12GB
+        memory = 20480 # 20 GB
       }
 
       template {
@@ -60,7 +60,7 @@ TYPE            = "PAPER"
 VERSION         = "1.21.1"
 ICON            = "https://docs.redbrick.dcu.ie/assets/logo.png"
 USE_AIKAR_FLAGS = true
-MAX_MEMORY      = 11G
+MAX_MEMORY      = 18G
 MOTD            = "LONG LIVE THE REDBRICK"
 MAX_PLAYERS     = "20"
 VIEW_DISTANCE   = "20"
