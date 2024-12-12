@@ -30,9 +30,18 @@ job "nessus" {
         ports = ["http"]
 
       }
+      template {
+        data        = <<EOF
+USERNAME={{ key "nessus/username" }}
+PASSWORD={{ key "nessus/password" }}
+ACTIVATION_CODE={{ key "nessus/activation_code" }}
+EOF
+        destination = ".env"
+        env         = true
+      }
 
       resources {
-        memory = 1000
+        memory = 2000
       }
     }
   }
