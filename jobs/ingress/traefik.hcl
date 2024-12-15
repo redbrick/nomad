@@ -14,6 +14,9 @@ job "traefik" {
       port "admin" {
         static = 8080
       }
+      port "ssh" {
+        static = 22
+      }
       port "smtp" {
         static = 25
       }
@@ -38,6 +41,12 @@ job "traefik" {
       port "managesieve" {
         static = 4190
       }
+      port "voice-tcp" {
+        static = 4502
+      }
+      port "voice-udp" {
+        static = 4503
+      }
     }
 
     service {
@@ -55,6 +64,7 @@ job "traefik" {
         volumes = [
           "local/traefik.toml:/etc/traefik/traefik.toml",
           "/storage/nomad/traefik/acme/acme.json:/acme.json",
+          "/storage/nomad/traefik/access.log:/access.log",
         ]
       }
 
@@ -72,6 +82,9 @@ job "traefik" {
 
   [entryPoints.traefik]
   address = ":8080"
+
+  [entryPoints.ssh]
+  address = ":22"
 
   [entryPoints.smtp]
   address = ":25"
@@ -96,6 +109,14 @@ job "traefik" {
 
   [entryPoints.managesieve]
   address = ":4190"
+
+  [entryPoints.voice-tcp]
+  address = ":4502"
+
+  [entryPoints.voice-udp]
+    address = ":4503/udp"
+    [entryPoints.voice-udp.udp]
+      timeout = "15s" # this will help reduce random dropouts in audio https://github.com/mumble-voip/mumble/issues/3550#issuecomment-441495977
 
 [tls.options]
   [tls.options.default]
@@ -131,6 +152,11 @@ job "traefik" {
   email = "elected-admins@redbrick.dcu.ie"
   storage = "acme.json"
   [certificatesResolvers.lets-encrypt.acme.tlsChallenge]
+
+[tracing]
+
+[accessLog]
+  filePath = "/access.log"
 EOF
         destination = "/local/traefik.toml"
       }
