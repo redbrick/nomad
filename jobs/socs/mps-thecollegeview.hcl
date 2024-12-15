@@ -20,6 +20,9 @@ job "mps-thecollegeview" {
       port "db" {
         to = 3306
       }
+      port "redis" {
+        to = 6379
+      }
     }
 
     service {
@@ -44,6 +47,7 @@ job "mps-thecollegeview" {
 
     task "tcv-nginx" {
       driver = "docker"
+
       config {
         image = "nginx:alpine"
         ports = ["http"]
@@ -51,11 +55,14 @@ job "mps-thecollegeview" {
           "local/nginx.conf:/etc/nginx/nginx.conf",
           "/storage/nomad/mps-thecollegeview:/var/www/html/",
         ]
+        group_add = [82] # www-data in alpine
       }
+
       resources {
         cpu    = 200
         memory = 100
       }
+
       template {
         data        = <<EOH
 # user www-data www-data;
@@ -80,15 +87,11 @@ http {
       client_max_body_size 5m;
       client_body_timeout 60;
 
-      # Pass all folders to FPM
-      location / {
-        try_files $uri $uri/ /index.php?$args;
-      }
-
-      # Pass REST API to FPM
-      location /wp-json/ {
-          try_files $uri $uri/ /index.php?$args;
-      }
+      # NOTE: Not used here, WP super cache rule used instead
+      # # Pass all folders to FPM
+      # location / {
+      #   try_files $uri $uri/ /index.php?$args;
+      # }
 
       # Pass the PHP scripts to FastCGI server
       location ~ \.php$ {
@@ -100,6 +103,34 @@ http {
 
       location ~ /\.ht {
         deny all;
+      }
+
+      # WP Super Cache rules.
+
+      set $cache_uri $request_uri;
+
+      # POST requests and urls with a query string should always go to PHP
+      if ($request_method = POST) {
+          set $cache_uri 'null cache';
+      }
+
+      if ($query_string != "") {
+          set $cache_uri 'null cache';
+      }
+
+      # Don't cache uris containing the following segments
+      if ($request_uri ~* "(/wp-admin/|/xmlrpc.php|/wp-(app|cron|login|register|mail).php|wp-.*.php|/feed/|index.php|wp-comments-popup.php|wp-links-opml.php|wp-locations.php|sitemap(_index)?.xml|[a-z0-9_-]+-sitemap([0-9]+)?.xml)") {
+          set $cache_uri 'null cache';
+      }
+
+      # Don't use the cache for logged in users or recent commenters
+      if ($http_cookie ~* "comment_author|wordpress_[a-f0-9]+|wp-postpass|wordpress_logged_in") {
+          set $cache_uri 'null cache';
+      }
+
+      # Use cached or actual file if they exists, otherwise pass request to WordPress
+      location / {
+          try_files /wp-content/cache/supercache/$http_host/$cache_uri/index.html $uri $uri/ /index.php?$args ;
       }
     }
 }
@@ -117,6 +148,7 @@ EOH
 
         volumes = [
           "/storage/nomad/mps-thecollegeview:/var/www/html/",
+          "local/custom.ini:/usr/local/etc/php/conf.d/custom.ini",
         ]
       }
 
@@ -132,22 +164,25 @@ WORDPRESS_DB_USER={{ key "mps/thecollegeview/db/username" }}
 WORDPRESS_DB_PASSWORD={{  key "mps/thecollegeview/db/password" }}
 WORDPRESS_DB_NAME={{ key "mps/thecollegeview/db/name" }}
 WORDPRESS_TABLE_PREFIX=wp_2
+WORDPRESS_CONFIG_EXTRA="define('WP_REDIS_HOST', '{{ env "NOMAD_ADDR_redis" }}');"
 EOH
         destination = "local/.env"
         env         = true
+      }
+
+      template {
+        data        = <<EOH
+pm.max_children = 10
+upload_max_filesize = 64M
+post_max_size = 64M
+EOH
+        destination = "local/custom.ini"
       }
     }
 
     service {
       name = "tcv-db"
       port = "db"
-
-      check {
-        name     = "mariadb_probe"
-        type     = "tcp"
-        interval = "10s"
-        timeout  = "2s"
-      }
     }
 
     task "tcv-db" {
@@ -203,6 +238,19 @@ EOH
 
         destination = "local/.env"
         env         = true
+      }
+    }
+
+    task "redis" {
+      driver = "docker"
+
+      config {
+        image = "redis:latest"
+        ports = ["redis"]
+      }
+
+      resources {
+        cpu = 200
       }
     }
   }
