@@ -143,6 +143,10 @@ job "traefik" {
       address = "127.0.0.1:8500"
       scheme  = "http"
 
+# Enable the file provider for dynamic configuration.
+[providers.file]
+  filename = "/local/dynamic.toml"
+
 #[providers.nomad]
 #  [providers.nomad.endpoint]
 #    address = "127.0.0.1:4646"
@@ -159,6 +163,42 @@ job "traefik" {
   filePath = "/access.log"
 EOF
         destination = "/local/traefik.toml"
+      }
+      template {
+        data        = <<EOF
+[http]
+
+[http.middlewares]
+
+# handle redirects for short links
+# NOTE: this is a consul template, add entries via consul kv
+# create the middlewares with replacements for each redirect
+{{ range $pair := tree "redirect/redbrick" }}
+  [http.middlewares.redirect-{{ trimPrefix "redirect/redbrick/" $pair.Key }}.redirectRegex]
+    regex = ".*"  # match everything - hosts are handled by the router
+    replacement = "{{ $pair.Value }}"
+    permanent = true
+{{- end }}
+
+[http.routers]
+
+# create routers with middlewares for each redirect
+{{ range $pair := tree "redirect/redbrick" }}
+  [http.routers.{{ trimPrefix "redirect/redbrick/" $pair.Key }}-redirect]
+    rule = "Host(`{{ trimPrefix "redirect/redbrick/" $pair.Key }}.redbrick.dcu.ie`)"
+    entryPoints = ["web", "websecure"]
+    middlewares = ["redirect-{{ trimPrefix "redirect/redbrick/" $pair.Key }}"]
+    service = "dummy-service"  # all routers need a service, this isn't used
+    [http.routers.{{ trimPrefix "redirect/redbrick/" $pair.Key }}-redirect.tls]
+{{- end }}
+
+[http.services]
+  [http.services.dummy-service.loadBalancer]
+    [[http.services.dummy-service.loadBalancer.servers]]
+      url = "http://127.0.0.1"  # Dummy service - not used
+EOF
+        destination = "local/dynamic.toml"
+        change_mode = "noop"
       }
     }
   }
