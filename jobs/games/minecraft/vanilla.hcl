@@ -57,13 +57,13 @@ job "minecraft-vanilla" {
         data        = <<EOF
 EULA            = "TRUE"
 TYPE            = "PAPER"
-VERSION         = "1.21.1"
+VERSION         = "1.21.3"
 ICON            = "https://docs.redbrick.dcu.ie/assets/logo.png"
 USE_AIKAR_FLAGS = true
 MAX_MEMORY      = 18G
 MOTD            = "LONG LIVE THE REDBRICK"
-MAX_PLAYERS     = "20"
-VIEW_DISTANCE   = "20"
+MAX_PLAYERS     = "32"
+VIEW_DISTANCE   = "32"
 ENABLE_RCON     = true
 RCON_PASSWORD   = {{ key "games/mc/vanilla-mc/rcon/password" }}
 # Auto-download plugins
