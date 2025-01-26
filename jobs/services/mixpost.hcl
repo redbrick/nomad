@@ -2,6 +2,10 @@ job "mixpost" {
   datacenters = ["aperture"]
   type        = "service"
 
+  meta {
+    domain = "mixpost.redbrick.dcu.ie"
+  }
+
   group "mixpost" {
     network {
       port "http" {
@@ -24,7 +28,7 @@ job "mixpost" {
       tags = [
         "traefik.enable=true",
         "traefik.port=${NOMAD_PORT_http}",
-        "traefik.http.routers.mixpost.rule=Host(`mixpost.redbrick.dcu.ie`)",
+        "traefik.http.routers.mixpost.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.mixpost.entrypoints=web,websecure",
         "traefik.http.routers.mixpost.tls.certresolver=lets-encrypt",
         "traefik.http.routers.mixpost.tls.certresolver=mytlschallenge",
@@ -54,7 +58,7 @@ APP_NAME=MIXPOST
 
 APP_KEY={{ key "mixpost/APP_KEY" }}
 APP_DEBUG=true
-APP_DOMAIN=mixpost.redbrick.dcu.ie
+APP_DOMAIN=${NOMAD_META_domain}
 APP_URL=https://${APP_DOMAIN}
 
 DB_HOST={{ env "NOMAD_IP_db" }}
@@ -109,8 +113,6 @@ EOH
 
       template {
         data        = <<EOH
-[server]
-
 [mariadbd]
 
 pid-file                = /run/mysqld/mysqld.pid
@@ -122,8 +124,6 @@ expire_logs_days        = 10
 
 character-set-server     = utf8mb4
 character-set-collations = utf8mb4=uca1400_ai_ci
-
-[mariadbd]
         EOH
         destination = "local/server.cnf"
       }
