@@ -52,7 +52,7 @@ job "mixpost" {
         data        = <<EOH
 APP_NAME=MIXPOST
 
-APP_KEY=base64:DGQ7OyZqSW3Fc1+gOL7jWk7ONEZk2VpPKx22gyO3VnM=
+APP_KEY={{ key "mixpost/APP_KEY" }}
 APP_DEBUG=true
 APP_DOMAIN=mixpost.redbrick.dcu.ie
 APP_URL=https://${APP_DOMAIN}
