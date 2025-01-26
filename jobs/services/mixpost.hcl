@@ -87,10 +87,10 @@ EOH
 
       template {
         data = <<EOH
-MYSQL_ROOT_PASSWORD=password
 MYSQL_DATABASE={{ key "mixpost/db/name" }}
 MYSQL_USER={{ key "mixpost/db/user" }}
 MYSQL_PASSWORD={{ key "mixpost/db/password" }}
+MYSQL_RANDOM_ROOT_PASSWORD=yes
 EOH
 
         destination = "local/file.env"
