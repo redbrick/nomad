@@ -66,6 +66,23 @@ DB_PORT={{ env "NOMAD_HOST_PORT_db" }}
 DB_DATABASE={{ key "mixpost/db/name" }}
 DB_USERNAME={{ key "mixpost/db/user" }}
 DB_PASSWORD={{ key "mixpost/db/password" }}
+
+REDIS_HOST={{ env "NOMAD_IP_redis" }}
+REDIS_PORT={{ env "NOMAD_HOST_PORT_redis" }}
+
+# MAIL_HOST=
+# MAIL_PORT=
+# MAIL_USERNAME=
+# MAIL_PASSWORD=
+# MAIL_ENCRYPTION=tls
+# MAIL_FROM_ADDRESS=no-reply@redbrick.dcu.ie
+# MAIL_FROM_NAME=${APP_NAME}
+# SSL_EMAIL
+
+# POSSIBLE INTEGRATION WITH MINIO MORE RESEARCH NECESSARY
+# MIXPOST_DISK=s3
+
+
 EOH
         destination = "local/.env"
         env         = true
