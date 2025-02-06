@@ -38,7 +38,7 @@ job "style-thelook" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.thelook.rule=Host(`${NOMAD_META_domain}`)",
+        "traefik.http.routers.thelook.rule=Host(`${NOMAD_META_domain}`) || Host(`style.redbrick.dcu.ie`)",
         "traefik.http.routers.thelook.entrypoints=web,websecure",
         "traefik.http.routers.thelook.tls.certresolver=lets-encrypt",
       ]
