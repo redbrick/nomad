@@ -28,7 +28,7 @@ job "privatebin" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.privatebin.rule=Host(`paste.redbrick.dcu.ie`)",
+        "traefik.http.routers.privatebin.rule=Host(`paste.redbrick.dcu.ie`) || Host(`paste.rb.dcu.ie`)",
         "traefik.http.routers.privatebin.entrypoints=web,websecure",
         "traefik.http.routers.privatebin.tls.certresolver=lets-encrypt",
       ]
@@ -183,7 +183,7 @@ batchsize = 10
 [model]
 class = Database
 [model_options]
-dsn = "pgsql:host=postgres.service.consul;dbname={{ key "privatebin/db/name" }}"
+dsn = "pgsql:host={{ env "NOMAD_ADDR_db" }};dbname={{ key "privatebin/db/name" }}"
 tbl = "{{ key "privatebin/db/name" }}"     ; table prefix
 usr = "{{ key "privatebin/db/user" }}"
 pwd = "{{ key "privatebin/db/password" }}"
