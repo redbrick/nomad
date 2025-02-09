@@ -1,4 +1,4 @@
-job "postgres-backup" {
+job "privatebin-backup" {
   datacenters = ["aperture"]
   type        = "batch"
 
@@ -20,17 +20,17 @@ job "postgres-backup" {
         data        = <<EOH
 #!/bin/bash
 
-file=/storage/backups/nomad/postgres/postgres-$(date +%Y-%m-%d_%H-%M-%S).sql
+file=/storage/backups/nomad/privatebin/postgresql-privatebin-$(date +%Y-%m-%d_%H-%M-%S).sql
 
-mkdir -p /storage/backups/nomad/postgres
+mkdir -p /storage/backups/nomad/privatebin
 
-alloc_id=$(nomad job status postgres | grep running | tail -n 1 | cut -d " " -f 1)
+alloc_id=$(nomad job status privatebin | grep running | tail -n 1 | cut -d " " -f 1)
 
 job_name=$(echo ${NOMAD_JOB_NAME} | cut -d "/" -f 1)
 
-nomad alloc exec $alloc_id pg_dumpall -U {{ key "postgres/username/root" }} > "${file}"
+nomad alloc exec -task db $alloc_id pg_dumpall -U {{ key "privatebin/db/user" }} > "${file}"
 
-find /storage/backups/nomad/postgres/postgres* -ctime +3 -exec rm {} \; || true
+find /storage/backups/nomad/privatebin/postgresql-privatebin* -ctime +3 -exec rm {} \; || true
 
 if [ -s "$file" ]; then # check if file exists and is not empty
   echo "Backup successful"

@@ -10,6 +10,9 @@ job "privatebin" {
       port "http" {
         to = 8080
       }
+      port "db" {
+        to = 5432
+      }
     }
 
     service {
@@ -25,7 +28,7 @@ job "privatebin" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.privatebin.rule=Host(`paste.rb.dcu.ie`) || Host(`paste.redbrick.dcu.ie`)",
+        "traefik.http.routers.privatebin.rule=Host(`paste.redbrick.dcu.ie`) || Host(`paste.rb.dcu.ie`)",
         "traefik.http.routers.privatebin.entrypoints=web,websecure",
         "traefik.http.routers.privatebin.tls.certresolver=lets-encrypt",
       ]
@@ -42,15 +45,10 @@ job "privatebin" {
           "local/conf.php:/srv/data/conf.php",
         ]
       }
-      template {
-        destination = "local/.env"
-        env         = true
-        change_mode = "restart"
-        data        = <<EOH
-TZ=Europe/Dublin
-PHP_TZ=Europe/Dublin
-CONFIG_PATH=/srv/data/
-EOH
+      env {
+        TZ          = "Europe/Dublin"
+        PHP_TZ      = "Europe/Dublin"
+        CONFIG_PATH = "/srv/data/"
       }
 
       template {
@@ -59,7 +57,7 @@ EOH
 [main]
 name = "Redbrick PasteBin"
 
-basepath = "https://paste.rb.dcu.ie/"
+basepath = "https://paste.redbrick.dcu.ie/"
 
 discussion = true
 
@@ -185,12 +183,35 @@ batchsize = 10
 [model]
 class = Database
 [model_options]
-dsn = "pgsql:host=postgres.service.consul;dbname={{ key "privatebin/db/name" }}"
-tbl = "privatebin_"     ; table prefix
+dsn = "pgsql:host={{ env "NOMAD_ADDR_db" }};dbname={{ key "privatebin/db/name" }}"
+tbl = "{{ key "privatebin/db/name" }}"     ; table prefix
 usr = "{{ key "privatebin/db/user" }}"
 pwd = "{{ key "privatebin/db/password" }}"
 opt[12] = true    ; PDO::ATTR_PERSISTENT ; use persistent connections - default
 EOH
+      }
+    }
+
+    task "db" {
+      driver = "docker"
+
+      config {
+        image = "postgres:17-alpine"
+        ports = ["db"]
+
+        volumes = [
+          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/var/lib/postgresql/data",
+        ]
+      }
+
+      template {
+        data        = <<EOH
+POSTGRES_PASSWORD={{ key "privatebin/db/password" }}
+POSTGRES_USER={{ key "privatebin/db/user" }}
+POSTGRES_NAME={{ key "privatebin/db/name" }}
+EOH
+        destination = "local/db.env"
+        env         = true
       }
     }
   }

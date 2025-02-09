@@ -7,12 +7,15 @@ job "plausible" {
       port "http" {
         to = 8000
       }
-      port "db" {
+      port "clickhouse" {
         static = 8123
+      }
+      port "db" {
+        static = 5432
       }
     }
 
-    task "plausible" {
+    task "app" {
       service {
         name = "plausible"
         port = "http"
@@ -35,8 +38,11 @@ job "plausible" {
       driver = "docker"
 
       config {
-        image = "ghcr.io/plausible/community-edition:v2.1.1"
+        image = "ghcr.io/plausible/community-edition:v2.1"
         ports = ["http"]
+        volumes = [
+          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/var/lib/plausible"
+        ]
 
         command = "/bin/sh"
         args    = ["-c", "sleep 10 && /entrypoint.sh db migrate && /entrypoint.sh run"]
@@ -44,6 +50,8 @@ job "plausible" {
 
       template {
         data        = <<EOH
+TMPDIR=/var/lib/plausible/tmp
+
 BASE_URL=https://plausible.redbrick.dcu.ie
 SECRET_KEY_BASE={{ key "plausible/secret" }}
 TOTP_VAULT_KEY={{ key "plausible/totp/key" }}
@@ -57,8 +65,8 @@ GOOGLE_CLIENT_ID={{ key "plausible/google/client_id" }}
 GOOGLE_CLIENT_SECRET={{ key "plausible/google/client_secret" }}
 
 # Database settings
-DATABASE_URL=postgres://{{ key "plausible/db/user" }}:{{ key "plausible/db/password" }}@postgres.service.consul:5432/{{ key "plausible/db/name" }}
-CLICKHOUSE_DATABASE_URL=http://{{ env "NOMAD_ADDR_db" }}/plausible_events_db
+DATABASE_URL=postgres://{{ key "plausible/db/user" }}:{{ key "plausible/db/password" }}@{{ env "NOMAD_ADDR_db" }}/{{ key "plausible/db/name" }}
+CLICKHOUSE_DATABASE_URL=http://{{ env "NOMAD_ADDR_clickhouse" }}/plausible_events_db
 
 # Email settings
 MAILER_NAME="Redbrick Plausible"
@@ -80,24 +88,43 @@ EOH
       }
     }
 
-    task "clickhouse" {
-      constraint {
-        attribute = "${attr.unique.hostname}"
-        value     = "chell"
+    task "db" {
+      driver = "docker"
+
+      config {
+        image = "postgres:17-alpine"
+        ports = ["db"]
+
+        volumes = [
+          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/var/lib/postgresql/data",
+        ]
       }
+
+      template {
+        data        = <<EOH
+POSTGRES_PASSWORD={{ key "plausible/db/password" }}
+POSTGRES_USER={{ key "plausible/db/user" }}
+POSTGRES_NAME={{ key "plausible/db/name" }}
+EOH
+        destination = "local/db.env"
+        env         = true
+      }
+    }
+
+    task "clickhouse" {
 
       service {
         name = "plausible-clickhouse"
-        port = "db"
+        port = "clickhouse"
       }
 
       driver = "docker"
 
       config {
         image = "clickhouse/clickhouse-server:24.3.3.102-alpine"
-        ports = ["db"]
+        ports = ["clickhouse"]
         volumes = [
-          "/opt/plausible/clickhouse:/var/lib/clickhouse",
+          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/var/lib/clickhouse",
           "local/clickhouse.xml:/etc/clickhouse-server/config.d/logging.xml:ro",
           "local/clickhouse-user-config.xml:/etc/clickhouse-server/users.d/logging.xml:ro"
         ]
@@ -140,7 +167,7 @@ EOH
       }
 
       resources {
-        memory = 800
+        memory = 1000
       }
     }
   }
