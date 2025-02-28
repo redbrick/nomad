@@ -14,6 +14,11 @@ job "prometheus" {
     task "prometheus" {
       driver = "docker"
 
+      service {
+        name = "prometheus"
+        port = "http"
+      }
+
       config {
         image = "prom/prometheus:latest"
         ports = ["http"]
@@ -56,8 +61,6 @@ scrape_configs:
   metrics_path: /v1/metrics
   params:
     format: ['prometheus']
-
-
 EOF
       }
 
