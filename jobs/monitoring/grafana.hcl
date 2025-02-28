@@ -48,10 +48,10 @@ job "grafana" {
         ports = ["http"]
 
         volumes = [
-          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/var/lib/grafana"
+          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/var/lib/grafana",
+          "local/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml"
         ]
       }
-
 
       template {
         data        = <<EOH
@@ -65,6 +65,21 @@ GF_LOG_LEVEL=debug
 EOH
         destination = "local/.env"
         env         = true
+      }
+      template {
+        data        = <<EOH
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    {{- range service "prometheus" }}
+    url: http://prometheus.service.consul:{{ .Port }}{{ end }}
+    isDefault: true
+    editable: false
+EOH
+        destination = "local/datasources.yml"
       }
     }
     task "db" {
