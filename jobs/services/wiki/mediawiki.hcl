@@ -1,6 +1,6 @@
 job "mediawiki" {
   datacenters = ["aperture"]
-  type = "service"
+  type        = "service"
 
   meta {
     domain = "wiki.redbrick.dcu.ie"
@@ -27,10 +27,10 @@ job "mediawiki" {
       port = "http"
 
       check {
-        type = "http"
-        path = "/Main_Page"
+        type     = "http"
+        path     = "/Main_Page"
         interval = "10s"
-        timeout = "5s"
+        timeout  = "5s"
       }
 
       tags = [
@@ -61,11 +61,11 @@ job "mediawiki" {
         ]
       }
       resources {
-          cpu    = 200
-          memory = 100
-        }
+        cpu    = 200
+        memory = 100
+      }
       template {
-        data = <<EOH
+        data        = <<EOH
 # user www-data www-data;
 error_log /dev/stderr error;
 events {
@@ -139,9 +139,9 @@ EOH
       }
 
       resources {
-          cpu    = 4000
-          memory = 1200
-        }
+        cpu    = 4000
+        memory = 1200
+      }
 
       template {
         data = <<EOH
@@ -179,7 +179,7 @@ EOH
       }
 
       template {
-        data = file("LocalSettings.php")
+        data        = file("LocalSettings.php")
         destination = "local/LocalSettings.php"
       }
     }
@@ -189,10 +189,10 @@ EOH
       port = "db"
 
       check {
-        name = "mariadb_probe"
-        type = "tcp"
+        name     = "mariadb_probe"
+        type     = "tcp"
         interval = "10s"
-        timeout = "2s"
+        timeout  = "2s"
       }
     }
 
@@ -237,9 +237,9 @@ EOH
       }
 
       resources {
-          cpu    = 800
-          memory = 1200
-        }
+        cpu    = 800
+        memory = 2500
+      }
 
       template {
         data = <<EOH
@@ -250,7 +250,7 @@ MYSQL_RANDOM_ROOT_PASSWORD=yes
 EOH
 
         destination = "local/.env"
-        env = true
+        env         = true
       }
     }
   }
