@@ -38,7 +38,7 @@ alloc_id=$(nomad job status -verbose bastion-vm | grep running | tail -n 1 | cut
 job_name=$(echo ${NOMAD_JOB_NAME} | cut -d "/" -f 1)
 
 echo "Backing up alloc id: ${alloc_id} on: ${host} to ${path}/${file}..."
-scp -B -i {{ key "bastion-vm/service/key" }} {{ key "bastion-vm/service/user" }}@${host}:/opt/nomad/alloc/${alloc_id}/bastion-vm/local/bastion-vm.qcow2 ${path}/${file}
+ssh -i {{ key "bastion-vm/service/key" }} {{ key "bastion-vm/service/user" }}@${host} "sudo cat /opt/nomad/alloc/${alloc_id}/bastion-vm/local/bastion-vm.qcow2" > ${path}/${file}
 
 find ${path}/bastion-vm-* -ctime +2 -exec rm {} \; || true
 
