@@ -42,7 +42,7 @@ job "hedgedoc" {
       driver = "docker"
 
       config {
-        image = "quay.io/hedgedoc/hedgedoc:1.10.0"
+        image = "quay.io/hedgedoc/hedgedoc:1.10.2"
         ports = ["http"]
         volumes = [
           "/storage/nomad/hedgedoc/banner:/hedgedoc/public/banner",
