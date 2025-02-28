@@ -213,6 +213,18 @@ EOH
       template {
         data = <<EOH
 [mysqld]
+# Ensure full UTF-8 support
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+skip-character-set-client-handshake
+
+# Fix 1000-byte key length issue
+innodb_large_prefix = 1
+innodb_file_format = Barracuda
+innodb_file_per_table = 1
+innodb_default_row_format = dynamic
+
+# Performance optimizations (Keep these based on your system)
 max_connections = 100
 key_buffer_size = 2G
 query_cache_size = 0
@@ -224,13 +236,14 @@ innodb_io_capacity = 200
 tmp_table_size = 5242K
 max_heap_table_size = 5242K
 innodb_log_buffer_size = 16M
-innodb_file_per_table = 1
 
-bind-address = 0.0.0.0
 # Logging
 slow_query_log = 1
 slow_query_log_file = /var/log/mysql/slow.log
 long_query_time = 1
+
+# Network
+bind-address = 0.0.0.0
 EOH
 
         destination = "local/conf.cnf"
