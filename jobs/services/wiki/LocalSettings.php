@@ -41,7 +41,7 @@ $wgDBpassword = "{{ key "mediawiki/db/password" }}";
 # MySQL specific settings
 $wgDBprefix = "rbwiki_";
 # MySQL table options to use during installation or update
-$wgDBTableOptions = "ENGINE=InnoDB, DEFAULT CHARSET=binary";
+$wgDBTableOptions = "ENGINE=InnoDB, DEFAULT CHARSET=utf8mb4";
 
 ## Shared memory settings
 $wgMainCacheType = CACHE_NONE;
@@ -89,10 +89,14 @@ wfLoadSkin( 'Vector' );
 wfLoadSkin( 'Citizen' );
 wfLoadSkin( 'Timeless' );
 wfLoadSkin( 'MinervaNeue' );
+wfLoadSkin( 'Medik' );
 
 $wgCitizenThemeColor = "#a81e22";
 $wgCitizenShowPageTools = "permission";
 $wgCitizenSearchDescriptionSource = "pagedescription";
+
+$wgMedikColor = "#a81e22";
+$wgMedikShowLogo = "main";
 
 $wgLocalisationUpdateDirectory = "$IP/cache";
 

@@ -17,7 +17,7 @@ job "mediawiki-backup" {
       }
 
       template {
-        data = <<EOH
+        data        = <<EOH
 #!/bin/bash
 
 file=/storage/backups/nomad/wiki/mysql/rbwiki-mysql-$(date +%Y-%m-%d_%H-%M-%S).sql
@@ -30,7 +30,7 @@ job_name=$(echo ${NOMAD_JOB_NAME} | cut -d "/" -f 1)
 
 nomad alloc exec -task rbwiki-db $alloc_id mariadb-dump -u {{ key "mediawiki/db/username" }} -p'{{ key "mediawiki/db/password"}}' {{ key "mediawiki/db/name" }} > "${file}"
 
-find /storage/backups/nomad/wiki/mysql/rbwiki-mysql* -ctime +3 -exec rm {} \; || true
+find /storage/backups/nomad/wiki/mysql/rbwiki-mysql* -ctime +30 -exec rm {} \; || true
 
 if [ -s "$file" ]; then # check if file exists and is not empty
   echo "Backup successful"
@@ -56,7 +56,7 @@ EOH
       }
 
       template {
-        data = <<EOH
+        data        = <<EOH
 #!/bin/bash
 
 file=/storage/backups/nomad/wiki/xml/rbwiki-dump-$(date +%Y-%m-%d_%H-%M-%S).xml
