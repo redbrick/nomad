@@ -95,6 +95,9 @@ $wgCitizenThemeColor = "#a81e22";
 $wgCitizenShowPageTools = "permission";
 $wgCitizenSearchDescriptionSource = "pagedescription";
 
+$wgMedikColor = "#a81e22";
+$wgMedikShowLogo = "main";
+
 $wgLocalisationUpdateDirectory = "$IP/cache";
 
 # load extensions
