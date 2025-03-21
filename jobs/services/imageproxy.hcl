@@ -43,7 +43,7 @@ job "imageproxy" {
         data        = <<EOH
 IMAGEPROXY_BASEURL=https://img.redbrick.dcu.ie
 IMAGEPROXY_CACHE=redis://{{ env "NOMAD_ADDR_redis" }}
-IMAGEPROXY_REFERRERS=redbrick.dcu.ie,rb.dcu.ie,*.redbrick.dcu.ie,*.rb.dcu.ie
+IMAGEPROXY_REFERRERS=redbrick.dcu.ie,rb.dcu.ie,*.redbrick.dcu.ie,*.rb.dcu.ie,localhost
 # IMAGEPROXY_ALLOWHOSTS
 EOH
         destination = "local/.env"
@@ -51,7 +51,7 @@ EOH
       }
       resources {
         cpu    = 500
-        memory = 1000
+        memory = 5000
       }
     }
     task "redis" {
