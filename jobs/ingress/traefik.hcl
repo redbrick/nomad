@@ -51,7 +51,7 @@ job "traefik" {
 
     service {
       name     = "traefik-http"
-      provider = "nomad"
+      provider = "consul"
       port     = "https"
     }
 
@@ -66,6 +66,10 @@ job "traefik" {
           "/storage/nomad/traefik/acme/acme.json:/acme.json",
           "/storage/nomad/traefik/access.log:/access.log",
         ]
+      }
+      resources {
+        cpu    = 500
+        memory = 1024
       }
 
       template {
@@ -157,7 +161,11 @@ job "traefik" {
   storage = "acme.json"
   [certificatesResolvers.lets-encrypt.acme.tlsChallenge]
 
-[tracing]
+[metrics]
+  [metrics.prometheus]
+    addServicesLabels = true
+    addRoutersLabels = true
+    addEntryPointsLabels = true
 
 [accessLog]
   filePath = "/access.log"
@@ -195,7 +203,7 @@ EOF
 [http.services]
   [http.services.dummy-service.loadBalancer]
     [[http.services.dummy-service.loadBalancer.servers]]
-      url = "http://127.0.0.1"  # Dummy service - not used
+      url = "http://0.0.0.0"  # Dummy service - not used
 EOF
         destination = "local/dynamic.toml"
         change_mode = "noop"
