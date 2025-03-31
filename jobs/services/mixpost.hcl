@@ -31,15 +31,7 @@ job "mixpost" {
         "traefik.http.routers.mixpost.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.mixpost.entrypoints=web,websecure",
         "traefik.http.routers.mixpost.tls.certresolver=lets-encrypt",
-        "traefik.http.routers.mixpost.tls.certresolver=mytlschallenge",
         "traefik.http.middlewares.mixpost.headers.SSLRedirect=true",
-        "traefik.http.middlewares.mixpost.headers.STSSeconds=315360000",
-        "traefik.http.middlewares.mixpost.headers.browserXSSFilter=true",
-        "traefik.http.middlewares.mixpost.headers.contentTypeNosniff=true",
-        "traefik.http.middlewares.mixpost.headers.forceSTSHeader=true",
-        "traefik.http.middlewares.mixpost.headers.SSLHost=`${APP_DOMAIN}`",
-        "traefik.http.middlewares.mixpost.headers.STSIncludeSubdomains=true",
-        "traefik.http.middlewares.mixpost.headers.STSPreload=true"
       ]
     }
 
@@ -48,18 +40,29 @@ job "mixpost" {
       driver = "docker"
 
       config {
-        image = "inovector/mixpost:latest"
-      ports = ["http"]
+        image = "inovector/mixpost-pro-team:latest"
+        ports = ["http"]
+
+        volumes = [
+          "/storage/nomad/${NOMAD_TASK_NAME}/app:/var/www/html/storage/app"
+        ]
+      }
+
+      resources {
+        cpu    = 1000
+        memory = 1024
       }
 
       template {
         data        = <<EOH
+LICENSE_KEY={{ key "mixpost/license/key" }}
+
 APP_NAME=MIXPOST
 
-APP_KEY={{ key "mixpost/APP_KEY" }}
+APP_KEY={{ key "mixpost/app/key" }}
 APP_DEBUG=true
-APP_DOMAIN=${NOMAD_META_domain}
-APP_URL=https://${APP_DOMAIN}
+APP_DOMAIN={{ env "NOMAD_META_domain" }}
+APP_URL=https://{{ env "NOMAD_META_domain" }}
 
 DB_HOST={{ env "NOMAD_IP_db" }}
 DB_PORT={{ env "NOMAD_HOST_PORT_db" }}
@@ -81,8 +84,6 @@ REDIS_PORT={{ env "NOMAD_HOST_PORT_redis" }}
 
 # POSSIBLE INTEGRATION WITH MINIO MORE RESEARCH NECESSARY
 # MIXPOST_DISK=s3
-
-
 EOH
         destination = "local/.env"
         env         = true
@@ -123,7 +124,7 @@ EOH
         ports = ["db"]
 
         volumes = [
-          "/storage/nomad/mixpost/mysql:/var/lib/mysql",
+          "/storage/nomad/${NOMAD_TASK_NAME}/mysql:/var/lib/mysql",
           "local/server.cnf:/etc/mysql/mariadb.conf.d/50-server.cnf",
         ]
       }
