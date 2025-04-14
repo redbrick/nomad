@@ -29,7 +29,7 @@ job "plausible" {
 
         tags = [
           "traefik.enable=true",
-          "traefik.http.routers.plausible.rule=Host(`plausible.redbrick.dcu.ie`)",
+          "traefik.http.routers.plausible.rule=Host(`plausible.redbrick.dcu.ie`) || Host(`pa.redbrick.dcu.ie`)",
           "traefik.http.routers.plausible.entrypoints=web,websecure",
           "traefik.http.routers.plausible.tls.certresolver=lets-encrypt"
         ]
