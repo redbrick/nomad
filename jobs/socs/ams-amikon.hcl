@@ -27,7 +27,7 @@ job "ams-amikon" {
       }
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.ams-amikon.rule=Host(`amikon.me`) || Host(`www.amikon.me`)",
+        "traefik.http.routers.ams-amikon.rule=Host(`amikon.me`) || Host(`www.amikon.me`) || Host(`amikon.rb.dcu.ie`)",
         "traefik.http.routers.ams-amikon.entrypoints=web,websecure",
         "traefik.http.routers.ams-amikon.tls.certresolver=lets-encrypt",
         "traefik.http.routers.ams-amikon.middlewares=amikon-www-redirect",
