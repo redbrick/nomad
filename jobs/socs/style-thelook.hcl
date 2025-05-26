@@ -175,6 +175,8 @@ EOH
 pm.max_children = 10
 upload_max_filesize = 64M
 post_max_size = 64M
+expose_php = off
+open_basedir = /var/www/html:/tmp
 EOH
         destination = "local/custom.ini"
       }
