@@ -39,6 +39,10 @@ job "uptime-kuma" {
           "/storage/nomad/uptime-kuma/data:/app/data"
         ]
       }
+      resources {
+        cpu    = 512
+        memory = 800
+      }
     }
   }
 }
