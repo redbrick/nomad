@@ -63,6 +63,10 @@ MINIO_ROOT_USER={{ key "minio/root/username" }}
 MINIO_ROOT_PASSWORD={{ key "minio/root/password" }}
 EOH
       }
+      resources {
+        cpu    = 1000
+        memory = 800
+      }
     }
   }
 }
