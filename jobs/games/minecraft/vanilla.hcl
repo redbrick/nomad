@@ -57,8 +57,8 @@ job "minecraft-vanilla" {
         data        = <<EOF
 EULA            = "TRUE"
 TYPE            = "PAPER"
-VERSION         = "1.21.7"
-ICON            = "https://docs.redbrick.dcu.ie/assets/logo.png"
+VERSION         = "1.21.8"
+ICON            = "https://docs.redbrick.dcu.ie/res/logo.png"
 USE_AIKAR_FLAGS = true
 MAX_MEMORY      = 18G
 MOTD            = "LONG LIVE THE REDBRICK"
@@ -67,7 +67,7 @@ VIEW_DISTANCE   = "32"
 ENABLE_RCON     = true
 RCON_PASSWORD   = {{ key "games/mc/vanilla-mc/rcon/password" }}
 # Auto-download plugins
-SPIGET_RESOURCES=83581,62325,118271,28140,102931 # RHLeafDecay, GSit, GravesX, Luckperms, NoChatReport
+SPIGET_RESOURCES=83581,62325,118271,28140,102931,81534 # RHLeafDecay, GSit, GravesX, Luckperms, NoChatReport, chunky
 MODRINTH_PROJECTS=datapack:no-enderman-grief,imageframe,bluemap,datapack:players-drop-heads,viaversion,viabackwards #,bmarker,thizzyz-tree-feller
 EOF
         destination = "local/.env"
