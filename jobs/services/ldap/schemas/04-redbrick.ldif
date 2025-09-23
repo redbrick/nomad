@@ -1,0 +1,21 @@
+dn: cn=redbrickSchema,cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: redbrickSchema
+olcAttributeTypes: ( 1.3.6.1.4.1.62920.1.1 NAME 'altmail' DESC 'Alternative Email (External/DCU Email)' EQUALITY caseIgnoreMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.62920.1.2 NAME 'studentNo' DESC 'Student Number' EQUALITY caseIgnoreMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.62920.1.3 NAME 'courseCode' DESC 'Course Code (excluding year)' EQUALITY caseIgnoreMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.62920.1.4 NAME 'year' DESC 'Course Year' EQUALITY integerMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.62920.1.5 NAME 'storageQuota' DESC 'Storage quota in MB' EQUALITY integerMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.62920.1.6 NAME 'expiryDate' DESC 'Account Expiry Date' EQUALITY generalizedTimeMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.24 SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.62920.1.7 NAME 'discord' DESC 'Discord ID' EQUALITY caseIgnoreMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{40} SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.62920.1.8 NAME 'github' DESC 'GitHub ID' EQUALITY caseIgnoreMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{40} SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.62920.1.9 NAME 'minecraft' DESC 'Minecraft UUID' EQUALITY caseIgnoreMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{40} )
+olcAttributeTypes: ( 1.3.6.1.4.1.62920.1.10 NAME 'sshPublicKey' DESC 'Users ssh Public Key' EQUALITY caseIgnoreMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+olcAttributeTypes: ( 1.3.6.1.4.1.62920.1.11 NAME 'DateOfBirth' DESC 'Date of birth of a user' EQUALITY caseIgnoreMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{16} )
+olcAttributeTypes: ( 1.3.6.1.4.1.62920.1.12 NAME 'adminNotes' DESC 'Notes written by admins' EQUALITY caseIgnoreMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE)
+olcObjectClasses: ( 1.3.6.1.4.1.62920.2.1 NAME 'brickie' DESC 'Redbrick member object class' SUP top STRUCTURAL MUST ( uid $ cn $ mail $ altmail $ studentNo $ courseCode $ userPassword $ homeDirectory $ uidNumber $ gidNumber $ storageQuota $ loginShell ) MAY ( expiryDate $ gecos $ discord $ github $ minecraft $ DateOfBirth $ year $ sshPublicKey $ adminNotes ) )
+olcObjectClasses: ( 1.3.6.1.4.1.62920.2.2 NAME 'guest' DESC 'Redbrick guest object class' SUP top STRUCTURAL MUST ( uid $ cn $ mail $ altmail ) MAY ( expiryDate $ userPassword $ sshPublicKey $ discord $ github $ minecraft ) )
+olcObjectClasses: ( 1.3.6.1.4.1.62920.2.3 NAME 'redbrickPosix' DESC 'Redbrick Server Access object class' SUP top AUXILIARY MUST ( homeDirectory $ uidNumber $ gidNumber $ storageQuota $ loginShell $ userPassword ) MAY ( gecos $ sshPublicKey ) )
+olcObjectClasses: ( 1.3.6.1.4.1.62920.2.4 NAME 'orgAccount' DESC 'Redbrick Organisation Account clubs/soc object class' SUP top STRUCTURAL MUST ( uid $ cn $ altmail ) MAY ( expiryDate $ userPassword $ sshPublicKey ) )
+olcObjectClasses: ( 1.3.6.1.4.1.62920.2.5 NAME 'reserved' DESC 'Reserved entries to prevent registration' SUP top STRUCTURAL MUST ( uid $ cn ) MAY ( description ) )
+olcObjectClasses: ( 1.3.6.1.4.1.62920.2.6 NAME 'service' DESC 'Reserved entries to prevent registration' SUP top STRUCTURAL MUST ( uid $ cn $ userPassword ) MAY ( description $ mail ) )
