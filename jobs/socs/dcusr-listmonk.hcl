@@ -62,8 +62,6 @@ job "dcusr-listmonk" {
         data        = <<EOH
 [app]
 address = "0.0.0.0:{{ env "NOMAD_PORT_http" }}"
-admin_username = "{{ key "dcusr/listmonk/admin/username" }}"
-admin_password = "{{ key "dcusr/listmonk/admin/password" }}"
 
 # Database.
 [db]
