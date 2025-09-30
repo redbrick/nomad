@@ -51,10 +51,10 @@ EOH
       template {
         destination = "local/.env"
         env         = true
-        data        = <<EOF
+        data        = <<EOH
 MONGO_INITDB_ROOT_USERNAME="{{ key "socs/esports/bot/mongodb/username" }}"
 MONGO_INITDB_ROOT_PASSWORD="{{ key "socs/esports/bot/mongodb/password" }}"
-EOF
+EOH
       }
 
       resources {
