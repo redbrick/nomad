@@ -44,8 +44,11 @@ EOH
 
       config {
         image = "mongo:latest"
-
         ports = ["db"]
+
+        volumes = [
+          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}/data:/data/db"
+        ]
       }
 
       template {
