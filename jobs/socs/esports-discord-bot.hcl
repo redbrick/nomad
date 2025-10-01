@@ -5,6 +5,12 @@ job "esports-discord-bot" {
   group "esports-bot" {
     count = 1
 
+    network {
+      port "db" {
+        to = 27017
+      }
+    }
+
     task "esports-bot" {
       driver = "docker"
 
@@ -19,28 +25,44 @@ job "esports-discord-bot" {
       }
 
       template {
-        data = <<EOH
+        destination = "local/.env"
+        env         = true
+        data        = <<EOH
 BOT_TOKEN={{ key "socs/esports/bot/discord/token" }}
+
 EMAIL_NAME={{ key "socs/esports/bot/email/name" }}
 EMAIL_PASS={{ key "socs/esports/bot/email/pass" }}
 EMAIL_USER={{key "socs/esports/bot/email/user" }}
-MONGODB_URI={{key "socs/esports/bot/mongodb/uri"}}
-RAPIDAPI_KEY={{ key "socs/esports/bot/rapidapi/key" }}
-TRACKER_API_KEY={{ key "socs/esports/bot/trackerapi/key" }}
-TRACKER_API_URL={{ key "socs/esports/bot/trackerapi/url" }}
-WORDNIK_API_KEY={{key "socs/esports/bot/wordnikapi/key" }}
-HUGGING_FACE_API_KEY={{ key "socs/esports/bot/huggingface/key" }}
 
-RCON_HOST=esports-mc-rcon.service.consul
-
-# https://discuss.hashicorp.com/t/passing-registered-ip-and-port-from-consul-to-env-nomad-job-section/35647
-{{ range service "esports-mc-rcon" }}
-RCON_PORT={{ .Port }}{{ end }}
-
-RCON_PASSWORD={{ key "games/mc/esports-mc/rcon/password" }}
+MONGODB_URI=mongodb://{{ key "socs/esports/bot/mongodb/username" }}:{{ key "socs/esports/bot/mongodb/password" }}@{{ env "NOMAD_ADDR_db" }}/?retryWrites=true&w=majority&appName={{ key "socs/esports/bot/mongodb/name" }}
 EOH
+      }
+    }
+
+    task "mongodb" {
+      driver = "docker"
+
+      config {
+        image = "mongo:latest"
+        ports = ["db"]
+
+        volumes = [
+          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}/data:/data/db"
+        ]
+      }
+
+      template {
         destination = "local/.env"
-        env = true
+        env         = true
+        data        = <<EOH
+MONGO_INITDB_ROOT_USERNAME="{{ key "socs/esports/bot/mongodb/username" }}"
+MONGO_INITDB_ROOT_PASSWORD="{{ key "socs/esports/bot/mongodb/password" }}"
+EOH
+      }
+
+      resources {
+        cpu = 300
+        memory = 512
       }
     }
   }
