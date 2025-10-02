@@ -150,7 +150,7 @@ EOH
     "connection": {
       "server": "{{ range service "openldap-ldap" }}{{ .Address }}{{ end }}",
       "port": "{{ range service "openldap-ldap" }}{{ .Port }}{{ end }}",
-      "user": "{{ key "mediawiki/ldap/user" }}"
+      "user": "{{ key "mediawiki/ldap/user" }}",
       "pass": "{{ key "mediawiki/ldap/password" }}",
       "enctype": "clear",
       "basedn": "o=redbrick,dc=redbrick,dc=dcu,dc=ie",
