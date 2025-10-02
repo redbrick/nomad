@@ -201,7 +201,7 @@ EOH
       driver = "docker"
 
       config {
-        image = "mariadb:11.4.2"
+        image = "mariadb:11.4"
         ports = ["db"]
 
         volumes = [
