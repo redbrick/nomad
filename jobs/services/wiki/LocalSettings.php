@@ -135,7 +135,7 @@ $LDAPProviderDomainConfigs = "/etc/mediawiki/ldapprovider.json";
 $wgPluggableAuth_Config['Redbrick Log In'] = [
     'plugin' => 'LDAPAuthentication2',
     'data' => [
-        'domain' => 'LDAP'
+        'domain' => 'Redbrick'
     ],
 ];
 
