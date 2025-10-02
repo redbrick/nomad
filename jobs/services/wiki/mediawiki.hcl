@@ -163,7 +163,7 @@ EOH
       "options": {
         "LDAP_OPT_DEREF": 1
       },
-      "grouprequest": "MediaWiki\\Extension\\LDAPProvider\\UserGroupsRequest\\GroupMemberUid::factory"
+      "grouprequest": "MediaWiki\\Extension\\LDAPProvider\\UserGroupsRequest\\UserMemberOf::factory"
     },
     "authorization": {
       "rules": {
