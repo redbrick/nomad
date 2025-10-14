@@ -55,7 +55,7 @@ NEXTAUTH_SECRET={{ key "linkwarden/nextauth/secret" }}
 DATABASE_URL=postgresql://{{ key "linkwarden/db/user" }}:{{ key "linkwarden/db/password" }}@{{ env "NOMAD_ADDR_db" }}/{{ key "linkwarden/db/name" }}
 
 # Additional Optional Settings
-NEXT_PUBLIC_DISABLE_REGISTRATION=false
+NEXT_PUBLIC_DISABLE_REGISTRATION=true
 NEXT_PUBLIC_CREDENTIALS_ENABLED=true
 MAX_WORKERS=4
 
