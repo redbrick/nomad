@@ -1,9 +1,9 @@
 job "roundcube" {
   datacenters = ["aperture"]
-  type = "service"
+  type        = "service"
 
   meta {
-    domain = "webmail.rb.dcu.ie"
+    domain = "webmail.redbrick.dcu.ie"
   }
 
   group "roundcube" {
@@ -66,7 +66,7 @@ ROUNDCUBEMAIL_DEFAULT_HOST=ssl://{{ key "roundcube/imap/host" }}
 ROUNDCUBEMAIL_DEFAULT_PORT={{ key "roundcube/imap/port" }}
 ROUNDCUBEMAIL_SMTP_SERVER=tls://{{ key "roundcube/smtp/host" }}
 ROUNDCUBEMAIL_SMTP_PORT={{ key "roundcube/smtp/port" }}
-ROUNDCUBEMAIL_USERNAME_DOMAIN=rb.dcu.ie
+ROUNDCUBEMAIL_USERNAME_DOMAIN=redbrick.dcu.ie
 ROUNDCUBEMAIL_LOGIN_LC=true
 EOH
       }

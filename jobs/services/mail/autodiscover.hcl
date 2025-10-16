@@ -4,8 +4,8 @@ job "autodiscover" {
   type = "service"
 
   meta {
-    tld  = "rb.dcu.ie"
-    mail = "mail.rb.dcu.ie"
+    tld  = "redbrick.dcu.ie"
+    mail = "mail.redbrick.dcu.ie"
   }
 
   group "autodiscover" {
