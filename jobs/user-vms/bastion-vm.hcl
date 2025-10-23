@@ -14,7 +14,7 @@ job "bastion-vm" {
     task "bastion-vm" {
       resources {
         cpu    = 12000
-        memory = 4096
+        memory = 16384
       }
 
       artifact {

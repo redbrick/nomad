@@ -65,6 +65,8 @@ job "mailman" {
         ]
         volumes = [
           "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/opt/mailman-web-data:rw",
+          "/home/guinness/mailman/archives/:/tmp69/",
+          "/home/guinness/mailman2/lists:/tmp70/:ro"
         ]
       }
 
@@ -105,7 +107,7 @@ EOH
 
       resources {
         cpu    = 500
-        memory = 800
+        memory = 1024
       }
     }
 
@@ -137,6 +139,7 @@ MAILMAN_REST_USER={{ key "mailman/rest/user" }}
 MAILMAN_REST_PASSWORD={{ key "mailman/rest/password" }}
 
 MM_HOSTNAME=0.0.0.0
+MTA=postfix
 
 # DB, it doesnt like it without the urlquery
 DATABASE_URL=postgresql://{{ key "mailman/db/user" | urlquery }}:{{ key "mailman/db/password" | urlquery }}@{{ env "NOMAD_HOST_IP_db" }}:{{ env "NOMAD_HOST_PORT_db" }}/{{ key "mailman/db/name" }}
