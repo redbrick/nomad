@@ -1,0 +1,462 @@
+#-----------------#
+# SYSTEM ACCOUNTS #
+#-----------------#
+
+# Redirections for system and pseudo accounts.
+MAILER-DAEMON@redbrick.dcu.ie	postmaster@redbrick.dcu.ie
+postmaster@redbrick.dcu.ie	root@redbrick.dcu.ie
+bin@redbrick.dcu.ie	root@redbrick.dcu.ie
+daemon@redbrick.dcu.ie	root@redbrick.dcu.ie
+man@redbrick.dcu.ie	root@redbrick.dcu.ie
+news@redbrick.dcu.ie	root@redbrick.dcu.ie
+nobody@redbrick.dcu.ie	/dev/null@redbrick.dcu.ie
+operator@redbrick.dcu.ie	root@redbrick.dcu.ie
+pop@redbrick.dcu.ie	root@redbrick.dcu.ie
+system@redbrick.dcu.ie	root@redbrick.dcu.ie
+toor@redbrick.dcu.ie	root@redbrick.dcu.ie
+usenet@redbrick.dcu.ie	news@redbrick.dcu.ie
+uucp@redbrick.dcu.ie	root@redbrick.dcu.ie
+xten@redbrick.dcu.ie	root@redbrick.dcu.ie
+postfix@redbrick.dcu.ie	root@redbrick.dcu.ie
+abuse@redbrick.dcu.ie	redbrick-admins@redbrick.dcu.ie,chair@redbrick.dcu.ie,sec@redbrick.dcu.ie
+security@redbrick.dcu.ie	root@redbrick.dcu.ie
+ftp@redbrick.dcu.ie	root@redbrick.dcu.ie
+ftp-bugs@redbrick.dcu.ie	ftp@redbrick.dcu.ie
+hostmaster@redbrick.dcu.ie	root@redbrick.dcu.ie
+nagios@redbrick.dcu.ie	root@redbrick.dcu.ie
+_nagios@redbrick.dcu.ie	root@redbrick.dcu.ie
+ossec@redbrick.dcu.ie	root@redbrick.dcu.ie
+
+# Mailman
+mailman@redbrick.dcu.ie	root@redbrick.dcu.ie
+mailman-owner@redbrick.dcu.ie	mailman@redbrick.dcu.ie
+mailman-request@redbrick.dcu.ie	mailman@redbrick.dcu.ie
+mailman-bounces@redbrick.dcu.ie	mailman@redbrick.dcu.ie
+mailman-admin@redbrick.dcu.ie	mailman@redbrick.dcu.ie
+
+# Where root mail goes. VERY IMPORTANT!
+root@redbrick.dcu.ie	redbrick-admins@redbrick.dcu.ie
+
+#----------------#
+# Administrators #
+#----------------#
+
+# Who wants to get system reports, cron job output etc.
+system-reports@redbrick.dcu.ie	redbrick-admins@redbrick.dcu.ie
+audit_warn@redbrick.dcu.ie	system-reports@redbrick.dcu.ie
+
+# Offical way to contact admins for requests.
+admin-request@redbrick.dcu.ie	redbrick-admins, ticket@redbrick.dcu.ie
+elected-admin@redbrick.dcu.ie	elected-admins@redbrick.dcu.ie
+
+# Where mail addressed to generic 'admins' goes.
+admin@redbrick.dcu.ie	admin-request@redbrick.dcu.ie
+admins@redbrick.dcu.ie	admin-request@redbrick.dcu.ie
+
+# DCU admin list.
+#
+# <plop>: Thu May 28 11:07:05 BST 1998
+dcu-admin-list@redbrick.dcu.ie	sysops@dcu.ie, mcgorman@compapp.dcu.ie
+
+# Admin Mailing lists
+rb-admins@redbrick.dcu.ie	redbrick-admins@lists.redbrick.dcu.ie
+redbrick-admins@redbrick.dcu.ie	redbrick-admins@lists.redbrick.dcu.ie
+elected-admins@redbrick.dcu.ie	elected-admins@lists.redbrick.dcu.ie
+admin-discuss@redbrick.dcu.ie	admin-discuss@lists.redbrick.dcu.ie
+trainee-admins@redbrick.dcu.ie	trainee-admins@lists.redbrick.dcu.ie
+
+#-------------#
+# Web related #
+#-------------#
+
+# webmaster is a mailman list
+httpd@redbrick.dcu.ie	webmaster@redbrick.dcu.ie
+www@redbrick.dcu.ie	webmaster@redbrick.dcu.ie
+webmaster@redbrick.dcu.ie	webmaster@lists.redbrick.dcu.ie
+
+#---------------------#
+# Committee & Society #
+#---------------------#
+
+# The Founders (TM)
+founders@redbrick.dcu.ie	drjolt, wibble, sandman, fergus, swipe, hyper
+
+# Committee is a mailing list (handled by mailman)
+committee@redbrick.dcu.ie	committee@lists.redbrick.dcu.ie
+
+# HELP! requests.
+help@redbrick.dcu.ie	helpdesk@redbrick.dcu.ie
+support@redbrick.dcu.ie	helpdesk@redbrick.dcu.ie
+help-request@redbrick.dcu.ie	helpdesk@redbrick.dcu.ie
+helpdesk-request@redbrick.dcu.ie	helpdesk@redbrick.dcu.ie
+helpdesk@redbrick.dcu.ie	helpdesk@lists.redbrick.dcu.ie
+
+# Chairperson alias.
+chairperson@redbrick.dcu.ie	chair@redbrick.dcu.ie
+
+# Treasurer alias.
+treasurer@redbrick.dcu.ie	treasure@redbrick.dcu.ie
+
+# Secretary alias.
+secretary@redbrick.dcu.ie	sec@redbrick.dcu.ie
+
+# Events alias.
+ents@redbrick.dcu.ie	events@redbrick.dcu.ie
+birthday@redbrick.dcu.ie	events@redbrick.dcu.ie
+
+# Accounts alias:
+accounts@redbrick.dcu.ie	elected-admins@redbrick.dcu.ie, treasurer@redbrick.dcu.ie, chair@redbrick.dcu.ie
+
+# Redbrick encyclopedia sybmissions/queries.
+#
+# wishkah gave webgroup encylopedia, on conditions he
+# be included in mails about it - <bubble>
+#
+encyclopedia@redbrick.dcu.ie	wishkah@redbrick.dcu.ie
+
+# c-hey maintainters alias.
+c-hey@redbrick.dcu.ie	pooka@redbrick.dcu.ie, colmmacc@redbrick.dcu.ie, bobb@redbrick.dcu.ie
+
+# DNS.
+dns@redbrick.dcu.ie	committee@redbrick.dcu.ie
+
+# cancel-announce
+# Cthulhu Thu Jan 27 01:00:00 GMT 2000
+cancel-announce@redbrick.dcu.ie	bobb@redbrick.dcu.ie
+
+#---------------#
+# Miscellaneous #
+#---------------#
+
+# Mailing List aliases
+commonroom@redbrick.dcu.ie	\commonroom@lists.redbrick.dcu.ie\
+latvia@redbrick.dcu.ie	\latvia@lists.redbrick.dcu.ie\
+renting@redbrick.dcu.ie	\rental@lists.redbrick.dcu.ie\
+# this one is for pooka's mailing list
+learning-journal@redbrick.dcu.ie	learning-journal@lists.redbrick.dcu.ie
+
+# User aliases
+wimax@redbrick.dcu.ie	johan@redbrick.dcu.ie
+# Alias for STOCS to go with Web Page URL. (Added cthulhu)
+sillicon@redbrick.dcu.ie	stocs@redbrick.dcu.ie
+spamtastic@redbrick.dcu.ie	bubble@redbrick.dcu.ie
+su-webgroup@redbrick.dcu.ie	phil, arioch, p, esoteric
+senseigoclub@redbrick.dcu.ie	pooka, belial, plop+go
+blog@redbrick.dcu.ie	atlas@redbrick.dcu.ie
+skyhawk@redbrick.dcu.ie	declan@redbrick.dcu.ie
+tom.doyle@redbrick.dcu.ie	greenday@redbrick.dcu.ie
+hairforceone@redbrick.dcu.ie	greenday@redbrick.dcu.ie
+david.craig@redbrick.dcu.ie	vexation@redbrick.dcu.ie
+dave.murphy@redbrick.dcu.ie	drjolt@redbrick.dcu.ie
+david.murphy@redbrick.dcu.ie	drjolt@redbrick.dcu.ie
+s.maher@redbrick.dcu.ie	snoopie@redbrick.dcu.ie
+Robert.Carew@redbrick.dcu.ie	rob@redbrick.dcu.ie
+diablo@redbrick.dcu.ie	fergus@redbrick.dcu.ie
+antarbh@redbrick.dcu.ie	supres@redbrick.dcu.ie
+colin.whittaker@redbrick.dcu.ie	grimnar@redbrick.dcu.ie
+meaigs@redbrick.dcu.ie	afrodite@redbrick.dcu.ie
+Margaret.McGaley@redbrick.dcu.ie	afrodite@redbrick.dcu.ie
+Kevin.Cannon@redbrick.dcu.ie	p@redbrick.dcu.ie
+raz@redbrick.dcu.ie	ivor@redbrick.dcu.ie
+fergusos@redbrick.dcu.ie	shocks@redbrick.dcu.ie
+zirconia@redbrick.dcu.ie	zircon@redbrick.dcu.ie
+eoin.mcgrath@redbrick.dcu.ie	bob@redbrick.dcu.ie
+acahill@redbrick.dcu.ie	ace@redbrick.dcu.ie
+Ian.Hollingsworth@redbrick.dcu.ie	lemming@redbrick.dcu.ie
+comet@redbrick.dcu.ie	helmet@redbrick.dcu.ie
+thomas.kelly@redbrick.dcu.ie	kudo@redbrick.dcu.ie
+debug@redbrick.dcu.ie	ubiquity@redbrick.dcu.ie
+webradio@redbrick.dcu.ie	kudo@redbrick.dcu.ie, singer@redbrick.dcu.ie, cain@redbrick.dcu.ie, celery@redbrick.dcu.ie, thayl@redbrick.dcu.ie
+red_giant@redbrick.dcu.ie	redgiant@redbrick.dcu.ie
+dong@redbrick.dcu.ie	tunney@redbrick.dcu.ie
+donal.mulligan@redbrick.dcu.ie	thor@redbrick.dcu.ie
+donal@redbrick.dcu.ie	thor@redbrick.dcu.ie
+Tanya.Reilly@redbrick.dcu.ie	toaster@redbrick.dcu.ie
+mark.dunne@redbrick.dcu.ie	pixies@redbrick.dcu.ie
+cathal.thorne@redbrick.dcu.ie	bodie@redbrick.dcu.ie
+lickylips@redbrick.dcu.ie	lickylip@redbrick.dcu.ie
+youknowwho@redbrick.dcu.ie	lickylip@redbrick.dcu.ie
+john.canavan@redbrick.dcu.ie	tibor@redbrick.dcu.ie
+john@redbrick.dcu.ie	tibor@redbrick.dcu.ie
+john.lyons@redbrick.dcu.ie	homerj@redbrick.dcu.ie
+brian.scanlan@redbrick.dcu.ie	singer@redbrick.dcu.ie
+caroline.sheedy@redbrick.dcu.ie	bootie@redbrick.dcu.ie
+jon.lundberg@redbrick.dcu.ie	spock@redbrick.dcu.ie
+jonathan.lundberg@redbrick.dcu.ie	spock@redbrick.dcu.ie
+damien.martin@redbrick.dcu.ie	otto@redbrick.dcu.ie
+orla.mcgann@redbrick.dcu.ie	orly@redbrick.dcu.ie
+nigel.parkes@redbrick.dcu.ie	elmer@redbrick.dcu.ie
+eileen.gavin@redbrick.dcu.ie	munchkin@redbrick.dcu.ie
+john.looney@redbrick.dcu.ie	valen@redbrick.dcu.ie
+cian.synnott@redbrick.dcu.ie	pooka@redbrick.dcu.ie
+mothlamp@redbrick.dcu.ie	pooka@redbrick.dcu.ie
+kachun.leung@redbrick.dcu.ie	plop@redbrick.dcu.ie
+dermot.hanley@redbrick.dcu.ie	wibble@redbrick.dcu.ie
+mike.mchugh@redbrick.dcu.ie	sandman@redbrick.dcu.ie
+james.raferty@redbrick.dcu.ie	lecter@redbrick.dcu.ie
+james.raftery@redbrick.dcu.ie	lecter@redbrick.dcu.ie
+aoife.mcgoveran@redbrick.dcu.ie	hms@redbrick.dcu.ie
+andrew.lawless@redbrick.dcu.ie	andy@redbrick.dcu.ie
+shane.ohuid@redbrick.dcu.ie	wishkah@redbrick.dcu.ie
+daire.mckenna@redbrick.dcu.ie	fatwa@redbrick.dcu.ie
+john.barker@redbrick.dcu.ie	barkerj@redbrick.dcu.ie
+sean.cullen@redbrick.dcu.ie	hyper@redbrick.dcu.ie
+paraic.oceallaigh@redbrick.dcu.ie	swipe@redbrick.dcu.ie
+micheal.mchugh@redbrick.dcu.ie	sandman@redbrick.dcu.ie
+fergus.donohue@redbrick.dcu.ie	fergus@redbrick.dcu.ie
+barry.oneill@redbrick.dcu.ie	bubble@redbrick.dcu.ie
+aoife.cahill@redbrick.dcu.ie	ace@redbrick.dcu.ie
+sheila.pollard@redbrick.dcu.ie	sheila@redbrick.dcu.ie
+robert.crosbie@redbrick.dcu.ie	bobb@redbrick.dcu.ie
+bobb-spam@redbrick.dcu.ie	bobb@redbrick.dcu.ie
+bobb-spam0@redbrick.dcu.ie	bobb@redbrick.dcu.ie
+bobb-spam1@redbrick.dcu.ie	bobb@redbrick.dcu.ie
+bobb-spam2@redbrick.dcu.ie	bobb@redbrick.dcu.ie
+bobb-spam3@redbrick.dcu.ie	bobb@redbrick.dcu.ie
+bobb-spam4@redbrick.dcu.ie	bobb@redbrick.dcu.ie
+bobb-spam5@redbrick.dcu.ie	bobb@redbrick.dcu.ie
+bobb-spam6@redbrick.dcu.ie	bobb@redbrick.dcu.ie
+bobb-spam7@redbrick.dcu.ie	bobb@redbrick.dcu.ie
+bobb-spam8@redbrick.dcu.ie	bobb@redbrick.dcu.ie
+bobb-spam9@redbrick.dcu.ie	bobb@redbrick.dcu.ie
+adam.kelly@redbrick.dcu.ie	cthulhu@redbrick.dcu.ie
+justin.moran@redbrick.dcu.ie	cain@redbrick.dcu.ie
+cecily.murray@redbrick.dcu.ie	celery@redbrick.dcu.ie
+karl.podesta@redbrick.dcu.ie	kpodesta@redbrick.dcu.ie
+ronan.ryan@redbrick.dcu.ie	ledge@redbrick.dcu.ie
+johnny@redbrick.dcu.ie	jonny@redbrick.dcu.ie
+andrew.phillips@redbrick.dcu.ie	jesus@redbrick.dcu.ie
+hoi.chau.wong@redbrick.dcu.ie	whc@redbrick.dcu.ie
+paddy.grant@redbrick.dcu.ie	floppy@redbrick.dcu.ie
+patrick.grant@redbrick.dcu.ie	floppy@redbrick.dcu.ie
+julie.kerin@redbrick.dcu.ie	julie@redbrick.dcu.ie
+iddqd@redbrick.dcu.ie	macbain@redbrick.dcu.ie
+michael.mcginness@redbrick.dcu.ie	mikka@redbrick.dcu.ie
+conor.okane@redbrick.dcu.ie	cokane@redbrick.dcu.ie
+donal.hunt@redbrick.dcu.ie	redgiant@redbrick.dcu.ie
+brian.bambrick@redbrick.dcu.ie	moridin@redbrick.dcu.ie
+declan.brennan@redbrick.dcu.ie	wilma@redbrick.dcu.ie
+grainne.walsh@redbrick.dcu.ie	grainy@redbrick.dcu.ie
+philip.reynolds@redbrick.dcu.ie	phil@redbrick.dcu.ie
+phil.reynolds@redbrick.dcu.ie	phil@redbrick.dcu.ie
+mglennon@redbrick.dcu.ie	magluby@redbrick.dcu.ie
+sigh@redbrick.dcu.ie	mort@redbrick.dcu.ie
+mort@redbrick.dcu.ie	arioch@redbrick.dcu.ie
+craygor@redbrick.dcu.ie	element@redbrick.dcu.ie
+ledg@redbrick.dcu.ie	ledge@redbrick.dcu.ie
+amanda@redbrick.dcu.ie	dipso@redbrick.dcu.ie
+djhooker@redbrick.dcu.ie	wilma@redbrick.dcu.ie
+dell@redbrick.dcu.ie	sandman@redbrick.dcu.ie
+patsy@redbrick.dcu.ie	heavenly@redbrick.dcu.ie
+raf@redbrick.dcu.ie	turiel@redbrick.dcu.ie
+littlemisscomedy@redbrick.dcu.ie	lmc@redbrick.dcu.ie
+samresh@redbrick.dcu.ie	doomgod@redbrick.dcu.ie
+conor.coyle@redbrick.dcu.ie	squaw@redbrick.dcu.ie
+kevinbrennan@redbrick.dcu.ie	zircon@redbrick.dcu.ie
+alanthecat@redbrick.dcu.ie	alantc@redbrick.dcu.ie
+colm.maccarthaigh@redbrick.dcu.ie	colmmacc@redbrick.dcu.ie
+pizzateam@redbrick.dcu.ie	sonic@redbrick.dcu.ie
+holyspambatman@redbrick.dcu.ie	sonic@redbrick.dcu.ie
+david.johnston@redbrick.dcu.ie	emperor@redbrick.dcu.ie
+dermot.duffy@redbrick.dcu.ie	dizer@redbrick.dcu.ie
+dizerspam@redbrick.dcu.ie	dizer@redbrick.dcu.ie
+eoin.campbell@redbrick.dcu.ie	cambo@redbrick.dcu.ie
+neil.walsh@redbrick.dcu.ie	marvin@redbrick.dcu.ie
+barry@redbrick.dcu.ie	bubble@redbrick.dcu.ie
+anthony.moyles@redbrick.dcu.ie	huey@redbrick.dcu.ie
+mclarke@redbrick.dcu.ie	prolix@redbrick.dcu.ie
+mclark@redbrick.dcu.ie	prolix@redbrick.dcu.ie
+mark_campbell@redbrick.dcu.ie	mark@redbrick.dcu.ie
+mark.campbell@redbrick.dcu.ie	mark@redbrick.dcu.ie
+mcampbell@redbrick.dcu.ie	mark@redbrick.dcu.ie
+campbellm@redbrick.dcu.ie	mark@redbrick.dcu.ie
+pronane@redbrick.dcu.ie	kaos@redbrick.dcu.ie
+shane_tallon@redbrick.dcu.ie	del_boy@redbrick.dcu.ie
+wesley.gorman@redbrick.dcu.ie	badboy@redbrick.dcu.ie
+ciaran.kenny@redbrick.dcu.ie	goratrix@redbrick.dcu.ie
+trevor.johnston@redbrick.dcu.ie	trevj@redbrick.dcu.ie
+sinead.mcgivney@redbrick.dcu.ie	neady@redbrick.dcu.ie
+enda_dowling@redbrick.dcu.ie	deano@redbrick.dcu.ie
+david.concannon@redbrick.dcu.ie	shimoda@redbrick.dcu.ie
+gary_ludgate@redbrick.dcu.ie	dice@redbrick.dcu.ie
+martin.clarke@redbrick.dcu.ie	prolix@redbrick.dcu.ie
+cambo1982@redbrick.dcu.ie	cambo@redbrick.dcu.ie
+jonathan.walsh@redbrick.dcu.ie	melmoth@redbrick.dcu.ie
+ann.byrne@redbrick.dcu.ie	halfpint@redbrick.dcu.ie
+martin.harte@redbrick.dcu.ie	tuama@redbrick.dcu.ie
+lee.cash@redbrick.dcu.ie	brodie@redbrick.dcu.ie
+declan.oneill@redbrick.dcu.ie	dec@redbrick.dcu.ie
+keith.mcdonnell@redbrick.dcu.ie	bkeeper@redbrick.dcu.ie
+john.ruddy@redbrick.dcu.ie	phase@redbrick.dcu.ie
+peter.sinnott@redbrick.dcu.ie	link@redbrick.dcu.ie
+michael.dowling@redbrick.dcu.ie	mickeyd@redbrick.dcu.ie
+mickeydspam@redbrick.dcu.ie	mickeyd@redbrick.dcu.ie
+eoghan@redbrick.dcu.ie	atlas@redbrick.dcu.ie
+dru@redbrick.dcu.ie	drusilla@redbrick.dcu.ie
+wavehunt@redbrick.dcu.ie	johan@redbrick.dcu.ie
+stephen.ryan37@redbrick.dcu.ie	ryaner@redbrick.dcu.ie
+natashamaher@redbrick.dcu.ie	7of9@redbrick.dcu.ie
+huskerdu@redbrick.dcu.ie	phl@redbrick.dcu.ie
+credak@redbrick.dcu.ie	creadak@redbrick.dcu.ie
+craig.gavagan@redbrick.dcu.ie	creadak@redbrick.dcu.ie
+joeh762@redbrick.dcu.ie	kuze@redbrick.dcu.ie
+macattac@redbrick.dcu.ie	mak@redbrick.dcu.ie
+failho@redbrick.dcu.ie	carri@redbrick.dcu.ie
+bunny@redbrick.dcu.ie	bunbun@redbrick.dcu.ie
+
+# This burd wanted this alias. She's a friend of mine (singer).
+# She used to be these addresses. Get rid of them and you're
+# all dead. Yes, even you, son of drjolt in the year 2525.
+# ok boomer - m1cr0man, 2020
+zorro@redbrick.dcu.ie	Aisling.NiCheallachain@irishlife.ie
+aisfc@redbrick.dcu.ie	Aisling.NiCheallachain@irishlife.ie
+assassins@redbrick.dcu.ie	art_wolf@redbrick.dcu.ie
+sarunas@redbrick.dcu.ie	svan@redbrick.dcu.ie
+sarunas.v@redbrick.dcu.ie	svan@redbrick.dcu.ie
+sarunas.vancevicius@redbrick.dcu.ie	svan@redbrick.dcu.ie
+eoghan.gaffney@redbrick.dcu.ie	atlas@redbrick.dcu.ie
+carbonkid@redbrick.dcu.ie	gaara@redbrick.dcu.ie
+waf@redbrick.dcu.ie	dregin@redbrick.dcu.ie
+surfnsail@redbrick.dcu.ie	sailing@redbrick.dcu.ie
+andrew.martin@redbrick.dcu.ie	werdz@redbrick.dcu.ie
+mieows@redbrick.dcu.ie	angelkat@redbrick.dcu.ie
+cocowtf@redbrick.dcu.ie	cocao@redbrick.dcu.ie
+patrickswayze@redbrick.dcu.ie	goldfish@redbrick.dcu.ie
+wolfhead@redbrick.dcu.ie	drg@redbrick.dcu.ie
+david.lynam@redbrick.dcu.ie	coconut@redbrick.dcu.ie
+cian.brennan@redbrick.dcu.ie	lil_cain@redbrick.dcu.ie
+cian@redbrick.dcu.ie	lil_cain@redbrick.dcu.ie
+biggestpenis@redbrick.dcu.ie	lil_cain@redbrick.dcu.ie
+eoghan.cotter@redbrick.dcu.ie	johan@redbrick.dcu.ie
+austin.halpin@redbrick.dcu.ie	haus@redbrick.dcu.ie
+shane.stacey@redbrick.dcu.ie	isaac702@redbrick.dcu.ie
+fruitcake@redbrick.dcu.ie	fructus@redbrick.dcu.ie
+fruitcaek@redbrick.dcu.ie	fructus@redbrick.dcu.ie
+lotta.mikkonen@redbrick.dcu.ie	attol@redbrick.dcu.ie
+diarmaid.mcmanus@redbrick.dcu.ie	elephant@redbrick.dcu.ie
+caroline.fuery@redbrick.dcu.ie	carri@redbrick.dcu.ie
+damien.rhatigan@redbrick.dcu.ie	dano@redbrick.dcu.ie
+jennifer.flynn@redbrick.dcu.ie	jennyf@redbrick.dcu.ie
+michael.odowd@redbrick.dcu.ie	nanaki@redbrick.dcu.ie
+microman@redbrick.dcu.ie	m1cr0man@redbrick.dcu.ie
+cian.butler@redbrick.dcu.ie	butlerx@redbrick.dcu.ie
+# guess which one is the correct one@redbrick.dcu.ie
+kat.farrell@redbrick.dcu.ie	angelkat@redbrick.dcu.ie
+kat.farrel@redbrick.dcu.ie	angelkat@redbrick.dcu.ie
+kat.farell@redbrick.dcu.ie	angelkat@redbrick.dcu.ie
+kat.farel@redbrick.dcu.ie	angelkat@redbrick.dcu.ie
+#for sonic@redbrick.dcu.ie
+alan.walsh@redbrick.dcu.ie	sonic@redbrick.dcu.ie
+alwalsh@redbrick.dcu.ie	sonic@redbrick.dcu.ie
+alanwalsh@redbrick.dcu.ie	sonic@redbrick.dcu.ie
+sonicthehedgehog@redbrick.dcu.ie	sonic@redbrick.dcu.ie
+# aliases for receive :)@redbrick.dcu.ie
+andrew.harford@redbrick.dcu.ie	receive@redbrick.dcu.ie
+andrew.j.harford@redbrick.dcu.ie	receive@redbrick.dcu.ie
+andy.harford@redbrick.dcu.ie	receive@redbrick.dcu.ie
+winchair@redbrick.dcu.ie	angelkat@redbrick.dcu.ie
+winkat@redbrick.dcu.ie	angelkat@redbrick.dcu.ie
+starbuck@redbrick.dcu.ie	receive@redbrick.dcu.ie
+# people spell bad@redbrick.dcu.ie
+recieve@redbrick.dcu.ie	receive@redbrick.dcu.ie
+andrew.hartford@redbrick.dcu.ie	receive@redbrick.dcu.ie
+lotta@redbrick.dcu.ie	attol@redbrick.dcu.ie
+powertax@redbrick.dcu.ie	pwrtaxi@redbrick.dcu.ie
+@redbrick.dcu.ie
+gamestocs@redbrick.dcu.ie	gamessoc@redbrick.dcu.ie
+games1@redbrick.dcu.ie	gamessoc@redbrick.dcu.ie
+games2@redbrick.dcu.ie	gamessoc@redbrick.dcu.ie
+gamessoc1@redbrick.dcu.ie	gamessoc@redbrick.dcu.ie
+gamessoc2@redbrick.dcu.ie	gamessoc@redbrick.dcu.ie
+gamessoc3@redbrick.dcu.ie	gamessoc@redbrick.dcu.ie
+gamessoc4@redbrick.dcu.ie	gamessoc@redbrick.dcu.ie
+gamessoc5@redbrick.dcu.ie	gamessoc@redbrick.dcu.ie
+gamessoc6@redbrick.dcu.ie	gamessoc@redbrick.dcu.ie
+gamessoc7@redbrick.dcu.ie	gamessoc@redbrick.dcu.ie
+gamessoc8@redbrick.dcu.ie	gamessoc@redbrick.dcu.ie
+gamessoc9@redbrick.dcu.ie	gamessoc@redbrick.dcu.ie
+gamessoc10@redbrick.dcu.ie	gamessoc@redbrick.dcu.ie
+gamessoc11@redbrick.dcu.ie	gamessoc@redbrick.dcu.ie
+gamessoc12@redbrick.dcu.ie	gamessoc@redbrick.dcu.ie
+gamessoc13@redbrick.dcu.ie	gamessoc@redbrick.dcu.ie
+
+# esports soc aliases
+announce-esports@redbrick.dcu.ie	announce-esports@lists.redbrick.dcu.ie
+esports-committee@redbrick.dcu.ie	esports-committee@lists.redbrick.dcu.ie
+esports-cmt@redbrick.dcu.ie	esports-committee@lists.redbrick.dcu.ie
+
+
+jennyf@redbrick.dcu.ie	ribbons@redbrick.dcu.ie
+niall.gaffney@redbrick.dcu.ie	gamma@redbrick.dcu.ie
+richard.walsh@redbrick.dcu.ie	koffee@redbrick.dcu.ie
+vadim@redbrick.dcu.ie	vadimck@redbrick.dcu.ie
+lorcan.boyle@redbrick.dcu.ie	zergless@redbrick.dcu.ie
+robert.devereux@redbrick.dcu.ie	kylar@redbrick.dcu.ie
+christopher.boyle@redbrick.dcu.ie	greyman@redbrick.dcu.ie
+cboyle@redbrick.dcu.ie	greyman@redbrick.dcu.ie
+cliodhna.harrison@redbrick.dcu.ie	thegirl@redbrick.dcu.ie
+james.hackett@redbrick.dcu.ie	distro@redbrick.dcu.ie
+dominic.connor@redbrick.dcu.ie	wizzdom@redbrick.dcu.ie
+habibi@redbrick.dcu.ie	ayden@redbrick.dcu.ie
+safrole@redbrick.dcu.ie	saf@redbrick.dcu.ie
+jonny@redbrick.dcu.ie	banjo@redbrick.dcu.ie
+xmeabhx@redbrick.dcu.ie	timelady@redbrick.dcu.ie
+jamesreilly@redbrick.dcu.ie	fun@redbrick.dcu.ie
+snowda@redbrick.dcu.ie	fordy@redbrick.dcu.ie
+funtrain@redbrick.dcu.ie	admins@redbrick.dcu.ie
+ladmins@redbrick.dcu.ie	admins@redbrick.dcu.ie
+tron@redbrick.dcu.ie	jammy@redbrick.dcu.ie
+amadan@redbrick.dcu.ie	marvin@redbrick.dcu.ie
+mike_d@redbrick.dcu.ie	marvin@redbrick.dcu.ie
+loky@redbrick.dcu.ie	chikatee@redbrick.dcu.ie
+scunni@redbrick.dcu.ie	jericho@redbrick.dcu.ie
+the_rock@redbrick.dcu.ie	jericho@redbrick.dcu.ie
+iruane@redbrick.dcu.ie	stark@redbrick.dcu.ie
+aurora@redbrick.dcu.ie	smf@redbrick.dcu.ie
+smithers@redbrick.dcu.ie	manuel@redbrick.dcu.ie
+jonnyb@redbrick.dcu.ie	nedd@redbrick.dcu.ie
+wwallace@redbrick.dcu.ie	epic@redbrick.dcu.ie
+lizard@redbrick.dcu.ie	creech@redbrick.dcu.ie
+lep@redbrick.dcu.ie	phat@redbrick.dcu.ie
+crispy@redbrick.dcu.ie	chris@redbrick.dcu.ie
+account@redbrick.dcu.ie	afsoc@redbrick.dcu.ie
+odie@redbrick.dcu.ie	me@redbrick.dcu.ie
+hriding@redbrick.dcu.ie	equest@redbrick.dcu.ie
+equestrian@redbrick.dcu.ie	equest@redbrick.dcu.ie
+
+economosoc@redbrick.dcu.ie	econosoc@redbrick.dcu.ie
+
+# now a spamtrap - colmmacc
+sarahb@redbrick.dcu.ie	/dev/null
+audi_58@redbrick.dcu.ie	AUDI_S8@redbrick.dcu.ie
+c_clay@redbrick.dcu.ie	fallen@redbrick.dcu.ie
+rcummi@redbrick.dcu.ie	4aces@redbrick.dcu.ie
+imelda@redbrick.dcu.ie	fruity@redbrick.dcu.ie
+mulinho@redbrick.dcu.ie	mullins@redbrick.dcu.ie
+sully1@redbrick.dcu.ie	sully@redbrick.dcu.ie
+robert@redbrick.dcu.ie	gandalf@redbrick.dcu.ie
+d_omall@redbrick.dcu.ie	domall@redbrick.dcu.ie
+dhunt@redbrick.dcu.ie	zoro@redbrick.dcu.ie
+seth@redbrick.dcu.ie	stranger@redbrick.dcu.ie
+jolt-9@redbrick.dcu.ie	chalk@redbrick.dcu.ie
+gee_sus@redbrick.dcu.ie	gee@redbrick.dcu.ie
+jruddy@redbrick.dcu.ie	phase@redbrick.dcu.ie
+lynchman@redbrick.dcu.ie	mloc@redbrick.dcu.ie
+brianh@redbrick.dcu.ie	alantc@redbrick.dcu.ie
+sutty@redbrick.dcu.ie	yosarian@redbrick.dcu.ie
+ryanks@redbrick.dcu.ie	rhino@redbrick.dcu.ie
+aliastom@redbrick.dcu.ie	ayatolah@redbrick.dcu.ie
+osprey@redbrick.dcu.ie	pariah@redbrick.dcu.ie
+jbolger@redbrick.dcu.ie	x@redbrick.dcu.ie
+joey_p@redbrick.dcu.ie	mrs_girl@redbrick.dcu.ie
+vigdis@redbrick.dcu.ie	tom@redbrick.dcu.ie
+dimitri@redbrick.dcu.ie	grover@redbrick.dcu.ie
+oasis@redbrick.dcu.ie	geezer@redbrick.dcu.ie
+games@redbrick.dcu.ie	gamessoc@redbrick.dcu.ie
+smeghead@redbrick.dcu.ie	jeebers@redbrick.dcu.ie
+piesoc@redbrick.dcu.ie	matsoc@redbrick.dcu.ie
+cherub@redbrick.dcu.ie	crumbs@redbrick.dcu.ie
+dme3@redbrick.dcu.ie	dme4@redbrick.dcu.ie
+garyod2@redbrick.dcu.ie	gary@redbrick.dcu.ie
+haus17@redbrick.dcu.ie	haus@redbrick.dcu.ie
+nadned@redbrick.dcu.ie	damnson@redbrick.dcu.ie

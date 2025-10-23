@@ -65,8 +65,6 @@ job "mailman" {
         ]
         volumes = [
           "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/opt/mailman-web-data:rw",
-          "/home/guinness/mailman/archives/:/tmp69/",
-          "/home/guinness/mailman2/lists:/tmp70/:ro"
         ]
       }
 
