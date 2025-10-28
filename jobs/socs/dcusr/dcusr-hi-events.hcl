@@ -1,7 +1,6 @@
 job "dcusr-hi-events" {
   datacenters = ["aperture"]
-
-  type = "service"
+  type        = "service"
 
   meta {
     domain = "tickets.solarracing.ie"

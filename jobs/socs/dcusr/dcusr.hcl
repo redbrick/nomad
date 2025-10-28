@@ -1,12 +1,12 @@
-job "dcusr-dev" {
+job "dcusr" {
   datacenters = ["aperture"]
-  type = "service"
+  type        = "service"
 
   meta {
     domain = "solarracing.ie"
   }
 
-  group "dcusr-dev" {
+  group "dcusr" {
     count = 1
 
     network {
@@ -19,7 +19,7 @@ job "dcusr-dev" {
     }
 
     service {
-      name = "dcusr-dev"
+      name = "dcusr"
       port = "http"
 
       tags = [
@@ -48,7 +48,7 @@ job "dcusr-dev" {
         }
       }
       template {
-        destination = "secrets/secret.env"
+        destination = "local/.env"
         env         = true
         data        = <<EOH
 DOCKER_USER={{ key "dcusr/ghcr/username" }}
