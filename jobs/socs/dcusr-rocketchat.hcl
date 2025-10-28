@@ -4,7 +4,6 @@ job "dcusr-rocketchat" {
 
   meta {
     domain       = "chat.solarracing.ie"
-    jitsi_domain = "meet.solarracing.ie"
   }
 
   group "rocketchat" {
