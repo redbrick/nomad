@@ -146,30 +146,31 @@ EOH
       template {
         data = <<EOH
 {
-  "LDAP": {
+  "Redbrick": {
+    "connection": {
+      "server": "{{ range service "openldap-ldap" }}{{ .Address }}{{ end }}",
+      "port": "{{ range service "openldap-ldap" }}{{ .Port }}{{ end }}",
+      "user": "{{ key "mediawiki/ldap/user" }}",
+      "pass": "{{ key "mediawiki/ldap/password" }}",
+      "enctype": "clear",
+      "basedn": "o=redbrick,dc=redbrick,dc=dcu,dc=ie",
+      "groupbasedn": "ou=groups,o=redbrick,dc=redbrick,dc=dcu,dc=ie",
+      "userbasedn": "ou=accounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie",
+      "searchattribute": "uid",
+      "usernameattribute": "uid",
+      "realnameattribute": "cn",
+      "emailattribute": "mail",
+      "options": {
+        "LDAP_OPT_DEREF": 1
+      },
+      "grouprequest": "MediaWiki\\Extension\\LDAPProvider\\UserGroupsRequest\\UserMemberOf::factory"
+    },
     "authorization": {
       "rules": {
         "groups": {
           "required": []
         }
       }
-    },
-    "connection": {
-      "server": "{{ key "mediawiki/ldap/server" }}",
-      "user": "{{ key "mediawiki/ldap/user" }}",
-      "pass": "{{ key "mediawiki/ldap/password" }}",
-      "options": {
-        "LDAP_OPT_DEREF": 1
-      },
-      "grouprequest": "MediaWiki\\Extension\\LDAPProvider\\UserGroupsRequest\\GroupMemberUid::factory",
-      "basedn": "o=redbrick",
-      "groupbasedn": "ou=groups,o=redbrick",
-      "userbasedn": "ou=accounts,o=redbrick",
-      "searchattribute": "uid",
-      "searchstring": "uid=USER-NAME,ou=accounts,o=redbrick",
-      "usernameattribute": "uid",
-      "realnameattribute": "cn",
-      "emailattribute": "altmail"
     }
   }
 }
@@ -200,7 +201,7 @@ EOH
       driver = "docker"
 
       config {
-        image = "mariadb"
+        image = "mariadb:11.4"
         ports = ["db"]
 
         volumes = [
@@ -251,7 +252,7 @@ EOH
 
       resources {
         cpu    = 800
-        memory = 2500
+        memory = 6144
       }
 
       template {
