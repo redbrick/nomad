@@ -3,7 +3,7 @@ job "dcusr-rocketchat" {
   type        = "service"
 
   meta {
-    domain       = "chat.solarracing.ie"
+    domain = "chat.solarracing.ie"
   }
 
   group "rocketchat" {
