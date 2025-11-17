@@ -33,7 +33,7 @@ job "uptime-kuma" {
       driver = "docker"
 
       config {
-        image = "louislam/uptime-kuma:1"
+        image = "louislam/uptime-kuma:2"
         ports = ["http"]
         volumes = [
           "/storage/nomad/uptime-kuma/data:/app/data"
