@@ -54,9 +54,6 @@ RFC2136_TSIG_KEY=dnsupdate.redbrick.dcu.ie.
 RFC2136_TSIG_SECRET={{ key "traefik/acme/dns/key" }}
 RFC2136_TSIG_ALGORITHM=hmac-sha256.
 RFC2136_NAMESERVER=ns1.redbrick.dcu.ie:53
-RFC2136_PROPAGATION_TIMEOUT=240
-RFC2136_POLLING_INTERVAL=5
-RFC2136_DNS_TIMEOUT=10
 EOF
       }
 
@@ -130,8 +127,6 @@ EOF
 [certificatesResolvers.rb.acme]
   email = "elected-admins@redbrick.dcu.ie"
   storage = "acme-dns.json"
-  # NOTE: This is staging server, remove this for prod
-  caserver = "https://acme-staging-v02.api.letsencrypt.org/directory"
   [certificatesResolvers.rb.acme.dnsChallenge]
     provider = "rfc2136"
     delayBeforeCheck = 60
@@ -172,6 +167,27 @@ EOF
     service = "dummy-service"  # all routers need a service, this isn't used
     [http.routers.{{ trimPrefix "redirect/redbrick/" $pair.Key }}-redirect.tls]
 {{- end }}
+
+[http.routers.tls-default]
+      rule = "HostRegexp(`{any:.+}.redbrick.dcu.ie`) || HostRegexp(`{any:.+}.rb.dcu.ie`) || HostRegexp(`{any:.+}.redbrick.ie`)"
+      entryPoints = ["web", "websecure"]
+      service = "dummy-service"
+
+      [http.routers.tls-default.tls]
+        certResolver = "rb"
+
+        [[http.routers.tls-default.tls.domains]]
+          main = "redbrick.dcu.ie"
+          sans = ["*.redbrick.dcu.ie"]
+
+        [[http.routers.tls-default.tls.domains]]
+          main = "rb.dcu.ie"
+          sans = ["*.rb.dcu.ie"]
+
+        [[http.routers.tls-default.tls.domains]]
+          main = "redbrick.ie"
+          sans = ["*.redbrick.ie"]
+
 
 [http.services]
   [http.services.dummy-service.loadBalancer]
