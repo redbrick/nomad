@@ -29,7 +29,7 @@ job "cawnj-test" {
         "traefik.enable=true",
         "traefik.http.routers.cawnj-test.rule=Host(`cawnj-test.redbrick.dcu.ie`)",
         "traefik.http.routers.cawnj-test.entrypoints=web,websecure",
-        "traefik.http.routers.cawnj-test.tls.certresolver=lets-encrypt"
+        "traefik.http.routers.cawnj-test.tls.certresolver=rb"
       ]
     }
 

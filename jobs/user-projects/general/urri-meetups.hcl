@@ -25,7 +25,7 @@ job "urri-meetups" {
         "traefik.enable=true",
         "traefik.http.routers.urri-meetups.rule=Host(`urri-meetups.rb.dcu.ie`)",
         "traefik.http.routers.urri-meetups.entrypoints=web,websecure",
-        "traefik.http.routers.urri-meetups.tls.certresolver=lets-encrypt",
+        "traefik.http.routers.urri-meetups.tls.certresolver=rb",
       ]
     }
 

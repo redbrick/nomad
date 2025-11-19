@@ -38,7 +38,7 @@ job "mediawiki" {
         "traefik.port=${NOMAD_PORT_http}",
         "traefik.http.routers.rbwiki.rule=Host(`${NOMAD_META_domain}`) || Host(`wiki.rb.dcu.ie`)",
         "traefik.http.routers.rbwiki.entrypoints=web,websecure",
-        "traefik.http.routers.rbwiki.tls.certresolver=lets-encrypt",
+        "traefik.http.routers.rbwiki.tls.certresolver=rb",
         "traefik.http.routers.rbwiki.middlewares=rbwiki-redirect-root, rbwiki-redirect-mw",
         "traefik.http.middlewares.rbwiki-redirect-root.redirectregex.regex=^https://wiki\\.redbrick\\.dcu\\.ie/?$",
         "traefik.http.middlewares.rbwiki-redirect-root.redirectregex.replacement=https://wiki.redbrick.dcu.ie/Main_Page",

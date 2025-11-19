@@ -31,7 +31,7 @@ job "paperless" {
         "traefik.http.routers.paperless.rule=Host(`paperless.redbrick.dcu.ie`) || Host(`paperless.rb.dcu.ie`)",
         "traefik.http.routers.paperless.entrypoints=websecure",
         "traefik.http.routers.paperless.tls=true",
-        "traefik.http.routers.paperless.tls.certresolver=lets-encrypt",
+        "traefik.http.routers.paperless.tls.certresolver=rb",
         "traefik.http.middlewares.paperless.headers.contentSecurityPolicy=default-src 'self'; img-src 'self' data:"
       ]
     }

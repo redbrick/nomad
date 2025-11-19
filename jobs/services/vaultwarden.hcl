@@ -22,7 +22,7 @@ job "vaultwarden" {
         "traefik.enable=true",
         "traefik.http.routers.vaultwarden.rule=Host(`vault.redbrick.dcu.ie`)",
         "traefik.http.routers.vaultwarden.entrypoints=websecure",
-        "traefik.http.routers.vaultwarden.tls.certresolver=lets-encrypt",
+        "traefik.http.routers.vaultwarden.tls.certresolver=rb",
       ]
     }
 

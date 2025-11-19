@@ -30,13 +30,13 @@ job "minio" {
         "traefik.http.services.minio-api.loadbalancer.server.port=${NOMAD_PORT_api}",
         "traefik.http.routers.minio-api.rule=Host(`cdn.redbrick.dcu.ie`)",
         "traefik.http.routers.minio-api.entrypoints=web,websecure",
-        "traefik.http.routers.minio-api.tls.certresolver=lets-encrypt",
+        "traefik.http.routers.minio-api.tls.certresolver=rb",
 
         "traefik.http.routers.minio-console.service=minio-console",
         "traefik.http.services.minio-console.loadbalancer.server.port=${NOMAD_PORT_console}",
         "traefik.http.routers.minio-console.rule=Host(`minio.rb.dcu.ie`)",
         "traefik.http.routers.minio-console.entrypoints=web,websecure",
-        "traefik.http.routers.minio-console.tls.certresolver=lets-encrypt",
+        "traefik.http.routers.minio-console.tls.certresolver=rb",
       ]
     }
 

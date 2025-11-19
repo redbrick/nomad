@@ -29,7 +29,7 @@ job "atlas" {
         "traefik.enable=true",
         "traefik.http.routers.nginx-atlas.rule=Host(`redbrick.dcu.ie`) || Host(`www.redbrick.dcu.ie`) || Host(`www.rb.dcu.ie`) || Host(`rb.dcu.ie`)",
         "traefik.http.routers.nginx-atlas.entrypoints=web,websecure",
-        "traefik.http.routers.nginx-atlas.tls.certresolver=lets-encrypt",
+        "traefik.http.routers.nginx-atlas.tls.certresolver=rb",
         "traefik.http.routers.nginx-atlas.middlewares=atlas-www-redirect,redirect-user-web",
         # redirect redbrick.dcu.ie/~user to user.redbrick.dcu.ie
         "traefik.http.middlewares.redirect-user-web.redirectregex.regex=https://redbrick\\.dcu\\.ie/~([^/]*)/?([^/].*)?",

@@ -51,7 +51,7 @@ job "nova-timetable" {
           "traefik.port=${NOMAD_PORT_frontend}",
           "traefik.http.routers.nova-timetable-frontend.rule=Host(`timetable.redbrick.dcu.ie`)",
           "traefik.http.routers.nova-timetable-frontend.entrypoints=web,websecure",
-          "traefik.http.routers.nova-timetable-frontend.tls.certresolver=lets-encrypt",
+          "traefik.http.routers.nova-timetable-frontend.tls.certresolver=rb",
         ]
       }
     }
@@ -60,9 +60,9 @@ job "nova-timetable" {
       driver = "docker"
 
       env {
-        BACKEND_PORT = "${NOMAD_PORT_backend}"
+        BACKEND_PORT  = "${NOMAD_PORT_backend}"
         REDIS_ADDRESS = "${NOMAD_ADDR_redis}"
-        CNS_ADDRESS = "https://clubsandsocs.jakefarrell.ie"
+        CNS_ADDRESS   = "https://clubsandsocs.jakefarrell.ie"
       }
 
       config {
@@ -86,7 +86,7 @@ job "nova-timetable" {
           "traefik.port=${NOMAD_PORT_backend}",
           "traefik.http.routers.nova-timetable-backend.rule=Host(`timetable.redbrick.dcu.ie`) && PathPrefix(`/api`)",
           "traefik.http.routers.nova-timetable-backend.entrypoints=web,websecure",
-          "traefik.http.routers.nova-timetable-backend.tls.certresolver=lets-encrypt",
+          "traefik.http.routers.nova-timetable-backend.tls.certresolver=rb",
         ]
       }
     }

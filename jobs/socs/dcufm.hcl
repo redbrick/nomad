@@ -13,17 +13,17 @@ job "dcufm" {
 
     constraint {
       attribute = "${attr.unique.hostname}"
-      value = "wheatley"
+      value     = "wheatley"
     }
-    
+
     service {
       port = "http"
       name = "icecast-stream"
       check {
-        type = "http"
-        path = "/"
+        type     = "http"
+        path     = "/"
         interval = "10s"
-        timeout = "2s"
+        timeout  = "2s"
       }
 
       tags = [
@@ -37,7 +37,7 @@ job "dcufm" {
         "traefik.tcp.routers.icecast-stream.rule=HostSNI(`dcufm.redbrick.dcu.ie`)",
         "traefik.tcp.routers.icecast-stream.entrypoints=web,websecure",
         "traefik.tcp.routers.icecast-stream.tls=true",
-        "traefik.tcp.routers.icecast-stream.tls.certresolver=lets-encrypt",
+        "traefik.tcp.routers.icecast-stream.tls.certresolver=rb",
       ]
     }
 
@@ -48,7 +48,7 @@ job "dcufm" {
         ports = ["http"]
         volumes = [
           "local/icecast_dcufm.xml:/etc/icecast2/icecast.xml"
-        ]        
+        ]
       }
 
       template {
@@ -110,18 +110,18 @@ job "dcufm" {
 EOH
 
         destination = "local/icecast_dcufm.xml"
-        perms = "755"
+        perms       = "755"
       }
 
       template {
-        data = <<EOH
+        data        = <<EOH
 ICECAST_SOURCE_PASSWORD="{{ key "dcufm/passwords/source" }}"
 ICECAST_ADMIN_PASSWORD="{{ key "dcufm/passwords/admin" }}"
 ICECAST_RELAY_PASSOWRD="{{ key "dcufm/passwords/relay" }}"
 ICECAST_HOSTNAME="dcufm.redbrick.dcu.ie"
 EOH
         destination = "local/file.env"
-        env = true
+        env         = true
       }
     }
   }
