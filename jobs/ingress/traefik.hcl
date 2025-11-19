@@ -172,6 +172,7 @@ EOF
       rule = "HostRegexp(`{any:.+}.redbrick.dcu.ie`) || HostRegexp(`{any:.+}.rb.dcu.ie`) || HostRegexp(`{any:.+}.redbrick.ie`)"
       entryPoints = ["web", "websecure"]
       service = "dummy-service"
+      priority = -1
 
       [http.routers.tls-default.tls]
         certResolver = "rb"
