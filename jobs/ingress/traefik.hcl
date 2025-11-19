@@ -17,30 +17,6 @@ job "traefik" {
       port "ssh" {
         static = 22
       }
-      port "smtp" {
-        static = 25
-      }
-      port "submission" {
-        static = 587
-      }
-      port "submissions" {
-        static = 465
-      }
-      port "imap" {
-        static = 143
-      }
-      port "imaps" {
-        static = 993
-      }
-      port "pop3" {
-        static = 110
-      }
-      port "pop3s" {
-        static = 995
-      }
-      port "managesieve" {
-        static = 4190
-      }
       port "voice-tcp" {
         static = 4502
       }
@@ -74,10 +50,13 @@ job "traefik" {
         env         = true
         change_mode = "restart"
         data        = <<EOF
-RFC2136_TSIG_KEY=traefik-acme-key
+RFC2136_TSIG_KEY=dnsupdate.redbrick.dcu.ie.
 RFC2136_TSIG_SECRET={{ key "traefik/acme/dns/key" }}
-RFC2136_TSIG_ALGORITHM=hmac-sha256
+RFC2136_TSIG_ALGORITHM=hmac-sha256.
 RFC2136_NAMESERVER=ns1.redbrick.dcu.ie:53
+RFC2136_PROPAGATION_TIMEOUT=240
+RFC2136_POLLING_INTERVAL=5
+RFC2136_DNS_TIMEOUT=10
 EOF
       }
 
@@ -100,30 +79,6 @@ EOF
 
   [entryPoints.ssh]
   address = ":22"
-
-  [entryPoints.smtp]
-  address = ":25"
-
-  [entryPoints.submission]
-  address = ":587"
-
-  [entryPoints.submissions]
-  address = ":465"
-
-  [entryPoints.imap]
-  address = ":143"
-
-  [entryPoints.imaps]
-  address = ":993"
-
-  [entryPoints.pop3]
-  address = ":110"
-
-  [entryPoints.pop3s]
-  address = ":995"
-
-  [entryPoints.managesieve]
-  address = ":4190"
 
   [entryPoints.voice-tcp]
   address = ":4502"
