@@ -29,7 +29,7 @@ job "nginx" {
         "traefik.enable=true",
         "traefik.http.routers.nginx-aperture.rule=Host(`aperture.redbrick.dcu.ie`)",
         "traefik.http.routers.nginx-aperture.entrypoints=web,websecure",
-        "traefik.http.routers.nginx-aperture.tls.certresolver=lets-encrypt"
+        "traefik.http.routers.nginx-aperture.tls.certresolver=rb"
       ]
     }
 
@@ -81,7 +81,7 @@ job "nginx" {
         "traefik.enable=true",
         "traefik.http.routers.nginx-glados.rule=Host(`glados.redbrick.dcu.ie`)",
         "traefik.http.routers.nginx-glados.entrypoints=web,websecure",
-        "traefik.http.routers.nginx-glados.tls.certresolver=lets-encrypt"
+        "traefik.http.routers.nginx-glados.tls.certresolver=rb"
       ]
     }
 
@@ -137,7 +137,7 @@ job "nginx" {
         "traefik.enable=true",
         "traefik.http.routers.nginx-wheatley.rule=Host(`wheatley.redbrick.dcu.ie`)",
         "traefik.http.routers.nginx-wheatley.entrypoints=web,websecure",
-        "traefik.http.routers.nginx-wheatley.tls.certresolver=lets-encrypt"
+        "traefik.http.routers.nginx-wheatley.tls.certresolver=rb"
       ]
     }
 
@@ -194,7 +194,7 @@ job "nginx" {
         "traefik.enable=true",
         "traefik.http.routers.nginx-chell.rule=Host(`chell.redbrick.dcu.ie`)",
         "traefik.http.routers.nginx-chell.entrypoints=web,websecure",
-        "traefik.http.routers.nginx-chell.tls.certresolver=lets-encrypt"
+        "traefik.http.routers.nginx-chell.tls.certresolver=rb"
       ]
     }
 

@@ -28,7 +28,7 @@ job "imageproxy" {
         "traefik.enable=true",
         "traefik.http.routers.imageproxy-api.rule=Host(`img.redbrick.dcu.ie`)",
         "traefik.http.routers.imageproxy-api.tls=true",
-        "traefik.http.routers.imageproxy-api.tls.certresolver=lets-encrypt",
+        "traefik.http.routers.imageproxy-api.tls.certresolver=rb",
       ]
     }
 

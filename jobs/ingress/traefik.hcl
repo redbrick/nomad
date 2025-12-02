@@ -17,30 +17,6 @@ job "traefik" {
       port "ssh" {
         static = 22
       }
-      port "smtp" {
-        static = 25
-      }
-      port "submission" {
-        static = 587
-      }
-      port "submissions" {
-        static = 465
-      }
-      port "imap" {
-        static = 143
-      }
-      port "imaps" {
-        static = 993
-      }
-      port "pop3" {
-        static = 110
-      }
-      port "pop3s" {
-        static = 995
-      }
-      port "managesieve" {
-        static = 4190
-      }
       port "voice-tcp" {
         static = 4502
       }
@@ -64,11 +40,26 @@ job "traefik" {
         volumes = [
           "local/traefik.toml:/etc/traefik/traefik.toml",
           "/storage/nomad/traefik/acme/acme.json:/acme.json",
+          "/storage/nomad/traefik/acme/acme-dns.json:/acme-dns.json",
           "/storage/nomad/traefik/access.log:/access.log",
         ]
       }
 
       template {
+        destination = "local/.env"
+        env         = true
+        change_mode = "restart"
+        data        = <<EOF
+RFC2136_TSIG_KEY=dnsupdate.redbrick.dcu.ie.
+RFC2136_TSIG_SECRET={{ key "traefik/acme/dns/key" }}
+RFC2136_TSIG_ALGORITHM=hmac-sha256.
+RFC2136_NAMESERVER=ns1.redbrick.dcu.ie:53
+EOF
+      }
+
+      template {
+        destination = "local/traefik.toml"
+        change_mode = "restart"
         data        = <<EOF
 [entryPoints]
   [entryPoints.web]
@@ -85,30 +76,6 @@ job "traefik" {
 
   [entryPoints.ssh]
   address = ":22"
-
-  [entryPoints.smtp]
-  address = ":25"
-
-  [entryPoints.submission]
-  address = ":587"
-
-  [entryPoints.submissions]
-  address = ":465"
-
-  [entryPoints.imap]
-  address = ":143"
-
-  [entryPoints.imaps]
-  address = ":993"
-
-  [entryPoints.pop3]
-  address = ":110"
-
-  [entryPoints.pop3s]
-  address = ":995"
-
-  [entryPoints.managesieve]
-  address = ":4190"
 
   [entryPoints.voice-tcp]
   address = ":4502"
@@ -157,14 +124,23 @@ job "traefik" {
   storage = "acme.json"
   [certificatesResolvers.lets-encrypt.acme.tlsChallenge]
 
+[certificatesResolvers.rb.acme]
+  email = "elected-admins@redbrick.dcu.ie"
+  storage = "acme-dns.json"
+  [certificatesResolvers.rb.acme.dnsChallenge]
+    provider = "rfc2136"
+    delayBeforeCheck = 60
+        resolvers = "ns1.redbrick.dcu.ie:53,1.1.1.1:53,8.8.8.8:53"
+
 [tracing]
 
 [accessLog]
   filePath = "/access.log"
 EOF
-        destination = "/local/traefik.toml"
       }
       template {
+        destination = "local/dynamic.toml"
+        change_mode = "noop"
         data        = <<EOF
 [http]
 
@@ -192,13 +168,33 @@ EOF
     [http.routers.{{ trimPrefix "redirect/redbrick/" $pair.Key }}-redirect.tls]
 {{- end }}
 
+[http.routers.tls-default]
+      rule = "HostRegexp(`{any:.+}.redbrick.dcu.ie`) || HostRegexp(`{any:.+}.rb.dcu.ie`) || HostRegexp(`{any:.+}.redbrick.ie`)"
+      entryPoints = ["web", "websecure"]
+      service = "dummy-service"
+      priority = -1
+
+      [http.routers.tls-default.tls]
+        certResolver = "rb"
+
+        [[http.routers.tls-default.tls.domains]]
+          main = "redbrick.dcu.ie"
+          sans = ["*.redbrick.dcu.ie"]
+
+        [[http.routers.tls-default.tls.domains]]
+          main = "rb.dcu.ie"
+          sans = ["*.rb.dcu.ie"]
+
+        [[http.routers.tls-default.tls.domains]]
+          main = "redbrick.ie"
+          sans = ["*.redbrick.ie"]
+
+
 [http.services]
   [http.services.dummy-service.loadBalancer]
     [[http.services.dummy-service.loadBalancer.servers]]
       url = "http://127.0.0.1"  # Dummy service - not used
 EOF
-        destination = "local/dynamic.toml"
-        change_mode = "noop"
       }
     }
   }

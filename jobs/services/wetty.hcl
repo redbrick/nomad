@@ -17,17 +17,17 @@ job "wetty" {
       port = "http"
 
       check {
-        type = "http"
-        path = "/"
+        type     = "http"
+        path     = "/"
         interval = "10s"
-        timeout = "2s"
+        timeout  = "2s"
       }
 
       tags = [
         "traefik.enable=true",
         "traefik.http.routers.wetty.rule=Host(`wetty.rb.dcu.ie`) || Host(`wetty.redbrick.dcu.ie`) || Host(`term.redbrick.dcu.ie`) || Host(`anyterm.redbrick.dcu.ie`) || Host(`ajaxterm.redbrick.dcu.ie`)",
         "traefik.http.routers.wetty.entrypoints=web,websecure",
-        "traefik.http.routers.wetty.tls.certresolver=lets-encrypt",
+        "traefik.http.routers.wetty.tls.certresolver=rb",
       ]
     }
 

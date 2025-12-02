@@ -22,7 +22,7 @@ job "shlink" {
         "traefik.http.routers.shlink-api.entrypoints=web,websecure",
         "traefik.http.routers.shlink-api.rule=Host(`s.rb.dcu.ie`)",
         "traefik.http.routers.shlink-api.tls=true",
-        "traefik.http.routers.shlink-api.tls.certresolver=lets-encrypt",
+        "traefik.http.routers.shlink-api.tls.certresolver=rb",
       ]
     }
 
@@ -35,7 +35,7 @@ job "shlink" {
       }
 
       template {
-        data = <<EOH
+        data        = <<EOH
 DEFAULT_DOMAIN=s.rb.dcu.ie
 IS_HTTPS_ENABLED=true
 DB_DRIVER=postgres
@@ -53,41 +53,41 @@ EOH
       }
     }
 
-#    task "shlink-web-client" {
-#      driver = "docker"
-#
-#      config {
-#        image = "shlinkio/shlink-web-client"
-#        ports = ["web"]
-#      }
-#
-#      template {
-#        data = <<EOH
-#SHLINK_SERVER_URL=https://s.rb.dcu.ie
-#SHLINK_API_KEY={{ key "shlink/api/key" }}
-#EOH
-#        destination = "local/file.env"
-#        env         = true
-#      }
-#
-#
-#
-#      service {
-#        name = "shlink"
-#        port = "api"
-#
-#        tags = [
-#          "traefik.enable=true",
-#          "traefik.http.routers.shlink-web.entrypoints=web,websecure",
-#          "traefik.http.routers.shlink-web.rule=Host(`shlink.rb.dcu.ie`)",
-#          "traefik.http.routers.shlink-web.tls=true",
-#          "traefik.http.routers.shlink-web.tls.certresolver=lets-encrypt",
-#        ]
-#      }
-#      resources {
-#        memory = 500
-#      }
-#    }
+    #    task "shlink-web-client" {
+    #      driver = "docker"
+    #
+    #      config {
+    #        image = "shlinkio/shlink-web-client"
+    #        ports = ["web"]
+    #      }
+    #
+    #      template {
+    #        data = <<EOH
+    #SHLINK_SERVER_URL=https://s.rb.dcu.ie
+    #SHLINK_API_KEY={{ key "shlink/api/key" }}
+    #EOH
+    #        destination = "local/file.env"
+    #        env         = true
+    #      }
+    #
+    #
+    #
+    #      service {
+    #        name = "shlink"
+    #        port = "api"
+    #
+    #        tags = [
+    #          "traefik.enable=true",
+    #          "traefik.http.routers.shlink-web.entrypoints=web,websecure",
+    #          "traefik.http.routers.shlink-web.rule=Host(`shlink.rb.dcu.ie`)",
+    #          "traefik.http.routers.shlink-web.tls=true",
+    #          "traefik.http.routers.shlink-web.tls.certresolver=rb",
+    #        ]
+    #      }
+    #      resources {
+    #        memory = 500
+    #      }
+    #    }
   }
 }
 

@@ -25,7 +25,7 @@ job "uptime-kuma" {
         "traefik.enable=true",
         "traefik.http.routers.uptime-kuma.rule=Host(`status.redbrick.dcu.ie`)",
         "traefik.http.routers.uptime-kuma.entrypoints=web,websecure",
-        "traefik.http.routers.uptime-kuma.tls.certresolver=lets-encrypt",
+        "traefik.http.routers.uptime-kuma.tls.certresolver=rb",
       ]
     }
 

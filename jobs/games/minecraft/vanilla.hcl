@@ -34,7 +34,7 @@ job "minecraft-vanilla" {
         "traefik.enable=true",
         "traefik.http.routers.vanilla-mc-bluemap.rule=Host(`vanilla-mc.rb.dcu.ie`)",
         "traefik.http.routers.vanilla-mc-bluemap.entrypoints=web,websecure",
-        "traefik.http.routers.vanilla-mc-bluemap.tls.certresolver=lets-encrypt",
+        "traefik.http.routers.vanilla-mc-bluemap.tls.certresolver=rb",
       ]
     }
 

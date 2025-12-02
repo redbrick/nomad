@@ -30,7 +30,7 @@ job "privatebin" {
         "traefik.enable=true",
         "traefik.http.routers.privatebin.rule=Host(`paste.redbrick.dcu.ie`) || Host(`paste.rb.dcu.ie`)",
         "traefik.http.routers.privatebin.entrypoints=web,websecure",
-        "traefik.http.routers.privatebin.tls.certresolver=lets-encrypt",
+        "traefik.http.routers.privatebin.tls.certresolver=rb",
       ]
     }
 
