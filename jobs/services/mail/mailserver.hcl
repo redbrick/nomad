@@ -103,8 +103,7 @@ job "mailserver" {
 
           "/etc/localtime:/etc/localtime:ro",
 
-          # TODO: wrong dir, fix 
-          "/storage/zbackup/oldstorage/home:/home/:ro",
+          "/storage/home:/home/:ro",
         ]
       }
 
