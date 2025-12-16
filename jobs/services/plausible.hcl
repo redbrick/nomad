@@ -38,7 +38,7 @@ job "plausible" {
       driver = "docker"
 
       config {
-        image = "ghcr.io/plausible/community-edition:v2.1"
+        image = "ghcr.io/plausible/community-edition:v3"
         ports = ["http"]
         volumes = [
           "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/var/lib/plausible"
@@ -49,6 +49,8 @@ job "plausible" {
       }
 
       template {
+        destination = "local/file.env"
+        env         = true
         data        = <<EOH
 TMPDIR=/var/lib/plausible/tmp
 
@@ -79,8 +81,6 @@ SMTP_USER_PWD={{ key "plausible/smtp/password" }}
 
 DISABLE_REGISTRATION=invite_only
 EOH
-        destination = "local/file.env"
-        env         = true
       }
 
       resources {
@@ -101,13 +101,13 @@ EOH
       }
 
       template {
+        destination = "local/db.env"
+        env         = true
         data        = <<EOH
 POSTGRES_PASSWORD={{ key "plausible/db/password" }}
 POSTGRES_USER={{ key "plausible/db/user" }}
 POSTGRES_NAME={{ key "plausible/db/name" }}
 EOH
-        destination = "local/db.env"
-        env         = true
       }
     }
 
@@ -121,7 +121,7 @@ EOH
       driver = "docker"
 
       config {
-        image = "clickhouse/clickhouse-server:24.3.3.102-alpine"
+        image = "clickhouse/clickhouse-server:24.12-alpine"
         ports = ["clickhouse"]
         volumes = [
           "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/var/lib/clickhouse",
@@ -129,8 +129,12 @@ EOH
           "local/clickhouse-user-config.xml:/etc/clickhouse-server/users.d/logging.xml:ro"
         ]
       }
+      env {
+        CLICKHOUSE_SKIP_USER_SETUP = 1
+      }
 
       template {
+        destination = "local/clickhouse.xml"
         data        = <<EOH
 <clickhouse>
     <logger>
@@ -149,10 +153,10 @@ EOH
     <part_log remove="remove"/>
 </clickhouse>
 EOH
-        destination = "local/clickhouse.xml"
       }
 
       template {
+        destination = "local/clickhouse-user-config.xml"
         data        = <<EOH
 <clickhouse>
     <profiles>
@@ -163,11 +167,10 @@ EOH
     </profiles>
 </clickhouse>
 EOH
-        destination = "local/clickhouse-user-config.xml"
       }
 
       resources {
-        memory = 1000
+        memory = 1500
       }
     }
   }
