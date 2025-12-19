@@ -158,6 +158,15 @@ EOF
 
 [http.routers]
 
+[http.routers.webtree]
+  rule = "HostRegexp(`^([a-z0-9-]+)\\.redbrick\\.dcu\\.ie$`)"
+  entryPoints = ["websecure"]
+  priority = 10
+  service = "webtree@consulcatalog"
+
+  [http.routers.webtree.tls]
+    certResolver = "rb"
+
 # create routers with middlewares for each redirect
 {{ range $pair := tree "redirect/redbrick" }}
   [http.routers.{{ trimPrefix "redirect/redbrick/" $pair.Key }}-redirect]
