@@ -8,24 +8,15 @@ job "members-mysql" {
 
   group "db" {
     network {
+      # mode = "host"
       port "db" {
+        to     = 3306
         static = 3306
       }
     }
 
     task "mariadb" {
       driver = "docker"
-
-      template {
-        data = <<EOH
-MYSQL_ROOT_PASSWORD="{{ key "members-mysql/root/password" }}"
-MYSQL_USER="{{ key "members-mysql/user/username" }}"
-MYSQL_PASSWORD="{{ key "members-mysql/user/password" }}"
-EOH
-
-        destination = "local/file.env"
-        env         = true
-      }
 
       config {
         image = "mariadb:latest"
@@ -38,6 +29,17 @@ EOH
       }
 
       template {
+        destination = "local/file.env"
+        env         = true
+        data        = <<EOH
+MYSQL_ROOT_PASSWORD="{{ key "members-mysql/root/password" }}"
+MYSQL_USER="{{ key "members-mysql/user/username" }}"
+MYSQL_PASSWORD="{{ key "members-mysql/user/password" }}"
+EOH
+      }
+
+      template {
+        destination = "local/server.cnf"
         data        = <<EOH
 [server]
 
@@ -55,7 +57,6 @@ character-set-collations = utf8mb4=uca1400_ai_ci
 
 [mariadbd]
         EOH
-        destination = "local/server.cnf"
       }
 
       resources {
