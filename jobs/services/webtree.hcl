@@ -40,6 +40,8 @@ job "webtree" {
           "/storage/webtree:/var/www/html",
           "local/nginx.conf:/etc/nginx/nginx.conf:ro",
         ]
+        group_add = [82, 10000] # www-data in alpine, RB member groups
+
       }
 
       resources {
@@ -61,6 +63,11 @@ http {
   include /etc/nginx/mime.types;
   server_tokens off;
 
+  set_real_ip_from 136.206.16.0/24;
+
+  real_ip_header X-Forwarded-For;
+  real_ip_recursive on;
+
   access_log /dev/stdout;
   error_log /dev/stderr error;
 
@@ -77,7 +84,7 @@ http {
     server_name ~^(?<subdomain>[a-z0-9-]+)\.redbrick\.dcu\.ie$;
 
     root /var/www/html/$first_letter/$subdomain;
-    index index.php index.html index.htm;
+    index index.html index.php index.htm;
 
     location / {
       try_files $uri $uri/ /index.php?$args =404;
@@ -99,6 +106,26 @@ http {
       deny all;
     }
   }
+
+  {{ range $pair := tree "webtree/domains" }}
+  server {
+    listen 80;
+    server_name {{ $pair.Key }};
+
+    root /var/www/html/{{ $pair.Value }};
+    index index.php index.html;
+
+    location / {
+      try_files $uri $uri/ /index.php?$args;
+    }
+
+    location ~ \.php$ {
+      include fastcgi_params;
+      fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+      fastcgi_pass {{ env "NOMAD_HOST_ADDR_fpm" }};
+    }
+  }
+  {{ end }}
 }
 EOH
       }
@@ -110,12 +137,12 @@ EOH
       config {
         image = "php:8-fpm-alpine"
         ports = ["fpm"]
-
         volumes = [
           "/storage/webtree:/var/www/html",
         ]
-        command = "sh"
-        args    = ["-c", "docker-php-ext-install mysqli && docker-php-ext-enable mysqli && php-fpm"]
+        group_add = [10000] # RB member group
+        command   = "sh"
+        args      = ["-c", "docker-php-ext-install mysqli && docker-php-ext-enable mysqli && php-fpm"]
       }
 
       resources {

@@ -28,7 +28,7 @@ job "traefik" {
     service {
       name     = "traefik-http"
       provider = "nomad"
-      port     = "https"
+      port     = "admin"
     }
 
     task "traefik" {
@@ -69,7 +69,10 @@ EOF
     scheme = "https"
 
   [entryPoints.websecure]
-  address = ":443"
+    address = ":443"
+    asDefault = true
+    [entryPoints.websecure.forwardedHeaders]
+      trustedIPs = ["127.0.0.1/32", "10.10.0.0/16", "136.206.16.0/24"]
 
   [entryPoints.traefik]
   address = ":8080"
@@ -203,6 +206,21 @@ EOF
   [http.services.dummy-service.loadBalancer]
     [[http.services.dummy-service.loadBalancer.servers]]
       url = "http://127.0.0.1"  # Dummy service - not used
+
+{{ $i := 0 -}}
+{{- range $pair := tree "webtree/domains" -}}
+  {{- $i = add $i 1 -}}
+
+  [http.routers.webtree-domain-{{ $i }}]
+    rule = "Host(`{{ $pair.Key }}`)"
+    entryPoints = ["web", "websecure"]
+    service = "webtree@consulcatalog"
+    priority = 20
+
+    [http.routers.webtree-domain-{{ $i }}.tls]
+      certResolver = "lets-encrypt"
+
+{{ end -}}
 EOF
       }
     }
