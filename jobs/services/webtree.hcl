@@ -107,6 +107,7 @@ http {
     }
   }
 
+  # server blocks for custom domains
   {{ range $pair := tree "webtree/domains" }}
   server {
     listen 80;
