@@ -183,7 +183,7 @@ batchsize = 10
 [model]
 class = Database
 [model_options]
-dsn = "pgsql:host={{ env "NOMAD_ADDR_db" }};dbname={{ key "privatebin/db/name" }}"
+dsn = "pgsql:host={{ env "NOMAD_IP_db" }};port={{ env "NOMAD_HOST_PORT_db" }};dbname={{ key "privatebin/db/name" }}"
 tbl = "{{ key "privatebin/db/name" }}"     ; table prefix
 usr = "{{ key "privatebin/db/user" }}"
 pwd = "{{ key "privatebin/db/password" }}"
