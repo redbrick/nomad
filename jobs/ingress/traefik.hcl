@@ -162,7 +162,7 @@ EOF
 [http.routers]
 
 [http.routers.webtree]
-  rule = "HostRegexp(`^([a-z0-9-]+)\\.redbrick\\.dcu\\.ie$`) || ((Host(`redbrick.dcu.ie`) || Host(`www.redbrick.dcu.ie`)) && PathPrefix(`/~`))"
+  rule = "HostRegexp(`^([a-z0-9_-]+)\\.redbrick\\.dcu\\.ie$`) || ((Host(`redbrick.dcu.ie`) || Host(`www.redbrick.dcu.ie`)) && PathPrefix(`/~`))"
   entryPoints = ["websecure"]
   priority = 10
   service = "webtree@consulcatalog"
