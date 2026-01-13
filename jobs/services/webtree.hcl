@@ -96,6 +96,7 @@ http {
 
     root /webtree/$subdomain_first_letter/$subdomain;
     index index.html index.php index.htm index.shtml;
+    ssi on;
 
     location / {
         try_files $uri $uri/ /index.php?$is_args$args =404;
@@ -119,6 +120,8 @@ http {
     server_name redbrick.dcu.ie www.redbrick.dcu.ie;
 
     root /webtree;
+
+    ssi on;
 
     # /~user/path -> /<first>/<user>/path
     location ~ ^/~(?<tilde_user>[a-z0-9_-]+)(?<rest>/.*)?$ {
@@ -170,6 +173,8 @@ http {
 
     root /webtree/{{ $pair.Value }};
     index index.html index.php index.htm index.shtml;
+
+    ssi on;
 
     location / {
       try_files $uri $uri/ /index.php?$args =404;
