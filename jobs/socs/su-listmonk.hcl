@@ -45,7 +45,7 @@ job "su-listmonk" {
         ports = ["http"]
 
         command = "sh"
-        args    = ["-c", "./listmonk --install --idempotent --yes --config '' && ./listmonk --upgrade --yes --config '' && ./listmonk --config ''"] # empty config so envvars are sued instead
+        args    = ["-c", "./listmonk --install --idempotent --yes --config '' && ./listmonk --upgrade --yes --config '' && ./listmonk --config ''"] # empty config so envvars are used instead
 
         volumes = [
           "/storage/nomad/su-listmonk/uploads:/uploads",
@@ -98,13 +98,13 @@ EOH
       }
 
       template {
+        destination = "local/wait.env"
+        env         = true
         data        = <<EOH
 DB_HOST={{ env "NOMAD_IP_db" }}
 DB_PORT={{ env "NOMAD_HOST_PORT_db" }}
 DB_USER={{ key "su/listmonk/db/username" }}
 EOH
-        destination = "local/wait.env"
-        env         = true
       }
 
       resources {
