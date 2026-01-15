@@ -6,7 +6,7 @@ job "nova-timetable" {
     count = 1
 
     network {
-      port "redis" {
+      port "valkey" {
         to = 6379
       }
 
@@ -60,10 +60,10 @@ job "nova-timetable" {
       driver = "docker"
 
       env {
-        BACKEND_PORT  = "${NOMAD_PORT_backend}"
-        VALKEY_HOST   = "${NOMAD_IP_valkey}"
-        VALKEY_PORT   = "${NOMAD_HOST_PORT_valkey}"
-        CNS_ADDRESS   = "https://clubsandsocs.jakefarrell.ie"
+        BACKEND_PORT = "${NOMAD_PORT_backend}"
+        VALKEY_HOST  = "${NOMAD_IP_valkey}"
+        VALKEY_PORT  = "${NOMAD_HOST_PORT_valkey}"
+        CNS_ADDRESS  = "https://clubsandsocs.jakefarrell.ie"
       }
 
       config {
@@ -124,28 +124,28 @@ EOH
       }
     }
 
-#     task "timetable-bot" {
-#       driver = "docker"
+    #     task "timetable-bot" {
+    #       driver = "docker"
 
-#       config {
-#         image = "ghcr.io/novanai/timetable-sync-bot:latest"
-#       }
+    #       config {
+    #         image = "ghcr.io/novanai/timetable-sync-bot:latest"
+    #       }
 
-#       template {
-#         data        = <<EOH
-# BOT_TOKEN={{ key "user-projects/nova/bot/token" }}
-# VALKEY_HOST={{ env "NOMAD_IP_valkey" }}
-# VALKEY_PORT={{ env "NOMAD_HOST_PORT_valkey" }}
-# POSTGRES_USER={{ key "user-projects/nova/db/user" }}
-# POSTGRES_PASSWORD={{ key "user-projects/nova/db/password" }}
-# POSTGRES_DB={{ key "user-projects/nova/db/name" }}
-# POSTGRES_HOST={{ env "NOMAD_IP_db" }}
-# POSTGRES_PORT={{ env "NOMAD_HOST_PORT_db" }}
-# CNS_ADDRESS="https://clubsandsocs.jakefarrell.ie"
-# EOH
-#         destination = "local/.env"
-#         env         = true
-#       }
-#     }
+    #       template {
+    #         data        = <<EOH
+    # BOT_TOKEN={{ key "user-projects/nova/bot/token" }}
+    # VALKEY_HOST={{ env "NOMAD_IP_valkey" }}
+    # VALKEY_PORT={{ env "NOMAD_HOST_PORT_valkey" }}
+    # POSTGRES_USER={{ key "user-projects/nova/db/user" }}
+    # POSTGRES_PASSWORD={{ key "user-projects/nova/db/password" }}
+    # POSTGRES_DB={{ key "user-projects/nova/db/name" }}
+    # POSTGRES_HOST={{ env "NOMAD_IP_db" }}
+    # POSTGRES_PORT={{ env "NOMAD_HOST_PORT_db" }}
+    # CNS_ADDRESS="https://clubsandsocs.jakefarrell.ie"
+    # EOH
+    #         destination = "local/.env"
+    #         env         = true
+    #       }
+    #     }
   }
 }
