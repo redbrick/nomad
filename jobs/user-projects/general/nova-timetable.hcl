@@ -90,6 +90,9 @@ job "nova-timetable" {
           "traefik.http.routers.nova-timetable-backend.tls.certresolver=rb",
         ]
       }
+      resources {
+        memory = 800
+      }
     }
 
     task "valkey" {
