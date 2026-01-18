@@ -1,10 +1,9 @@
 job "gate-proxy" {
   datacenters = ["aperture"]
-  node_pool   = "ingress"
-  type        = "service"
+  node_pool   = "all"
+  type        = "system"
 
   group "gate-proxy" {
-    count = 1
 
     network {
       port "mc" {
