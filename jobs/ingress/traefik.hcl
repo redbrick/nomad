@@ -52,7 +52,8 @@ job "traefik" {
           # "/storage/nomad/traefik/acme/acme.json:/acme.json",
           # "/storage/nomad/traefik/acme/acme-dns.json:/acme-dns.json",
           # "/storage/nomad/traefik/access.log:/access.log",
-          "/storage/nomad/traefik/certs/certificates:/local/certs:ro",
+          "local/dynamic.toml:/traefik-config/dynamic.toml:ro",
+          "/storage/nomad/traefik/certs/certificates:/traefik-config/certs:ro",
         ]
       }
 
@@ -119,7 +120,7 @@ job "traefik" {
 
 # Enable the file provider for dynamic configuration.
 [providers.file]
-  directory = "/local"
+  directory = "/traefik-config"
   watch     = true
 
 #[providers.nomad]
