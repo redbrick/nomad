@@ -1,75 +1,49 @@
 job "keepalived" {
   datacenters = ["aperture"]
-  # node_pool   = "ingress"
-  type = "service"
+  node_pool   = "default"
+  type        = "system"
+
+
+  constraint {
+    distinct_hosts = true
+  }
 
   group "vrrp" {
-    count = 2
+
     network {
       mode = "host"
     }
 
+    update {
+      max_parallel     = 1
+      canary           = 1
+      min_healthy_time = "10s"
+      healthy_deadline = "1m"
+      auto_revert      = true
+      auto_promote     = true
+    }
+
     task "keepalived" {
+
       driver = "docker"
+
+      env {
+        KEEPALIVED_VIRTUAL_IP   = "136.206.16.50"
+        KEEPALIVED_CHECK_PORT   = 8080 # traefik admin port
+        KEEPALIVED_VIRTUAL_MASK = 24
+        KEEPALIVED_VRID         = 51
+        KEEPALIVED_INTERFACE    = "br0" # or auto maybe?
+        KEEPALIVED_AUTH_TYPE    = "PASS"
+        KEEPALIVED_AUTH_PASS    = "ihatenixos"
+      }
 
       config {
         image        = "shawly/keepalived:2"
+        hostname     = "${attr.unique.hostname}"
         network_mode = "host"
         privileged   = true
-
-        volumes = [
-          "local/keepalived.conf:/etc/keepalived/keepalived.conf:ro"
-        ]
-      }
-      env {
-        KEEPALIVED_CUSTOM_CONFIG = true
       }
 
-      template {
-        data        = <<EOF
-global_defs {
-    router_id {{ env "node.unique.name" }}
-}
-
-vrrp_script chk_traefik {
-    script "/usr/bin/nc -zv 127.0.0.1 8080"
-    interval 2
-    weight 20
-}
-
-vrrp_instance VI_1 {
-    state BACKUP
-    interface br0
-    virtual_router_id 51
-    priority 100
-    advert_int 1
-
-    authentication {
-        auth_type PASS
-        auth_pass redbrick_ha_2026
-    }
-
-    unicast_src_ip {{ env "attr.unique.network.ip-address" }}
-    unicast_peer {
-        {{- range $index, $node := nodes -}}
-        {{- if ne $node.ID (env "node.unique.id") }}
-        {{ $node.Address }}
-        {{- end -}}
-        {{- end }}
-    }
-
-    virtual_ipaddress {
-        136.206.16.69/24
-    }
-
-    track_script {
-        chk_traefik
-    }
-}
-EOF
-        destination = "local/keepalived.conf"
-        change_mode = "restart"
-      }
 
       resources {
         cpu    = 100
