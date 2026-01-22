@@ -7,7 +7,7 @@ job "roundcube" {
   }
 
   group "roundcube" {
-    count = 1
+    count = 2
 
     network {
       port "http" {
@@ -16,9 +16,13 @@ job "roundcube" {
       port "fpm" {
         to = 9000
       }
-      port "db" {
-        to = 5432
-      }
+    }
+
+    update {
+      max_parallel     = 1
+      health_check     = "checks"
+      min_healthy_time = "10s"
+      healthy_deadline = "5m"
     }
 
     service {
@@ -92,7 +96,8 @@ EOH
 
         volumes = [
           "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/var/www/html",
-          "local/rb-custom.php:/var/roundcube/config/rb-custom.php"
+          "local/rb-custom.php:/var/roundcube/config/rb-custom.php",
+          "local/php.ini:/usr/local/etc/php/conf.d/php.ini"
         ]
       }
 
@@ -101,8 +106,10 @@ EOH
         env         = true
         data        = <<EOH
 ROUNDCUBEMAIL_DB_TYPE=pgsql
-ROUNDCUBEMAIL_DB_HOST={{ env "NOMAD_IP_db" }}
-ROUNDCUBEMAIL_DB_PORT={{ env "NOMAD_HOST_PORT_db" }}
+{{ range service "roundcube-db" }}
+ROUNDCUBEMAIL_DB_HOST={{ .Name }}.service.consul
+ROUNDCUBEMAIL_DB_PORT={{ .Port }}
+{{ end }}
 ROUNDCUBEMAIL_DB_NAME={{ key "roundcube/db/name" }}
 ROUNDCUBEMAIL_DB_USER={{ key "roundcube/db/user" }}
 ROUNDCUBEMAIL_DB_PASSWORD={{ key "roundcube/db/password" }}
@@ -130,10 +137,95 @@ $config['support_url'] = 'https://redbrick.dcu.ie/';
 
 EOH
       }
+      template {
+        destination = "local/php.ini"
+        data        = <<EOH
+pm = dynamic
+pm.max_children = 20
+pm.start_servers = 4
+pm.min_spare_servers = 4
+pm.max_spare_servers = 8
+pm.max_requests = 500
+request_terminate_timeout = 120s
+
+opcache.enable=1
+opcache.enable_cli=0
+opcache.memory_consumption=128
+opcache.interned_strings_buffer=16
+opcache.max_accelerated_files=20000
+opcache.validate_timestamps=0
+opcache.save_comments=1
+EOH
+      }
     }
 
-    task "roundcube-db" {
+    task "wait-for-db" {
       driver = "docker"
+
+      lifecycle {
+        hook    = "prestart"
+        sidecar = false
+      }
+
+      config {
+        image   = "postgres:18-alpine"
+        command = "sh"
+        args = [
+          "-c",
+          "while ! pg_isready -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER}; do echo 'Waiting for DB...'; sleep 1; done; echo 'DB is ready!'"
+        ]
+      }
+      template {
+        data        = <<EOH
+{{ range service "roundcube-db" }}
+DB_HOST={{ .Address }}
+DB_PORT={{ .Port }}
+{{ end }}
+DB_USER={{ key "roundcube/db/user" }}
+EOH
+        destination = "local/wait.env"
+        env         = true
+      }
+
+      resources {
+        memory = 128
+      }
+    }
+  }
+
+  group "database" {
+    count = 1
+
+    network {
+      port "db" {
+        to = 5432
+      }
+    }
+
+    update {
+      max_parallel = 0 # don't update this group automatically
+      auto_revert  = false
+    }
+
+    task "db" {
+      driver         = "docker"
+      kill_signal    = "SIGTERM" # SIGTERM instead of SIGKILL so database can shutdown safely
+      kill_timeout   = "30s"
+      shutdown_delay = "5s"
+
+      service {
+        name = "roundcube-db"
+        port = "db"
+
+        check {
+          type     = "script"
+          name     = "postgres-ready"
+          command  = "/bin/sh"
+          args     = ["-c", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+          interval = "10s"
+          timeout  = "2s"
+        }
+      }
 
       config {
         image = "postgres:17-alpine"
