@@ -94,6 +94,9 @@ MAIL_BRAND="DCU Solar Racing"
 MAIL_PRIMARY="#22c55e"
 
 PLAUSIBLE_BASE_URL={{ key "socs/dcusr-dev/plausible/url" }}
+
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY={{ key "socs/dcusr/captcha/site/key"}}
+RECAPTCHA_SECRET={{ key "socs/dcusr/captcha/secret/key" }}
 EOH
       }
     }
