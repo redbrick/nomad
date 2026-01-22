@@ -7,30 +7,38 @@ job "linkstack" {
   }
 
   group "linkstack" {
+    count = 1
+
     network {
       port "http" {
         to = 80
       }
     }
 
+    update {
+      max_parallel     = 1
+      health_check     = "checks"
+      min_healthy_time = "10s"
+      healthy_deadline = "5m"
+    }
+
     service {
       name = "linkstack"
       port = "http"
 
+      # check {
+      #   type      = "http"
+      #   path      = "/"
+      #   interval  = "10s"
+      #   timeout   = "2s"
+      # }
+
       tags = [
         "traefik.enable=true",
-        "traefik.port=${NOMAD_PORT_http}",
         "traefik.http.routers.linkstack.rule=Host(`${NOMAD_META_domain}`)",
-        "traefik.http.routers.linkstack.entrypoints=web,websecure",
+        "traefik.http.routers.linkstack.entrypoints=websecure",
         "traefik.http.routers.linkstack.tls.certresolver=rb",
         "traefik.http.routers.linkstack.tls=true",
-        "traefik.http.routers.linkstack.service=linkstack",
-        "traefik.http.middlewares.name-head.headers.customrequestheaders.X-Forwarded-Proto=https",
-        "traefik.http.middlewares.name-head.headers.customResponseHeaders.X-Robots-Tag=none",
-        "traefik.http.middlewares.name-head.headers.customResponseHeaders.Strict-Transport-Security=max-age=63072000",
-        "traefik.http.middlewares.name-head.headers.stsSeconds=31536000",
-        "traefik.http.middlewares.name-head.headers.accesscontrolalloworiginlist=*",
-        "traefik.http.routers.linkstack.middlewares=name-head",
       ]
     }
 
@@ -43,14 +51,17 @@ job "linkstack" {
         ports = ["http"]
 
         volumes = [
-          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/htdocs",
+          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}/advanced-config.php:/htdocs/config/advanced-config.php",
+          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}/images:/htdocs/assets/linkstack/images",
+          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}/themes:/htdocs/themes",
+          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}/assets/img:/htdocs/assets/img",
           "local/.env:/htdocs/.env",
         ]
       }
 
       resources {
-        cpu    = 500
-        memory = 512
+        cpu    = 800
+        memory = 768
       }
 
       template {
@@ -67,13 +78,15 @@ UPLOAD_MAX_FILESIZE=16M
 EOH
       }
 
+      # NOTE: Not a real .env file, but used by LinkStack as its config, for some reason...
       template {
         destination = "local/.env"
         env         = false
+        change_mode = "noop"
         data        = <<EOH
 LOCALE=en
 
-# auth or verified. auth required email verificaiton
+# auth or verified. auth required email verification
 REGISTER_AUTH=verified
 ALLOW_REGISTRATION=false
 
@@ -85,9 +98,9 @@ DISPLAY_CREDIT_FOOTER=false
 
 ADMIN_EMAIL={{ key "linkstack/admin/email" }}
 
-SUPPORTED_DOMAINS=""
+SUPPORTED_DOMAINS="{{ env "NOMAD_META_domain" }}"
 
-#=Leave empty to use the default homepage. 
+#=Leave empty to use the default homepage.
 #or user's profile e.g. 'admin' without the '@'
 HOME_URL="redbrick"
 
@@ -109,7 +122,14 @@ LOG_LEVEL=info
 MAINTENANCE_MODE=false
 
 #Database Settings=Should be left alone. If you wish to use mysql you'd have to seed the database again.
-DB_CONNECTION=sqlite
+DB_CONNECTION=mysql
+{{- range service "linkstack-db" }}
+DB_HOST={{ .Address }}
+DB_PORT={{ .Port }}
+{{- end }}
+DB_DATABASE={{ key "linkstack/db/name" }}
+DB_USERNAME={{ key "linkstack/db/user" }}
+DB_PASSWORD={{ key "linkstack/db/password" }}
 
 MAIL_MAILER=smtp
 MAIL_HOST=mail.redbrick.dcu.ie
@@ -117,14 +137,8 @@ MAIL_PORT=465
 MAIL_USERNAME={{ key "linkstack/ldap/username" }}
 MAIL_PASSWORD={{ key "linkstack/ldap/password" }}
 MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS={{ key "linkstack/from/address" }}
+MAIL_FROM_ADDRESS={{ key "linkstack/ldap/username" }}@redbrick.dcu.ie
 MAIL_FROM_NAME="${APP_NAME}"
-
-#Cache Settings=Completely optional.
-MEMCACHED_HOST=127.0.0.1
-REDIS_HOST=127.0.0.1
-REDIS_PASSWORD=null
-REDIS_PORT=6379
 
 #Miscellaneous Settings=Should be left alone if you don't know what you're doing.
 BROADCAST_DRIVER=log
@@ -146,7 +160,7 @@ CUSTOM_META_TAGS=false
 FORCE_HTTPS=true
 
 #=Defines wether or not themes are allowed to inject custom code.
-ALLOW_CUSTOM_CODE_IN_THEMES=false
+ALLOW_CUSTOM_CODE_IN_THEMES=true
 
 ENABLE_THEME_UPDATER=true
 
@@ -154,6 +168,7 @@ ENABLE_SOCIAL_LOGIN=false
 
 USE_THEME_PREVIEW_IFRAME=true
 
+# traefik terminates TLS, don't need to force it here
 FORCE_ROUTE_HTTPS=false
 
 DISPLAY_FOOTER_HOME=true
@@ -166,7 +181,7 @@ TITLE_FOOTER_TERMS=
 TITLE_FOOTER_PRIVACY=
 TITLE_FOOTER_CONTACT=
 
-HOME_FOOTER_LINK=""
+HOME_FOOTER_LINK=https://{{ env "NOMAD_META_domain" }}/
 
 HIDE_VERIFICATION_CHECKMARK=false
 
@@ -183,6 +198,122 @@ ENABLE_REPORT_ICON=false
 ENABLE_ADMIN_BAR=true
 ENABLE_ADMIN_BAR_USERS=true
 EOH
+      }
+    }
+
+    task "wait-for-db" {
+      driver = "docker"
+
+      lifecycle {
+        hook    = "prestart"
+        sidecar = false
+      }
+
+      config {
+        image   = "mariadb:12"
+        command = "sh"
+        args = [
+          "-c",
+          "until mariadb-admin ping -h\"${DB_HOST}\" -P\"${DB_PORT}\" --silent; do echo 'Waiting for DB...'; sleep 1; done; echo 'DB is ready!'"
+        ]
+      }
+
+      template {
+        destination = "local/wait.env"
+        env         = true
+        change_mode = "restart"
+        data        = <<EOH
+    {{ range service "linkstack-db" }}
+    DB_HOST={{ .Address }}
+    DB_PORT={{ .Port }}
+    {{ end }}
+    EOH
+      }
+
+      resources {
+        memory = 128
+      }
+    }
+
+  }
+
+  group "database" {
+    count = 1
+
+    network {
+      port "db" {
+        to = 3306
+      }
+    }
+
+    update {
+      max_parallel = 0 # don't update this group automatically
+      auto_revert  = false
+    }
+
+    task "db" {
+      driver         = "docker"
+      kill_signal    = "SIGTERM" # SIGTERM instead of SIGKILL so database can shutdown safely
+      kill_timeout   = "30s"
+      shutdown_delay = "5s"
+
+      service {
+        name = "linkstack-db"
+        port = "db"
+
+        check {
+          name     = "mariadb-probe"
+          type     = "tcp"
+          interval = "10s"
+          timeout  = "1s"
+
+        }
+      }
+
+      config {
+        image = "mariadb:12"
+        ports = ["db"]
+
+        volumes = [
+          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/var/lib/mysql",
+          "local/server.cnf:/etc/mysql/mariadb.conf.d/50-server.cnf",
+        ]
+      }
+
+      template {
+        destination = "local/.env"
+        env         = true
+        data        = <<EOH
+MARIADB_RANDOM_ROOT_PASSWORD=true
+MARIADB_PASSWORD={{ key "linkstack/db/password" }}
+MARIADB_USER={{ key "linkstack/db/user" }}
+MARIADB_DATABASE={{ key "linkstack/db/name" }}
+EOH
+      }
+      template {
+        destination = "local/server.cnf"
+        data        = <<EOH
+[server]
+
+[mariadbd]
+
+pid-file                = /run/mysqld/mysqld.pid
+basedir                 = /usr
+
+bind-address            = 0.0.0.0
+
+expire_logs_days        = 10
+
+character-set-server     = utf8mb4
+character-set-collations = utf8mb4=uca1400_ai_ci
+
+[mariadbd]
+        EOH
+      }
+
+      resources {
+        cpu    = 400
+        memory = 800
       }
     }
   }
