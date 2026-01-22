@@ -40,7 +40,7 @@ job "dcusr-openproject" {
       driver = "docker"
 
       config {
-        image = "openproject/openproject:16"
+        image = "openproject/openproject:17"
         ports = ["http"]
         volumes = [
           "/storage/nomad/${NOMAD_JOB_NAME}/pgdata:/var/openproject/pgdata",
