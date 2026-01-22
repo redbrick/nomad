@@ -49,8 +49,8 @@ job "linkstack" {
       }
 
       resources {
-        cpu    = 1000
-        memory = 1024
+        cpu    = 500
+        memory = 512
       }
 
       template {
