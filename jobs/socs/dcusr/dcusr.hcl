@@ -1,4 +1,4 @@
-job "dcusr" {
+job "dcusr-dev" {
   datacenters = ["aperture"]
   type        = "service"
 
@@ -6,30 +6,43 @@ job "dcusr" {
     domain = "solarracing.ie"
   }
 
-  group "dcusr" {
+  group "web" {
     count = 1
 
     network {
       port "http" {
         to = 3000
       }
-      port "db" {
-        to = 5432
-      }
     }
+
+    update {
+      max_parallel     = 1
+      health_check     = "checks"
+      min_healthy_time = "10s"
+      healthy_deadline = "5m"
+    }
+
 
     service {
       name = "dcusr"
       port = "http"
+
+      check {
+        type     = "http"
+        path     = "/"
+        interval = "30s"
+        timeout  = "2s"
+      }
+
 
       tags = [
         "traefik.enable=true",
         "traefik.http.routers.dcusr-dev.rule=Host(`solarracing.ie`) || Host(`www.solarracing.ie`)",
         "traefik.http.routers.dcusr-dev.entrypoints=web,websecure",
         "traefik.http.routers.dcusr-dev.tls.certresolver=lets-encrypt",
-        "traefik.http.middlewares.nextauth-headers.headers.sslProxyHeaders.X-Forwarded-Proto=https",
-        "traefik.http.middlewares.nextauth-headers.headers.customRequestHeaders.X-Forwarded-Host=solarracing.ie",
-        "traefik.http.routers.dcusr-dev.middlewares=nextauth-headers@consulcatalog",
+        "traefik.http.routers.dcusr-dev.middlewares=dcusr-nextauth-headers",
+        "traefik.http.middlewares.dcusr-nextauth-headers.headers.sslProxyHeaders.X-Forwarded-Proto=https",
+        "traefik.http.middlewares.dcusr-nextauth-headers.headers.customRequestHeaders.X-Forwarded-Host=solarracing.ie",
 
       ]
     }
@@ -38,8 +51,8 @@ job "dcusr" {
       driver = "docker"
 
       config {
-        image = "ghcr.io/dcu-solar-racing/website:main"
-        ports = ["http"]
+        image      = "ghcr.io/dcu-solar-racing/website:main"
+        ports      = ["http"]
         force_pull = true
 
         auth {
@@ -68,7 +81,7 @@ PREVIEW_SECRET={{ key "socs/dcusr-dev/preview/secret" }}
 SEED_ADMIN_EMAIL={{ key "socs/dcusr-dev/seed/email" }}
 SEED_ADMIN_PASSWORD={{ key "socs/dcusr-dev/seed/password" }}
 
-DATABASE_URL=postgresql://{{ key "socs/dcusr-dev/db/user" | urlquery }}:{{ key "socs/dcusr-dev/db/password" | urlquery }}@{{ env "NOMAD_ADDR_db" }}/{{ key "socs/dcusr-dev/db/name" | urlquery }}?schema=public
+DATABASE_URL=postgresql://{{ key "socs/dcusr-dev/db/user" | urlquery }}:{{ key "socs/dcusr-dev/db/password" | urlquery }}@{{ range service "dcusr-dev-db" }}{{ .Address }}:{{ .Port }}{{ end }}/{{ key "socs/dcusr-dev/db/name" | urlquery }}?schema=public
 
 MINIO_ENDPOINT={{ key "socs/dcusr-dev/minio/url" }}
 MINIO_PORT={{ key "socs/dcusr-dev/minio/port" }}
@@ -101,15 +114,82 @@ EOH
       }
     }
 
-    task "postgres" {
+    task "wait-for-db" {
       driver = "docker"
+
+      lifecycle {
+        hook    = "prestart"
+        sidecar = false
+      }
+
+      config {
+        image   = "postgres:17-alpine"
+        command = "sh"
+        args = [
+          "-c",
+          "while ! pg_isready -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER}; do echo 'Waiting for DB...'; sleep 1; done; echo 'DB is ready!'"
+        ]
+      }
+
+      template {
+        destination = "local/wait.env"
+        env         = true
+        data        = <<EOH
+{{ range service "dcusr-dev-db" }}
+DB_HOST={{ .Address }}
+DB_PORT={{ .Port }}
+{{ end }}
+DB_USER={{ key "socs/dcusr-dev/db/user" }}
+EOH
+      }
+
+      resources {
+        memory = 128
+      }
+    }
+  }
+
+  group "database" {
+    count = 1
+
+    network {
+      port "db" {
+        to = 5432
+      }
+    }
+
+    update {
+      max_parallel = 0 # don't update this group automatically
+      auto_revert  = false
+    }
+
+    task "db" {
+      driver         = "docker"
+      kill_signal    = "SIGTERM" # SIGTERM instead of SIGKILL so database can shutdown safely
+      kill_timeout   = "30s"
+      shutdown_delay = "5s"
+
+      service {
+        name = "dcusr-dev-db"
+        port = "db"
+
+        check {
+          type     = "script"
+          name     = "postgres-ready"
+          command  = "/bin/sh"
+          args     = ["-c", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+          interval = "10s"
+          timeout  = "2s"
+        }
+      }
+
 
       config {
         image = "postgres:17-alpine"
         ports = ["db"]
 
         volumes = [
-          "/storage/nomad/dcusr-dev/db:/var/lib/postgresql/data",
+          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/var/lib/postgresql/data",
         ]
       }
 
