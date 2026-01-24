@@ -106,10 +106,10 @@ EOH
         env         = true
         data        = <<EOH
 ROUNDCUBEMAIL_DB_TYPE=pgsql
-{{ range service "roundcube-db" }}
+{{- range service "roundcube-db" }}
 ROUNDCUBEMAIL_DB_HOST={{ .Name }}.service.consul
 ROUNDCUBEMAIL_DB_PORT={{ .Port }}
-{{ end }}
+{{- end }}
 ROUNDCUBEMAIL_DB_NAME={{ key "roundcube/db/name" }}
 ROUNDCUBEMAIL_DB_USER={{ key "roundcube/db/user" }}
 ROUNDCUBEMAIL_DB_PASSWORD={{ key "roundcube/db/password" }}
@@ -177,10 +177,10 @@ EOH
       }
       template {
         data        = <<EOH
-{{ range service "roundcube-db" }}
+{{- range service "roundcube-db" }}
 DB_HOST={{ .Address }}
 DB_PORT={{ .Port }}
-{{ end }}
+{{- end }}
 DB_USER={{ key "roundcube/db/user" }}
 EOH
         destination = "local/wait.env"
