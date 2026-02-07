@@ -185,7 +185,7 @@ EOH
       template {
         destination = "local/lock-down-rest-api.php"
         perms       = "0644"
-        data = <<EOH
+        data        = <<EOH
 <?php
 /**
  * Requires login for all REST API requests (public blocked).
