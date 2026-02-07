@@ -149,6 +149,7 @@ EOH
         volumes = [
           "/storage/nomad/mps-thecollegeview:/var/www/html/",
           "local/custom.ini:/usr/local/etc/php/conf.d/custom.ini",
+          "local/lock-down-rest-api.php:/var/www/html/wp-content/mu-plugins/lock-down-rest-api.php",
         ]
       }
 
@@ -158,6 +159,8 @@ EOH
       }
 
       template {
+        destination = "local/.env"
+        env         = true
         data        = <<EOH
 WORDPRESS_DB_HOST={{ env "NOMAD_ADDR_db" }}
 WORDPRESS_DB_USER={{ key "mps/thecollegeview/db/username" }}
@@ -166,11 +169,10 @@ WORDPRESS_DB_NAME={{ key "mps/thecollegeview/db/name" }}
 WORDPRESS_TABLE_PREFIX=wp_2
 WORDPRESS_CONFIG_EXTRA="define('WP_REDIS_HOST', '{{ env "NOMAD_ADDR_redis" }}');"
 EOH
-        destination = "local/.env"
-        env         = true
       }
 
       template {
+        destination = "local/custom.ini"
         data        = <<EOH
 pm.max_children = 10
 upload_max_filesize = 64M
@@ -178,7 +180,29 @@ post_max_size = 64M
 expose_php = off
 open_basedir = /var/www/html:/tmp
 EOH
-        destination = "local/custom.ini"
+      }
+
+      template {
+        destination = "local/lock-down-rest-api.php"
+        perms       = "0644"
+        data = <<EOH
+<?php
+/**
+ * Requires login for all REST API requests (public blocked).
+ * see https://developer.wordpress.org/rest-api/frequently-asked-questions/#can-i-disable-the-rest-api
+ */
+
+add_filter('rest_authentication_errors', function ($result) {
+    if ($result !== null) return $result;
+    if (is_user_logged_in()) return $result;
+
+    return new WP_Error(
+        'rest_not_logged_in',
+        __('REST API restricted to authenticated users.'),
+        array('status' => 401)
+    );
+});
+EOH
       }
     }
 
