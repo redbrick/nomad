@@ -15,11 +15,13 @@ job "openldap" {
 
     network {
       port "ldap" {
-        to = 389
+        to     = 389
+        static = 389
       }
 
       port "ldaps" {
-        to = 636
+        to     = 636
+        static = 636
       }
 
       port "http" {
@@ -164,10 +166,10 @@ EOH
         destination = "local/scripts/01-memberOf.sh"
       }
 
-      template {
-        data        = file("./scripts/acls.sh")
-        destination = "local/scripts/acls.sh"
-      }
+      # template {
+      #   data        = file("./scripts/acls.sh")
+      #   destination = "local/scripts/acls.sh"
+      # }
     }
 
 
