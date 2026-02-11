@@ -137,7 +137,7 @@ EOH
         destination = "local/managesieve.php"
         data        = <<EOH
 <?php
-$config['managesieve_host'] = 'tls://mail.redbrick.dcu.ie';
+$config['managesieve_host'] = 'tls://{{ key "roundcube/managesieve/host" }}';
 $config['managesieve_port'] = 4190;
 
 // Use STARTTLS on the ManageSieve connection
