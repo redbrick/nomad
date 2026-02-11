@@ -92,7 +92,8 @@ EOH
 
         volumes = [
           "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/var/www/html",
-          "local/rb-custom.php:/var/roundcube/config/rb-custom.php"
+          "local/rb-custom.php:/var/roundcube/config/rb-custom.php",
+          "local/managesieve.php:/var/roundcube/config/managesieve.php",
         ]
       }
 
@@ -115,10 +116,11 @@ ROUNDCUBEMAIL_SMTP_PORT={{ key "roundcube/smtp/port" }}
 ROUNDCUBEMAIL_USERNAME_DOMAIN=redbrick.dcu.ie
 
 ROUNDCUBEMAIL_INSTALL_PLUGINS=true
-ROUNDCUBEMAIL_PLUGINS=archive,zipdownload,attachment_reminder,enigma,emoticons,identity_select,identicon,jqueryui,hide_blockquote,userinfo,markasjunk,additional_message_headers,newmail_notifier,thunderbird_labels,show_folder_size,tls_icon,vcard_attachments
+ROUNDCUBEMAIL_PLUGINS=archive,zipdownload,attachment_reminder,enigma,emoticons,identity_select,identicon,jqueryui,hide_blockquote,userinfo,markasjunk,additional_message_headers,newmail_notifier,thunderbird_labels,show_folder_size,tls_icon,vcard_attachments,managesieve
 ROUNDCUBEMAIL_COMPOSER_PLUGINS=weird-birds/thunderbird_labels,jfcherng-roundcube/show-folder-size,germancoding/tls_icon,roundcube/larry,roundcube/classic,seb1k/elastic2022
 EOH
       }
+
       template {
         destination = "local/rb-custom.php"
         data        = <<EOH
@@ -130,6 +132,33 @@ $config['support_url'] = 'https://redbrick.dcu.ie/';
 
 EOH
       }
+
+      template {
+        destination = "local/managesieve.php"
+        data        = <<EOH
+<?php
+$config['managesieve_host'] = 'tls://{{ key "roundcube/managesieve/host" }}';
+$config['managesieve_port'] = 4190;
+
+// Use STARTTLS on the ManageSieve connection
+$config['managesieve_usetls'] = true;
+
+// Let Roundcube pick the best SASL mechanism advertised by the server
+$config['managesieve_auth_type'] = null;
+
+// Ensure PHP can verify the server certificate (alpine skill issue?)
+$config['managesieve_conn_options'] = [
+  'ssl' => [
+    'verify_peer'       => true,
+    'verify_peer_name'  => true,
+    'allow_self_signed' => false,
+  ],
+];
+
+# show forwarding option on the UI
+$config['managesieve_forward'] = 1;
+EOH
+  }
     }
 
     task "roundcube-db" {
