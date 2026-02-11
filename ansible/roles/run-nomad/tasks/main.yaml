@@ -1,0 +1,12 @@
+---
+
+# TODO: Add Nomad namespaces. 
+
+- name: Run {{ item }} Nomad Job
+  community.general.nomad_job:
+    host: "{{ lookup('ansible.builtin.env', 'NOMAD_ADDR')}}"
+    token: "{{ lookup('ansible.builtin.env', 'NOMAD_TOKEN')}}"
+    state: present
+    content: "{{ lookup('file', '../jobs/' - task - ''.hcl') }}"
+  with_items:
+  - "{{ groups['nomad_jobs']}}"
