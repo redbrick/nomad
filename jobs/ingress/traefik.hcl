@@ -1,7 +1,7 @@
 job "traefik" {
   datacenters = ["aperture"]
-  node_pool   = "ingress"
-  type        = "service"
+  node_pool   = "default"
+  type        = "system"
 
   group "traefik" {
     network {
@@ -14,9 +14,9 @@ job "traefik" {
       port "admin" {
         static = 8080
       }
-      port "ssh" {
-        static = 22
-      }
+      # port "ssh" {
+      #   static = 22
+      # }
       port "voice-tcp" {
         static = 4502
       }
@@ -29,32 +29,29 @@ job "traefik" {
       name     = "traefik-http"
       provider = "nomad"
       port     = "admin"
+
+      check {
+        type     = "http"
+        path     = "/"
+        interval = "10s"
+        timeout  = "2s"
+      }
     }
 
     task "traefik" {
       driver = "docker"
       config {
-        image        = "traefik"
+        image        = "traefik:v3"
         network_mode = "host"
 
         volumes = [
           "local/traefik.toml:/etc/traefik/traefik.toml",
-          "/storage/nomad/traefik/acme/acme.json:/acme.json",
-          "/storage/nomad/traefik/acme/acme-dns.json:/acme-dns.json",
-          "/storage/nomad/traefik/access.log:/access.log",
+          # "/storage/nomad/traefik/acme/acme.json:/acme.json",
+          # "/storage/nomad/traefik/acme/acme-dns.json:/acme-dns.json",
+          # "/storage/nomad/traefik/access.log:/access.log",
+          "local/dynamic.toml:/traefik-config/dynamic.toml:ro",
+          "/storage/nomad/traefik/certs/certificates:/traefik-config/certs:ro",
         ]
-      }
-
-      template {
-        destination = "local/.env"
-        env         = true
-        change_mode = "restart"
-        data        = <<EOF
-RFC2136_TSIG_KEY=dnsupdate.redbrick.dcu.ie.
-RFC2136_TSIG_SECRET={{ key "traefik/acme/dns/key" }}
-RFC2136_TSIG_ALGORITHM=hmac-sha256.
-RFC2136_NAMESERVER=ns1.redbrick.dcu.ie:53
-EOF
       }
 
       template {
@@ -77,8 +74,8 @@ EOF
   [entryPoints.traefik]
   address = ":8080"
 
-  [entryPoints.ssh]
-  address = ":22"
+  # [entryPoints.ssh]
+  # address = ":22"
 
   [entryPoints.voice-tcp]
   address = ":4502"
@@ -104,6 +101,8 @@ EOF
     dashboard = true
     insecure  = true
 
+[ping]
+
 # Enable Consul Catalog configuration backend.
 [providers.consulCatalog]
     prefix           = "traefik"
@@ -115,30 +114,18 @@ EOF
 
 # Enable the file provider for dynamic configuration.
 [providers.file]
-  filename = "/local/dynamic.toml"
+  directory = "/traefik-config"
+  watch     = true
 
 #[providers.nomad]
 #  [providers.nomad.endpoint]
 #    address = "127.0.0.1:4646"
 #    scheme = "http"
 
-[certificatesResolvers.lets-encrypt.acme]
-  email = "elected-admins@redbrick.dcu.ie"
-  storage = "acme.json"
-  [certificatesResolvers.lets-encrypt.acme.tlsChallenge]
-
-[certificatesResolvers.rb.acme]
-  email = "elected-admins@redbrick.dcu.ie"
-  storage = "acme-dns.json"
-  [certificatesResolvers.rb.acme.dnsChallenge]
-    provider = "rfc2136"
-    delayBeforeCheck = 60
-        resolvers = "ns1.redbrick.dcu.ie:53,1.1.1.1:53,8.8.8.8:53"
-
 [tracing]
 
 [accessLog]
-  filePath = "/access.log"
+  filePath = "/dev/stderr"
 EOF
       }
       template {
@@ -149,26 +136,43 @@ EOF
 
 [http.middlewares]
 
+[http.middlewares.https-redirect.redirectScheme]
+  scheme = "https"
+  permanent = true
+
 # handle redirects for short links
 # NOTE: this is a consul template, add entries via consul kv
 # create the middlewares with replacements for each redirect
 {{ range $pair := tree "redirect/redbrick" }}
   [http.middlewares.redirect-{{ trimPrefix "redirect/redbrick/" $pair.Key }}.redirectRegex]
-    regex = ".*"  # match everything - hosts are handled by the router
+    regex = ".*" # match everything - hosts are handled by the router
     replacement = "{{ $pair.Value }}"
     permanent = true
 {{- end }}
 
 [http.routers]
 
+# ACME Challenge Router
+[http.routers.acme-http-challenge]
+  rule = "PathPrefix(`/.well-known/acme-challenge/`)"
+  entryPoints = ["web"]
+  service = "acme-challenge-solver"
+  priority = 10000
+
+# Global HTTPS Redirect
+[http.routers.https-redirect]
+  rule = "HostRegexp(`{host:.+}`)"
+  entryPoints = ["web"]
+  middlewares = ["https-redirect"]
+  service = "dummy-service"
+  priority = 1
+
 [http.routers.webtree]
   rule = "HostRegexp(`^([a-z0-9_-]+)\\.redbrick\\.dcu\\.ie$`) || ((Host(`redbrick.dcu.ie`) || Host(`www.redbrick.dcu.ie`)) && PathPrefix(`/~`))"
   entryPoints = ["websecure"]
   priority = 10
   service = "webtree@consulcatalog"
-
   [http.routers.webtree.tls]
-    certResolver = "rb"
 
 # create routers with middlewares for each redirect
 {{ range $pair := tree "redirect/redbrick" }}
@@ -176,37 +180,11 @@ EOF
     rule = "Host(`{{ trimPrefix "redirect/redbrick/" $pair.Key }}.redbrick.dcu.ie`)"
     entryPoints = ["web", "websecure"]
     middlewares = ["redirect-{{ trimPrefix "redirect/redbrick/" $pair.Key }}"]
-    service = "dummy-service"  # all routers need a service, this isn't used
+    service = "dummy-service" # all routers need a service, this isn't used
     [http.routers.{{ trimPrefix "redirect/redbrick/" $pair.Key }}-redirect.tls]
 {{- end }}
 
-[http.routers.tls-default]
-      rule = "HostRegexp(`{any:.+}.redbrick.dcu.ie`) || HostRegexp(`{any:.+}.rb.dcu.ie`) || HostRegexp(`{any:.+}.redbrick.ie`)"
-      entryPoints = ["web", "websecure"]
-      service = "dummy-service"
-      priority = -1
-
-      [http.routers.tls-default.tls]
-        certResolver = "rb"
-
-        [[http.routers.tls-default.tls.domains]]
-          main = "redbrick.dcu.ie"
-          sans = ["*.redbrick.dcu.ie"]
-
-        [[http.routers.tls-default.tls.domains]]
-          main = "rb.dcu.ie"
-          sans = ["*.rb.dcu.ie"]
-
-        [[http.routers.tls-default.tls.domains]]
-          main = "redbrick.ie"
-          sans = ["*.redbrick.ie"]
-
-
-[http.services]
-  [http.services.dummy-service.loadBalancer]
-    [[http.services.dummy-service.loadBalancer.servers]]
-      url = "http://127.0.0.1"  # Dummy service - not used
-
+# Dynamic webtree domains
 {{ $i := 0 -}}
 {{- range $pair := tree "webtree/domains" -}}
   {{- $i = add $i 1 -}}
@@ -216,12 +194,24 @@ EOF
     entryPoints = ["web", "websecure"]
     service = "webtree@consulcatalog"
     priority = 20
-
     [http.routers.webtree-domain-{{ $i }}.tls]
-      certResolver = "lets-encrypt"
 
 {{ end -}}
+
+[http.services]
+
+  [http.services.acme-challenge-solver.loadBalancer]
+    [[http.services.acme-challenge-solver.loadBalancer.servers]]
+      url = "http://acme-challenge-solver.service.consul:8888"
+
+  [http.services.dummy-service.loadBalancer]
+    [[http.services.dummy-service.loadBalancer.servers]]
+      url = "http://127.0.0.1" # Dummy service - not used
 EOF
+      }
+      resources {
+        cpu    = 500
+        memory = 512
       }
     }
   }
