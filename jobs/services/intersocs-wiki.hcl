@@ -9,7 +9,6 @@ job "intersocs-wiki" {
 
   group "web" {
     network {
-      mode = "bridge"
       port "http" {
         to = 3000
       }
@@ -62,13 +61,13 @@ job "intersocs-wiki" {
         data        = <<EOH
 DB_TYPE = postgres
 {{- range service "intersocs-wiki-db" }}
-DB_HOST         = {{ .Address }}
-DB_PORT         = {{ .Port }}
+DB_HOST = {{ .Address }}
+DB_PORT = {{ .Port }}
 {{- end }}
 
-DB_USER         = {{ key "intersocs/wiki/db/user" }}
-DB_PASS     = {{ key "intersocs/wiki/db/password" }}
-DB_NAME     = {{ key "intersocs/wiki/db/name" }}
+DB_USER = {{ key "intersocs/wiki/db/user" }}
+DB_PASS = {{ key "intersocs/wiki/db/password" }}
+DB_NAME = {{ key "intersocs/wiki/db/name" }}
 EOH
       }
     }
@@ -95,10 +94,10 @@ EOH
         env         = true
         data        = <<EOH
 {{- range service "intersocs-wiki-db" }}
-DB_HOST={{ .Address }}
-DB_PORT={{ .Port }}
+DB_HOST = {{ .Address }}
+DB_PORT = {{ .Port }}
 {{- end }}
-DB_USER={{ key "intersocs/wiki/db/user" }}
+DB_USER = {{ key "intersocs/wiki/db/user" }}
 EOH
       }
 
