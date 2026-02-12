@@ -51,7 +51,7 @@ job "intersocs-wiki" {
       }
 
       resources {
-        cpu    = 1000
+        cpu    = 800
         memory = 500
       }
 
@@ -105,7 +105,6 @@ EOH
         memory = 128
       }
     }
-
   }
 
   group "database" {
