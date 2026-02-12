@@ -23,7 +23,7 @@ job "matrix-element" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.element.rule=Host(`matrix.redbrick.dcu.ie`)",
+        "traefik.http.routers.element.rule=Host(`matrix.redbrick.dcu.ie`) || Host(`element.redbrick.dcu.ie`)",
         "traefik.http.routers.element.entrypoints=websecure",
         "traefik.http.routers.element.tls=true",
         "traefik.http.routers.element.tls.certresolver=rb",
@@ -71,7 +71,7 @@ job "matrix-element" {
   "brand": "Redbrick Matrix",
   "default_country_code": "IE",
   "show_labs_settings": true,
-  "disable_custom_urls": false,
+  "disable_custom_urls": true,
   "disable_guests": true,
   "disable_login_language_selector": false,
   "disable_3pid_login": false,
