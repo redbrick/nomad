@@ -51,9 +51,7 @@ job "matrix-discord-bridge" {
         args    = ["-c", "cd /data && /usr/bin/mautrix-discord --no-update"]
 
         volumes = [
-          "/storage/nomad/matrix/bridges/discord:/data",
           "local/config.yaml:/data/config.yaml",
-          "local/registration.yaml:/data/registration.yaml",
         ]
       }
 
@@ -170,30 +168,8 @@ logging:
       time_format: "2006-01-02 15:04:05"
 EOH
       }
-
-      # Generate registration file for Synapse
-      template {
-        destination = "local/registration.yaml"
-        change_mode = "restart"
-        data        = <<EOH
-id: discord
-url: http://{{ range service "matrix-discord-bridge" }}{{ .Address }}:{{ .Port }}{{ end }}
-as_token: "{{ key "matrix/bridge/discord/as_token" }}"
-hs_token: "{{ key "matrix/bridge/discord/hs_token" }}"
-sender_localpart: discordbot
-rate_limited: false
-namespaces:
-  users:
-    - exclusive: true
-      regex: '@.*_d:redbrick\.dcu\.ie'
-  rooms: []
-  aliases:
-    - exclusive: false
-      # regex: '#.*_d:redbrick\.dcu\.ie'
-      regex: '#.*:redbrick\.dcu\.ie'
-EOH
-      }
     }
+
     task "wait-for-db" {
       driver = "docker"
 
@@ -216,10 +192,10 @@ EOH
         env         = true
         data        = <<EOH
 {{- range service "mautrix-discord-postgres" }}
-DB_HOST={{ .Address }}
-DB_PORT={{ .Port }}
+DB_HOST = {{ .Address }}
+DB_PORT = {{ .Port }}
 {{- end }}
-DB_USER={{ key "matrix/bridge/discord/db/user" }}
+DB_USER = {{ key "matrix/bridge/discord/db/user" }}
 EOH
       }
 
@@ -227,7 +203,6 @@ EOH
         memory = 128
       }
     }
-
   }
 
   group "postgres" {
