@@ -8,7 +8,6 @@ job "mps-listmonk" {
 
   group "listmonk" {
     network {
-      mode = "bridge"
       port "http" {}
     }
 
