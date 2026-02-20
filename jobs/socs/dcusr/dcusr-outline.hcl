@@ -10,8 +10,7 @@ job "dcusr-outline" {
     network {
       # mode = "bridge"
       port "http" {
-        static = 3000
-        to     = 3000
+        to = 3000
       }
 
       port "db" {
