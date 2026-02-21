@@ -99,7 +99,7 @@ appservice:
 # Bridge config
 bridge:
   username_template: "{{ "{{.}}" }}_d"
-  displayname_template: "{{ "{{.DisplayName}}" }} (Discord)"
+  displayname_template: "{{ "{{.GlobalName}}" }} (Discord)"
   channel_name_template: "{{ "{{.Name}}" }}"
   guild_name_template: '{{.Name}}'
 
