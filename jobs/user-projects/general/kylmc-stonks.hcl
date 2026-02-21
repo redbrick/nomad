@@ -4,7 +4,6 @@ job "kylmc-stonks" {
 
   meta {
     domain = "kylmc-stonks.rb.dcu.ie"
-    stonks = "stonks"
   }
 
   group "stonks" {
@@ -52,34 +51,30 @@ job "kylmc-stonks" {
           username = "${DOCKER_USER}"
           password = "${DOCKER_PASS}"
         }
-
-        # volumes = [
-        #   "/storage/nomad/${NOMAD_JOB_NAME}/uploads:/uploads",
-        # ]
       }
 
       resources {
-        cpu    = 1000
-        memory = 500
+        cpu    = 300
+        memory = 300
       }
 
       template {
         destination = "local/.env"
         env         = true
         data        = <<EOH
-DOCKER_USER = {{ key "user-projects/kylmc/stonks/ghcr/username" }}
-DOCKER_PASS = {{ key "user-projects/kylmc/stonks/ghcr/password" }}
+DOCKER_USER       = {{ key "user-projects/kylmc/stonks/ghcr/username" }}
+DOCKER_PASS       = {{ key "user-projects/kylmc/stonks/ghcr/password" }}
 
 
-DB_USER         = {{ key "user-projects/kylmc/stonks/db/username" }}
-DB_PASSWORD     = {{ key "user-projects/kylmc/stonks/db/password" }}
-DB_NAME         = {{ key "user-projects/kylmc/stonks/db/name" }}
+DB_USER           = {{ key "user-projects/kylmc/stonks/db/username" }}
+DB_PASSWORD       = {{ key "user-projects/kylmc/stonks/db/password" }}
+DB_NAME           = {{ key "user-projects/kylmc/stonks/db/name" }}
 {{- range service "kylmc-stonks-db" }}
-DB_HOST         = {{ .Address }}
-DB_PORT         = {{ .Port }}
+DB_HOST           = {{ .Address }}
+DB_PORT           = {{ .Port }}
 {{- end }}
 
-PORT = {{ env "NOMAD_PORT_http" }}
+PORT              = {{ env "NOMAD_PORT_http" }}
 PASSPHRASE_PEPPER = {{ key "user-projects/kylmc/stonks/passphrase_pepper" }}
 EOH
       }
@@ -107,10 +102,10 @@ EOH
         env         = true
         data        = <<EOH
 {{- range service "kylmc-stonks-db" }}
-DB_HOST={{ .Address }}
-DB_PORT={{ .Port }}
+DB_HOST = {{ .Address }}
+DB_PORT = {{ .Port }}
 {{- end }}
-DB_USER={{ key "user-projects/kylmc/stonks/db/username" }}
+DB_USER = {{ key "user-projects/kylmc/stonks/db/username" }}
 EOH
       }
 
@@ -168,9 +163,9 @@ EOH
         destination = "local/db.env"
         env         = true
         data        = <<EOH
-POSTGRES_DB       = "{{ key "user-projects/kylmc/stonks/db/name" }}"
-POSTGRES_USER     = "{{ key "user-projects/kylmc/stonks/db/username" }}"
-POSTGRES_PASSWORD = "{{ key "user-projects/kylmc/stonks/db/password" }}"
+POSTGRES_DB         = "{{ key "user-projects/kylmc/stonks/db/name" }}"
+POSTGRES_USER       = "{{ key "user-projects/kylmc/stonks/db/username" }}"
+POSTGRES_PASSWORD   = "{{ key "user-projects/kylmc/stonks/db/password" }}"
 EOH
       }
 
