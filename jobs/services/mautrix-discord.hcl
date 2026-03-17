@@ -122,7 +122,7 @@ bridge:
 
   # Permissions
   permissions:
-    "redbrick.dcu.ie": relay
+    "*": relay
     "{{ key "matrix/bridge/discord/admin_user" }}": admin
     "@matrix:redbrick.dcu.ie": admin
 
@@ -144,7 +144,7 @@ bridge:
       # fetch all messages first before backfilling anything, so high limits can take a lot of time.
       initial:
         dm: 0
-        channel: -1
+        channel: 200
         thread: 0
       # Missed message backfill (on startup).
       # 0 means backfill is disabled, -1 means fetch all messages since last bridged message.
