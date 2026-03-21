@@ -1,12 +1,9 @@
-job "matrix-cinny" {
+job "matrix-admin" {
   datacenters = ["aperture"]
   type        = "service"
 
-  meta {
-    domain = "cinny.redbrick.dcu.ie"
-  }
 
-  group "cinny" {
+  group "web" {
     count = 1
 
     network {
@@ -16,15 +13,15 @@ job "matrix-cinny" {
     }
 
     service {
-      name = "cinny-web"
+      name = "matrix-admin-web"
       port = "http"
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.cinny.rule=Host(`${NOMAD_META_domain}`)",
-        "traefik.http.routers.cinny.entrypoints=websecure",
-        "traefik.http.routers.cinny.tls=true",
-        "traefik.http.routers.cinny.tls.certresolver=rb",
+        "traefik.http.routers.matrix-admin.rule=Host(`matrix-admin.redbrick.dcu.ie`)",
+        "traefik.http.routers.matrix-admin.entrypoints=websecure",
+        "traefik.http.routers.matrix-admin.tls=true",
+        "traefik.http.routers.matrix-admin.tls.certresolver=rb",
       ]
 
       check {
@@ -35,15 +32,15 @@ job "matrix-cinny" {
       }
     }
 
-    task "cinny" {
+    task "admin" {
       driver = "docker"
 
       config {
-        image = "ghcr.io/cinnyapp/cinny:latest"
+        image = "awesometechnologies/synapse-admin:latest"
         ports = ["http"]
 
         volumes = [
-          "local/config.json:/app/config.json:ro"
+          # "local/config.json:/app/config.json:ro"
         ]
       }
 
@@ -67,10 +64,10 @@ job "matrix-cinny" {
     "openAsDefault": false,
     "spaces": [
       "#redbrick:redbrick.dcu.ie",
-      "#cinny-space:matrix.org"
+      "#admin-space:matrix.org"
     ],
     "rooms": [
-      "#cinny:matrix.org"
+      "#admin:matrix.org"
     ],
     "servers": [
         "reedbrick.dcu.ie",

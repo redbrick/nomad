@@ -4,6 +4,7 @@ job "matrix-element" {
 
   meta {
     domain = "matrix.redbrick.dcu.ie"
+    alt    = "element.redbrick.dcu.ie"
     main   = "redbrick.dcu.ie"
   }
 
@@ -23,7 +24,7 @@ job "matrix-element" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.element.rule=Host(`matrix.redbrick.dcu.ie`) || Host(`element.redbrick.dcu.ie`)",
+        "traefik.http.routers.element.rule=Host(`${NOMAD_META_domain}`) || Host(`${NOMAD_META_alt}`)",
         "traefik.http.routers.element.entrypoints=websecure",
         "traefik.http.routers.element.tls=true",
         "traefik.http.routers.element.tls.certresolver=rb",

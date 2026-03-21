@@ -3,7 +3,7 @@ job "matrix-hydrogen" {
   type        = "service"
 
   meta {
-    domain = "matrix.redbrick.dcu.ie"
+    domain = "hydrogen.redbrick.dcu.ie"
     main   = "redbrick.dcu.ie"
   }
 
@@ -23,7 +23,7 @@ job "matrix-hydrogen" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.matrix-hydrogen-web.rule=Host(`hydrogen.redbrick.dcu.ie`)",
+        "traefik.http.routers.matrix-hydrogen-web.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.matrix-hydrogen-web.entrypoints=websecure",
         "traefik.http.routers.matrix-hydrogen-web.tls=true",
         "traefik.http.routers.matrix-hydrogen-web.tls.certresolver=rb",
@@ -59,7 +59,7 @@ job "matrix-hydrogen" {
         change_mode = "restart"
         data        = <<EOH
 {
-  "defaultHomeServer": "https://redbrick.dcu.ie",
+  "defaultHomeServer": "https://{{ env "NOMAD_META_main" }}",
   "themeManifests": [
     "assets/theme-element.json"
   ],
