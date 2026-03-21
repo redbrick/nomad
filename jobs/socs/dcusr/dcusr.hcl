@@ -3,7 +3,8 @@ job "dcusr-dev" {
   type        = "service"
 
   meta {
-    domain = "solarracing.ie"
+    domain  = "solarracing.ie"
+    domain2 = "www.solarracing.ie"
   }
 
   group "web" {
@@ -37,12 +38,9 @@ job "dcusr-dev" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.dcusr-dev.rule=Host(`solarracing.ie`) || Host(`www.solarracing.ie`)",
+        "traefik.http.routers.dcusr-dev.rule=Host(`${NOMAD_META_domain}`) || Host(`${NOMAD_META_domain2}`)",
         "traefik.http.routers.dcusr-dev.entrypoints=web,websecure",
         "traefik.http.routers.dcusr-dev.tls.certresolver=lets-encrypt",
-        "traefik.http.routers.dcusr-dev.middlewares=dcusr-nextauth-headers",
-        "traefik.http.middlewares.dcusr-nextauth-headers.headers.sslProxyHeaders.X-Forwarded-Proto=https",
-        "traefik.http.middlewares.dcusr-nextauth-headers.headers.customRequestHeaders.X-Forwarded-Host=solarracing.ie",
 
       ]
     }
@@ -81,7 +79,9 @@ PREVIEW_SECRET={{ key "socs/dcusr-dev/preview/secret" }}
 SEED_ADMIN_EMAIL={{ key "socs/dcusr-dev/seed/email" }}
 SEED_ADMIN_PASSWORD={{ key "socs/dcusr-dev/seed/password" }}
 
-DATABASE_URL=postgresql://{{ key "socs/dcusr-dev/db/user" | urlquery }}:{{ key "socs/dcusr-dev/db/password" | urlquery }}@{{ range service "dcusr-dev-db" }}{{ .Address }}:{{ .Port }}{{ end }}/{{ key "socs/dcusr-dev/db/name" | urlquery }}?schema=public
+{{ range service "dcusr-dev-db"  -}}
+DATABASE_URL=postgresql://{{ key "socs/dcusr-dev/db/user" | urlquery }}:{{ key "socs/dcusr-dev/db/password" | urlquery }}@{{ .Address }}:{{ .Port }}/{{ key "socs/dcusr-dev/db/name" | urlquery }}?schema=public
+{{- end }}
 
 MINIO_ENDPOINT={{ key "socs/dcusr-dev/minio/url" }}
 MINIO_PORT={{ key "socs/dcusr-dev/minio/port" }}
@@ -121,30 +121,30 @@ EOH
         hook    = "prestart"
         sidecar = false
       }
-
       config {
-        image   = "postgres:17-alpine"
+        image   = "alpine:3.19"
         command = "sh"
         args = [
           "-c",
-          "while ! pg_isready -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER}; do echo 'Waiting for DB...'; sleep 1; done; echo 'DB is ready!'"
+          "while ! nc -z \"$DB_HOST\" \"$DB_PORT\"; do echo 'Waiting for Postgres...'; sleep 1; done; echo 'DB is ready!'"
         ]
       }
 
       template {
-        destination = "local/wait.env"
+        destination = "local/.env"
         env         = true
+        change_mode = "restart"
         data        = <<EOH
-{{ range service "dcusr-dev-db" }}
+{{- range service "dcusr-dev-db" }}
 DB_HOST={{ .Address }}
 DB_PORT={{ .Port }}
-{{ end }}
-DB_USER={{ key "socs/dcusr-dev/db/user" }}
+{{- end }}
 EOH
       }
 
       resources {
-        memory = 128
+        cpu    = 50
+        memory = 64
       }
     }
   }
