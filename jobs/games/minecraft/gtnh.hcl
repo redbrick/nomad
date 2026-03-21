@@ -53,6 +53,8 @@ job "minecraft-gtnh" {
       }
 
       template {
+        destination = "local/.env"
+        env         = true
         data        = <<EOF
 EULA                            = "TRUE"
 TYPE                            = "CUSTOM"
@@ -76,8 +78,6 @@ ENABLE_RCON                     = "TRUE"
 RCON_PASSWORD                   = {{ key "games/mc/gtnh-mc/rcon/password" }}
 SPAWN_PROTECTION                = 1
 EOF
-        destination = "local/.env"
-        env         = true
       }
     }
   }
