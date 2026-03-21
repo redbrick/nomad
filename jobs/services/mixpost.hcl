@@ -27,16 +27,14 @@ job "mixpost" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.port=${NOMAD_PORT_http}",
         "traefik.http.routers.mixpost.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.mixpost.entrypoints=web,websecure",
-        "traefik.http.routers.mixpost.tls.certresolver=lets-encrypt",
-        "traefik.http.middlewares.mixpost.headers.SSLRedirect=true",
+        "traefik.http.routers.mixpost.tls.certresolver=rb",
       ]
     }
 
 
-    task "mixpost" {
+    task "app" {
       driver = "docker"
 
       config {
@@ -44,53 +42,53 @@ job "mixpost" {
         ports = ["http"]
 
         volumes = [
-          "/storage/nomad/${NOMAD_TASK_NAME}/app:/var/www/html/storage/app"
+          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/var/www/html/storage/app"
         ]
       }
 
-      resources {
-        cpu    = 1000
-        memory = 1024
-      }
-
       template {
+        destination = "local/.env"
+        env         = true
         data        = <<EOH
-LICENSE_KEY={{ key "mixpost/license/key" }}
+LICENSE_KEY = {{ key "mixpost/license/key" }}
 
-APP_NAME=MIXPOST
+APP_NAME    = "Redbrick Mixpost"
 
-APP_KEY={{ key "mixpost/app/key" }}
-APP_DEBUG=true
-APP_DOMAIN={{ env "NOMAD_META_domain" }}
-APP_URL=https://{{ env "NOMAD_META_domain" }}
+APP_KEY     = {{ key "mixpost/app/key" }}
+APP_DOMAIN  = {{ env "NOMAD_META_domain" }}
+APP_URL     = https://{{ env "NOMAD_META_domain" }}
+APP_DEBUG   = false
 
-DB_HOST={{ env "NOMAD_IP_db" }}
-DB_PORT={{ env "NOMAD_HOST_PORT_db" }}
-DB_DATABASE={{ key "mixpost/db/name" }}
-DB_USERNAME={{ key "mixpost/db/user" }}
-DB_PASSWORD={{ key "mixpost/db/password" }}
+DB_HOST     = {{ env "NOMAD_IP_db" }}
+DB_PORT     = {{ env "NOMAD_HOST_PORT_db" }}
+DB_DATABASE = {{ key "mixpost/db/name" }}
+DB_USERNAME = {{ key "mixpost/db/user" }}
+DB_PASSWORD = {{ key "mixpost/db/password" }}
 
-REDIS_HOST={{ env "NOMAD_IP_redis" }}
-REDIS_PORT={{ env "NOMAD_HOST_PORT_redis" }}
+REDIS_HOST  = {{ env "NOMAD_IP_redis" }}
+REDIS_PORT  = {{ env "NOMAD_HOST_PORT_redis" }}
 
 # MAIL_HOST=
 # MAIL_PORT=
 # MAIL_USERNAME=
 # MAIL_PASSWORD=
 # MAIL_ENCRYPTION=tls
-# MAIL_FROM_ADDRESS=no-reply@redbrick.dcu.ie
+# MAIL_FROM_ADDRESS = 
 # MAIL_FROM_NAME=${APP_NAME}
 # SSL_EMAIL
 
 # POSSIBLE INTEGRATION WITH MINIO MORE RESEARCH NECESSARY
 # MIXPOST_DISK=s3
 EOH
-        destination = "local/.env"
-        env         = true
+      }
+
+      resources {
+        cpu    = 1000
+        memory = 1024
       }
     }
 
-    task "mixpost-redis" {
+    task "redis" {
       driver = "docker"
 
       config {
@@ -104,46 +102,45 @@ EOH
       }
     }
 
-    task "mariadb" {
+    task "db" {
       driver = "docker"
-
-      template {
-        data = <<EOH
-MYSQL_DATABASE={{ key "mixpost/db/name" }}
-MYSQL_USER={{ key "mixpost/db/user" }}
-MYSQL_PASSWORD={{ key "mixpost/db/password" }}
-MYSQL_RANDOM_ROOT_PASSWORD=yes
-EOH
-
-        destination = "local/file.env"
-        env         = true
-      }
 
       config {
         image = "mariadb:latest"
         ports = ["db"]
 
         volumes = [
-          "/storage/nomad/${NOMAD_TASK_NAME}/mysql:/var/lib/mysql",
+          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/var/lib/mysql",
           "local/server.cnf:/etc/mysql/mariadb.conf.d/50-server.cnf",
         ]
       }
 
       template {
+        destination = "local/file.env"
+        env         = true
+        data        = <<EOH
+MYSQL_DATABASE             = {{ key "mixpost/db/name" }}
+MYSQL_USER                 = {{ key "mixpost/db/user" }}
+MYSQL_PASSWORD             = {{ key "mixpost/db/password" }}
+MYSQL_RANDOM_ROOT_PASSWORD = yes
+EOH
+      }
+
+      template {
+        destination = "local/server.cnf"
         data        = <<EOH
 [mariadbd]
 
-pid-file                = /run/mysqld/mysqld.pid
-basedir                 = /usr
+pid-file                 = /run/mysqld/mysqld.pid
+basedir                  = /usr
 
-bind-address            = 0.0.0.0
+bind-address             = 0.0.0.0
 
-expire_logs_days        = 10
+expire_logs_days         = 10
 
 character-set-server     = utf8mb4
 character-set-collations = utf8mb4=uca1400_ai_ci
-        EOH
-        destination = "local/server.cnf"
+EOH
       }
 
       resources {
