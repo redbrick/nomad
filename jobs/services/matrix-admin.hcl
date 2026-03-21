@@ -2,6 +2,9 @@ job "matrix-admin" {
   datacenters = ["aperture"]
   type        = "service"
 
+  meta {
+    domain = "matrix-admin.redbrick.dcu.ie"
+  }
 
   group "web" {
     count = 1
@@ -18,7 +21,7 @@ job "matrix-admin" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.matrix-admin.rule=Host(`matrix-admin.redbrick.dcu.ie`)",
+        "traefik.http.routers.matrix-admin.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.matrix-admin.entrypoints=websecure",
         "traefik.http.routers.matrix-admin.tls=true",
         "traefik.http.routers.matrix-admin.tls.certresolver=rb",
