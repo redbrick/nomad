@@ -2,6 +2,10 @@ job "nova-timetable" {
   datacenters = ["aperture"]
   type        = "service"
 
+  meta {
+    domain = "timetable.redbrick.dcu.ie"
+  }
+
   group "nova-timetable" {
     count = 1
 
@@ -49,7 +53,7 @@ job "nova-timetable" {
         tags = [
           "traefik.enable=true",
           "traefik.port=${NOMAD_PORT_frontend}",
-          "traefik.http.routers.nova-timetable-frontend.rule=Host(`timetable.redbrick.dcu.ie`)",
+          "traefik.http.routers.nova-timetable-frontend.rule=Host(`${NOMAD_META_domain}`)",
           "traefik.http.routers.nova-timetable-frontend.entrypoints=web,websecure",
           "traefik.http.routers.nova-timetable-frontend.tls.certresolver=rb",
         ]
@@ -84,11 +88,12 @@ job "nova-timetable" {
         tags = [
           "traefik.enable=true",
           "traefik.port=${NOMAD_PORT_backend}",
-          "traefik.http.routers.nova-timetable-backend.rule=Host(`timetable.redbrick.dcu.ie`) && PathPrefix(`/api`)",
+          "traefik.http.routers.nova-timetable-backend.rule=Host(`${NOMAD_META_domain}`) && PathPrefix(`/api`)",
           "traefik.http.routers.nova-timetable-backend.entrypoints=web,websecure",
           "traefik.http.routers.nova-timetable-backend.tls.certresolver=rb",
         ]
       }
+
       resources {
         memory = 800
       }
@@ -111,18 +116,18 @@ job "nova-timetable" {
         ports = ["db"]
 
         volumes = [
-          "/storage/nomad/nova-timetable/db:/var/lib/postgresql/data"
+          "/storage/nomad/${NOMAD_JOB_NAME}/db:/var/lib/postgresql/data"
         ]
       }
 
       template {
-        data        = <<EOH
-POSTGRES_USER={{ key "user-projects/nova/db/user" }}
-POSTGRES_PASSWORD={{ key "user-projects/nova/db/password" }}
-POSTGRES_DB={{ key "user-projects/nova/db/name" }}
-EOH
         destination = "local/db.env"
         env         = true
+        data        = <<EOH
+POSTGRES_USER     = {{ key "user-projects/nova/db/user" }}
+POSTGRES_PASSWORD = {{ key "user-projects/nova/db/password" }}
+POSTGRES_DB       = {{ key "user-projects/nova/db/name" }}
+EOH
       }
     }
 
@@ -134,19 +139,22 @@ EOH
       }
 
       template {
-        data        = <<EOH
-BOT_TOKEN={{ key "user-projects/nova/bot/token" }}
-VALKEY_HOST={{ env "NOMAD_IP_valkey" }}
-VALKEY_PORT={{ env "NOMAD_HOST_PORT_valkey" }}
-POSTGRES_USER={{ key "user-projects/nova/db/user" }}
-POSTGRES_PASSWORD={{ key "user-projects/nova/db/password" }}
-POSTGRES_DB={{ key "user-projects/nova/db/name" }}
-POSTGRES_HOST={{ env "NOMAD_IP_db" }}
-POSTGRES_PORT={{ env "NOMAD_HOST_PORT_db" }}
-CNS_ADDRESS="https://clubsandsocs.jakefarrell.ie"
-EOH
         destination = "local/.env"
         env         = true
+        data        = <<EOH
+BOT_TOKEN         = {{ key "user-projects/nova/bot/token" }}
+
+VALKEY_HOST       = {{ env "NOMAD_IP_valkey" }}
+VALKEY_PORT       = {{ env "NOMAD_HOST_PORT_valkey" }}
+
+POSTGRES_USER     = {{ key "user-projects/nova/db/user" }}
+POSTGRES_PASSWORD = {{ key "user-projects/nova/db/password" }}
+POSTGRES_DB       = {{ key "user-projects/nova/db/name" }}
+POSTGRES_HOST     = {{ env "NOMAD_IP_db" }}
+POSTGRES_PORT     = {{ env "NOMAD_HOST_PORT_db" }}
+
+CNS_ADDRESS       = "https://clubsandsocs.jakefarrell.ie"
+EOH
       }
     }
   }
