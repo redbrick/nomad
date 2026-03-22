@@ -155,7 +155,6 @@ EOH
 
 # Allows mailman to spoof addresses
 mailman@{{ env "NOMAD_META_tld" }} OK
-mailman OK
 EOH
       }
 
