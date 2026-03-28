@@ -1,0 +1,207 @@
+dn: dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: domain
+dc: redbrick
+
+dn: o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organization
+o: redbrick
+
+# Organizational Units
+dn: ou=committee,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalUnit
+ou: committee
+
+dn: ou=dcuOrgs,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalUnit
+ou: dcuOrgs
+
+dn: ou=societies,ou=dcuOrgs,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalUnit
+ou: societies
+
+dn: ou=clubs,ou=dcuOrgs,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalUnit
+ou: clubs
+
+dn: ou=schoolOfComms,ou=dcuOrgs,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalUnit
+ou: schoolOfComms
+
+dn: ou=accounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalUnit
+ou: accounts
+
+dn: ou=member,ou=accounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalUnit
+ou: member
+
+dn: ou=associate,ou=accounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalUnit
+ou: associate
+
+dn: ou=founder,ou=accounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalUnit
+ou: founder
+
+dn: ou=guest,ou=accounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalUnit
+ou: guest
+
+dn: ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalUnit
+ou: serviceAccounts
+
+dn: ou=reserved,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalUnit
+ou: reserved
+
+dn: ou=groups,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalUnit
+ou: groups
+
+# Reserve Account
+
+dn: uid=reserved,ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+cn: reserved
+description: Reserved account for placeholder and reserve
+objectClass: top
+objectClass: service
+uid: reserved
+userPassword: {{ key "ldap/reserved/password" }}
+
+# Groups
+
+dn: cn=member,ou=groups,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: groupOfNames
+objectClass: posixGroup
+gidNumber: 100
+cn: member
+member: uid=reserved,ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+
+dn: cn=founders,ou=groups,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: posixGroup
+objectClass: groupOfNames
+gidNumber: 101
+cn: founders
+member: uid=reserved,ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+
+dn: cn=committee,ou=groups,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: groupOfNames
+objectClass: posixGroup
+gidNumber: 102
+cn: committee
+member: uid=reserved,ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+
+dn: cn=rootholders,ou=groups,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: groupOfNames
+objectClass: posixGroup
+gidNumber: 103
+cn: rootholders
+member: uid=reserved,ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+
+
+
+# Committee Placeholders
+
+dn: cn=chair,ou=committee,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalRole
+cn: chair
+description: Chairperson of the society
+roleOccupant: uid=reserved,ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+
+dn: cn=secretary,ou=committee,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalRole
+cn: secretary
+description: Secretary of the society
+roleOccupant: uid=reserved,ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+
+dn: cn=treasurer,ou=committee,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalRole
+cn: treasurer
+description: Treasurer of the society
+roleOccupant: uid=reserved,ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+
+dn: cn=pro,ou=committee,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalRole
+cn: pro
+description: Public Relations Officer for the society
+roleOccupant: uid=reserved,ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+
+dn: cn=vicechair,ou=committee,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalRole
+cn: vicechair
+description: Vice-Chair of the society
+roleOccupant: uid=reserved,ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+
+dn: cn=gdo,ou=committee,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalRole
+cn: gdo
+description: Graphics Design Officer of the society
+roleOccupant: uid=reserved,ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+
+dn: cn=firstyearrep,ou=committee,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalRole
+cn: firstyearrep
+description: First Year Representative of the society
+roleOccupant: uid=reserved,ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+
+dn: cn=webmaster,ou=committee,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalRole
+cn: webmaster
+description: Webmaster of the society
+roleOccupant: uid=reserved,ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+
+dn: cn=sysadmin,ou=committee,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalRole
+cn: sysadmin
+description: System Administrator of the society
+roleOccupant: uid=reserved,ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+
+dn: cn=helpdesk,ou=committee,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalRole
+cn: helpdesk
+description: Helpdesk of the society
+roleOccupant: uid=reserved,ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+
+dn: cn=events,ou=committee,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalRole
+cn: events
+description: Events Officers of the society
+roleOccupant: uid=reserved,ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+
+dn: cn=ocm,ou=committee,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+objectClass: top
+objectClass: organizationalRole
+cn: ocm
+description: Ordinary Committee Member of the society
+roleOccupant: uid=reserved,ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
