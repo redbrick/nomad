@@ -42,8 +42,8 @@ job "gatus" {
 
       template {
         destination = "local/.env"
-        env = true
-        data = <<EOH
+        env         = true
+        data        = <<EOH
 POSTGRES_DB       = {{ key "gatus/db/name" }}
 POSTGRES_USER     = {{ key "gatus/db/user" }}
 POSTGRES_PASSWORD = {{ key "gatus/db/password" }}
@@ -97,7 +97,7 @@ EOH
 
       template {
         destination = "local/.env"
-        env = true
+        env         = true
         change_mode = "restart"
         data = <<EOH
 {{- range service "gatus-db" }}
