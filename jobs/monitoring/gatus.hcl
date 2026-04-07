@@ -1,4 +1,4 @@
-job "gatus-test" {
+job "gatus" {
   datacenters = ["aperture"]
   type        = "service"
 
@@ -42,7 +42,7 @@ job "gatus-test" {
 
       template {
         destination = "local/.env"
-        env         = true
+        env = true
         data = <<EOH
 POSTGRES_DB       = {{ key "gatus/db/name" }}
 POSTGRES_USER     = {{ key "gatus/db/user" }}
@@ -69,9 +69,10 @@ EOH
     service {
       name = "gatus"
       port = "http"
-        tags = [
+
+      tags = [
         "traefik.enable=true",
-        "traefik.http.routers.gatus.rule=Host(`status.redbrick.dcu.ie`)",
+        "traefik.http.routers.gatus.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.gatus.entrypoints=web,websecure",
         "traefik.http.routers.gatus.tls.certresolver=rb",
       ]
@@ -96,7 +97,7 @@ EOH
 
       template {
         destination = "local/.env"
-        env         = true
+        env = true
         change_mode = "restart"
         data = <<EOH
 {{- range service "gatus-db" }}
@@ -120,7 +121,8 @@ EOH
         ports = ["http"]
 
         volumes = [
-          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/var/lib/postgresql/data"
+          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/config",
+          "local/config.yaml:/config/config.yaml",
         ]
       }
 
@@ -337,8 +339,6 @@ endpoints:
     group: Short Links
     url: "https://dcuclubsandsocs.ie"
     <<: *defaults_https
-
-    
 EOH
       }
 
