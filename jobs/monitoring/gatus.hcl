@@ -99,7 +99,7 @@ EOH
         destination = "local/.env"
         env         = true
         change_mode = "restart"
-        data = <<EOH
+        data        = <<EOH
 {{- range service "gatus-db" }}
 DB_HOST={{ .Address }}
 DB_PORT={{ .Port }}
