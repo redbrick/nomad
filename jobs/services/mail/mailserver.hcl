@@ -106,7 +106,7 @@ job "mailserver" {
 
           "/storage/home:/home/:ro",
 
-          # Mount persistant master.cf
+          # Mount persistant master.cf to keep smtpd_client_restrictions settings across restarts
           "/storage/nomad/mail/master.cf:/etc/postfix/master.cf:ro",
         ]
       }
