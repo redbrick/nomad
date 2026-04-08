@@ -220,13 +220,12 @@ auth_username_format = %Lu
 EOH
       }
 
-template {
-  destination = "local/sasl_access"
-  data        = <<EOH
+      template {
+        destination = "local/sasl_access"
+        data        = <<EOH
 {{ key "mail/postfix/sasl_access" }}
 EOH
-}
-
+      }
 
       resources {
         cpu    = 800
