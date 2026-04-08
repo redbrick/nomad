@@ -18,7 +18,7 @@ $wgResourceBasePath = $wgScriptPath;
 $wgLogo = "$wgResourceBasePath/Resources/assets/logo.png";
 $wgFavicon = "$wgResourceBasePath/Resources/assets/favicon.ico";
 $wgAllowExternalImages = true;
-
+$wgMaxImageArea = 6.4e7;
 
 ## UPO: this is also a user preference option
 $wgEnableEmail = false;
