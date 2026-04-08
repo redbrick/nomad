@@ -133,6 +133,7 @@ EOH
           "/storage/nomad/mediawiki/images:/var/www/html/images",
           "/storage/nomad/mediawiki/skins:/var/www/html/skins",
           "/storage/nomad/mediawiki/resources/assets:/var/www/html/Resources/assets",
+          "local/php.ini:/usr/local/etc/php/php.ini",
           "local/LocalSettings.php:/var/www/html/LocalSettings.php",
           "local/ldapprovider.json:/etc/mediawiki/ldapprovider.json"
         ]
@@ -141,6 +142,15 @@ EOH
       resources {
         cpu    = 4000
         memory = 1200
+      }
+
+      # php.ini file because php is ass and won't let you update this in LocalSettings.php
+      template {
+        data = <<EOH
+post_max_size = 64M
+upload_max_filesize = 50M
+EOH
+        destination = "local/php.ini" 
       }
 
       template {
