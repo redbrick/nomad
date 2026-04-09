@@ -109,14 +109,11 @@ EOT
         env         = true
         data        = <<EOT
 WEBHOOK_URL={{ key "mail/monitor/webhookurl" }}
+TOP_N=6
+INTERVAL_SECONDS=300
+STATE_FILE=${NOMAD_ALLOC_DIR}/top_sasl_prev.txt
+# LOG_PATH is fixed to /var/log/mail/mail.log in the script
 EOT
-      }
-
-      env {
-        TOP_N            = "6"
-        INTERVAL_SECONDS = "300"
-        STATE_FILE       = "${NOMAD_ALLOC_DIR}/top_sasl_prev.txt"
-        # LOG_PATH is fixed to /var/log/mail/mail.log in the script
       }
 
       resources {
