@@ -147,6 +147,10 @@ smtpd_sender_restrictions =
   warn_if_reject,
   reject_unverified_sender
 
+# Rate limit outgoing mail to prevent spam (100/day)
+smtpd_client_message_rate_limit = 100
+anvil_rate_time_unit = 1d
+
 # This file is so that aliases resolve correctly
 virtual_alias_maps = texthash:/tmp/docker-mailserver/aliases
 EOH
