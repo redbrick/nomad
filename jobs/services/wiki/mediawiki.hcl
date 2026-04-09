@@ -146,11 +146,11 @@ EOH
 
       # php.ini file because php is ass and won't let you update this in LocalSettings.php
       template {
+        destination = "local/php.ini" 
         data = <<EOH
 post_max_size = 64M
 upload_max_filesize = 50M
 EOH
-        destination = "local/php.ini" 
       }
 
       template {
