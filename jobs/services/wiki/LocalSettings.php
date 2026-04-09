@@ -18,7 +18,7 @@ $wgResourceBasePath = $wgScriptPath;
 $wgLogo = "$wgResourceBasePath/Resources/assets/logo.png";
 $wgFavicon = "$wgResourceBasePath/Resources/assets/favicon.ico";
 $wgAllowExternalImages = true;
-$wgMaxImageArea = 6.4e7;
+$wgMaxImageArea = 6.4e7; # 64,000,000 pixel resolution (8000x8000)
 
 ## UPO: this is also a user preference option
 $wgEnableEmail = false;
@@ -47,7 +47,11 @@ $wgDBTableOptions = "ENGINE=InnoDB, DEFAULT CHARSET=utf8mb4";
 $wgMainCacheType = CACHE_NONE;
 $wgMemCachedServers = [];
 
+## File Uploads
 $wgEnableUploads = true;
+$wgFileExtensions = [ 'png', 'gif', 'jpg', 'jpeg', 'webp', 'txt' ];
+$wgUploadSizeWarning = 52428800;
+$wgMaxUploadSize = 52428800; # 50mb upload limit
 $wgUseImageMagick = true;
 $wgImageMagickConvertCommand = "/usr/bin/convert";
 $wgUploadPath = "$wgScriptPath/images";
