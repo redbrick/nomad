@@ -42,15 +42,19 @@ def die(msg):
 
 def read_prev():
     try:
-        with open(STATE_FILE, "r", encoding="utf-8", errors="replace") as f:
-            return f.read()
+      with open(STATE_FILE, "r", encoding="utf-8", errors="replace") as f:
+        lines = f.readlines()
+        return "\n".join(sorted(line.rstrip() for line in lines if line.strip()))
     except FileNotFoundError:
-        return ""
+      return ""
 
 def write_prev(s):
     os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
+    # Normalize and sort lines before saving
+    lines = [line.rstrip() for line in s.splitlines() if line.strip()]
+    lines.sort()
     with open(STATE_FILE, "w", encoding="utf-8") as f:
-        f.write(s)
+      f.write("\n".join(lines) + ("\n" if lines else ""))
 
 def post_webhook(text_payload: str):
     if not WEBHOOK_URL:
@@ -76,22 +80,24 @@ def main():
     prev = read_prev()
 
     while True:
-        try:
-            cur = get_top()
-        except subprocess.CalledProcessError as e:
-            print(f"Command failed, will retry:\n{e.output}", file=sys.stderr)
-            time.sleep(INTERVAL_SECONDS)
-            continue
-
-        if cur != prev:
-            try:
-                post_webhook(cur if cur.strip() else "(no sasl_username matches)")
-                write_prev(cur)
-                prev = cur
-            except Exception as e:
-                print(f"Webhook failed, will retry next interval: {e}", file=sys.stderr)
-
+      try:
+        cur = get_top()
+        # Normalize and sort lines for comparison
+        cur_norm = "\n".join(sorted(line.rstrip() for line in cur.splitlines() if line.strip()))
+      except subprocess.CalledProcessError as e:
+        print(f"Command failed, will retry:\n{e.output}", file=sys.stderr)
         time.sleep(INTERVAL_SECONDS)
+        continue
+
+      if cur_norm != prev:
+        try:
+          post_webhook(cur if cur.strip() else "(no sasl_username matches)")
+          write_prev(cur)
+          prev = cur_norm
+        except Exception as e:
+          print(f"Webhook failed, will retry next interval: {e}", file=sys.stderr)
+
+      time.sleep(INTERVAL_SECONDS)
 
 if __name__ == "__main__":
     main()
