@@ -65,6 +65,7 @@ job "mediawiki" {
         memory = 100
       }
       template {
+        destination = "local/nginx.conf"
         data        = <<EOH
 # user www-data www-data;
 error_log /dev/stderr error;
@@ -117,7 +118,6 @@ http {
     }
 }
 EOH
-        destination = "local/nginx.conf"
       }
     }
 
@@ -154,7 +154,8 @@ EOH
       }
 
       template {
-        data = <<EOH
+        destination = "local/ldapprovider.json"
+        data        = <<EOH
 {
   "Redbrick": {
     "connection": {
@@ -185,8 +186,6 @@ EOH
   }
 }
 EOH
-
-        destination = "local/ldapprovider.json"
       }
 
       template {
@@ -222,7 +221,8 @@ EOH
       }
 
       template {
-        data = <<EOH
+        destination = "local/conf.cnf"
+        data        = <<EOH
 [mysqld]
 # Ensure full UTF-8 support
 character-set-server = utf8mb4
@@ -256,8 +256,6 @@ long_query_time = 1
 # Network
 bind-address = 0.0.0.0
 EOH
-
-        destination = "local/conf.cnf"
       }
 
       resources {
@@ -266,15 +264,14 @@ EOH
       }
 
       template {
-        data = <<EOH
+        destination = "local/.env"
+        env         = true
+        data        = <<EOH
 MYSQL_DATABASE={{ key "mediawiki/db/name" }}
 MYSQL_USER={{ key "mediawiki/db/username" }}
 MYSQL_PASSWORD={{ key "mediawiki/db/password" }}
 MYSQL_RANDOM_ROOT_PASSWORD=yes
 EOH
-
-        destination = "local/.env"
-        env         = true
       }
     }
   }
