@@ -137,7 +137,10 @@ ui:
   dashboard-subheading: "Centralised dashboard to monitor all Redbrick's running services and track downtime"
   logo: "https://redbrick.dcu.ie/assets/favicon.ico"
   link: "https://{{ env "NOMAD_META_domain" }}"
-  ui.favicon.default: "https://redbrick.dcu.ie/assets/favicon.ico"
+  favicon:
+    default: "https://redbrick.dcu.ie/assets/favicon.ico"
+    size16x16: "https://redbrick.dcu.ie/assets/favicon.ico"
+    size32x32: "https://redbrick.dcu.ie/assets/favicon.ico"
   dark-mode: on
 
 storage:
@@ -195,36 +198,6 @@ endpoints:
     url: "https://timetable.redbrick.dcu.ie"
     <<: *defaults_https
 
-  - name: The College View
-    group: Services
-    url: "https://thecollegeview.ie"
-    <<: *defaults_https
-
-  - name: The Look
-    group: Services
-    url: "https://thelookonline.dcu.ie"
-    <<: *defaults_https
-
-  - name: Hedgedoc
-    group: Services
-    url: "https://md.redbrick.dcu.ie/_health"
-    <<: *defaults_https
-
-  - name: DCU Solar Racing
-    group: Other Socs
-    url: "https://solarracing.ie"
-    <<: *defaults_https
-
-  - name: MPS Site
-    group: Other Socs
-    url: "https://dcumps.ie"
-    <<: *defaults_https
-
-  - name: Solar Racing Outline
-    group: Other Socs
-    url: "https://outline.solarracing.ie"
-    <<: *defaults_https
-
   - name: Vaultwarden
     group: Services
     url: "https://vault.redbrick.dcu.ie"
@@ -245,17 +218,12 @@ endpoints:
     url: "https://docs.redbrick.dcu.ie"
     <<: *defaults_https
 
-  - name: Plume (on RB)
-    group: Services
-    url: "https://cspp.rb.dcu.ie"
-    <<: *defaults_https
-
   - name: Paperless
     group: Services
     url: "https://paperless.redbrick.dcu.ie"
     <<: *defaults_https
 
-  - name: C&S OMS
+  - name: DCU Clubs and Socs
     group: Services
     url: "https://dcuclubsandsocs.ie"
     <<: *defaults_https
@@ -263,6 +231,47 @@ endpoints:
   - name: C&S Room Bookings
     group: Services
     url: "https://rooms.rb.dcu.ie"
+    <<: *defaults_https
+
+  - name: Hedgedoc
+    group: Services
+    url: "https://md.redbrick.dcu.ie/_health"
+    <<: *defaults_https
+
+  # --- Other Socs ---
+  - name: DCU Solar Racing
+    group: Other Socs
+    url: "https://solarracing.ie"
+    <<: *defaults_https
+
+  - name: MPS Site
+    group: Other Socs
+    url: "https://dcumps.ie"
+    <<: *defaults_https
+
+  - name: The Look
+    group: Other Socs
+    url: "https://thelookonline.dcu.ie"
+    <<: *defaults_https
+
+  - name: The College View
+    group: Other Socs
+    url: "https://thecollegeview.ie"
+    <<: *defaults_https
+
+  - name: Solar Racing Outline
+    group: Other Socs
+    url: "https://outline.solarracing.ie"
+    <<: *defaults_https
+
+  - name: Plume (on RB)
+    group: Other Socs
+    url: "https://cspp.rb.dcu.ie"
+    <<: *defaults_https
+
+  - name: Amikon Website
+    group: Other Socs
+    url: "https://amikon.me"
     <<: *defaults_https
 
   - name: Glados
@@ -328,16 +337,6 @@ endpoints:
   - name: Tiktok Shortlink
     group: Short Links
     url: "https://tiktok.redbrick.dcu.ie"
-    <<: *defaults_https
-
-  - name: Amikon Website
-    group: Short Links
-    url: "https://amikon.me"
-    <<: *defaults_https
-
-  - name: DCU Clubs and Socs
-    group: Short Links
-    url: "https://dcuclubsandsocs.ie"
     <<: *defaults_https
 EOH
       }
