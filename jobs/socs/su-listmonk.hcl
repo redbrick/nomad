@@ -10,10 +10,13 @@ job "su-listmonk" {
     network {
       mode = "bridge"
       port "http" {}
+    }
 
-      port "db" {
-        to = 5432
-      }
+    update {
+      max_parallel     = 1
+      health_check     = "checks"
+      min_healthy_time = "10s"
+      healthy_deadline = "5m"
     }
 
     service {
@@ -48,7 +51,7 @@ job "su-listmonk" {
         args    = ["-c", "./listmonk --install --idempotent --yes --config '' && ./listmonk --upgrade --yes --config '' && ./listmonk --config ''"] # empty config so envvars are used instead
 
         volumes = [
-          "/storage/nomad/su-listmonk/uploads:/uploads",
+          "/storage/nomad/${NOMAD_JOB_NAME}/uploads:/uploads",
         ]
       }
 
@@ -67,8 +70,10 @@ LISTMONK_app__public_url  = {{ env "NOMAD_META_domain" }}
 LISTMONK_db__user         = {{ key "su/listmonk/db/username" }}
 LISTMONK_db__password     = {{ key "su/listmonk/db/password" }}
 LISTMONK_db__database     = {{ key "su/listmonk/db/name" }}
-LISTMONK_db__host         = {{ env "NOMAD_HOST_IP_db" }}
-LISTMONK_db__port         = {{ env "NOMAD_HOST_PORT_db" }}
+{{- range service "su-listmonk-db" }}
+LISTMONK_db__host         = {{ .Address }}
+LISTMONK_db__port         = {{ .Port }}
+{{- end }}
 LISTMONK_db__ssl_mode     = disable
 LISTMONK_db__max_open     = 25
 LISTMONK_db__max_idle     = 25
@@ -101,8 +106,10 @@ EOH
         destination = "local/wait.env"
         env         = true
         data        = <<EOH
-DB_HOST={{ env "NOMAD_IP_db" }}
-DB_PORT={{ env "NOMAD_HOST_PORT_db" }}
+{{- range service "su-listmonk-db" }}
+DB_HOST={{ .Address }}
+DB_PORT={{ .Port }}
+{{- end }}
 DB_USER={{ key "su/listmonk/db/username" }}
 EOH
       }
@@ -112,8 +119,27 @@ EOH
       }
     }
 
-    task "db" {
-      driver = "docker"
+  }
+
+  group "database" {
+    count = 1
+
+    network {
+      port "db" {
+        to = 5432
+      }
+    }
+
+    update {
+      max_parallel = 0 # don't update this group automatically
+      auto_revert  = false
+    }
+
+    task "postgres" {
+      driver         = "docker"
+      kill_signal    = "SIGTERM" # SIGTERM instead of SIGKILL so database can shutdown safely
+      kill_timeout   = "30s"
+      shutdown_delay = "5s"
 
       service {
         name = "su-listmonk-db"
@@ -129,17 +155,12 @@ EOH
         }
       }
 
-      lifecycle {
-        hook    = "prestart"
-        sidecar = true
-      }
-
       config {
         image = "postgres:17-alpine"
         ports = ["db"]
 
         volumes = [
-          "/storage/nomad/su-listmonk/postgres:/var/lib/postgresql/data"
+          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/var/lib/postgresql/data"
         ]
       }
 
