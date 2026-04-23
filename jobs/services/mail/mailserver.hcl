@@ -144,8 +144,6 @@ smtpd_sender_restrictions =
   reject_unlisted_sender,
   reject_unauth_pipelining,
   reject_sender_login_mismatch,
-  warn_if_reject,
-  reject_unverified_sender
 
 # Rate limit outgoing mail to prevent spam (100/day)
 smtpd_client_message_rate_limit = 100
