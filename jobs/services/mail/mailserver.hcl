@@ -149,6 +149,7 @@ smtpd_sender_restrictions =
 
 # Rate limit outgoing mail to prevent spam (100/day)
 smtpd_client_message_rate_limit = 100
+smtpd_client_auth_rate_limit = 100
 anvil_rate_time_unit = 1d
 
 # This file is so that aliases resolve correctly
