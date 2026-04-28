@@ -94,8 +94,7 @@ languagedefault = "en"
 ; (optional) URL shortener address to offer after a new paste is created.
 ; It is suggested to only use this with self-hosted shorteners as this will leak
 ; the pastes encryption key.
-urlshortener = "https://s.rb.dcu.ie/rest/v1/short-urls/shorten?apiKey={{ key "privatebin/shlink/api" }}&format=txt&longUrl="
-
+; urlshortener = "https://example.com/shorten?url=%s"
 qrcode = true
 email = true
 
