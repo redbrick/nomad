@@ -47,6 +47,10 @@ job "traefik" {
           "/storage/nomad/traefik/access.log:/access.log",
         ]
       }
+      resources {
+        cpu    = 500
+        memory = 1024
+      }
 
       template {
         destination = "local/.env"
@@ -143,6 +147,12 @@ EOF
 
 [tracing]
 
+[metrics]
+  [metrics.prometheus]
+    addServicesLabels = true
+    addRoutersLabels = true
+    addEntryPointsLabels = true
+
 [accessLog]
   filePath = "/access.log"
 EOF
@@ -227,6 +237,7 @@ EOF
       certResolver = "lets-encrypt"
 
 {{ end -}}
+      url = "http://127.0.0.1"  # Dummy service - not used
 EOF
       }
     }
