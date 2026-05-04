@@ -96,6 +96,7 @@ job "mailserver" {
 
           "local/postfix-main.cf:/tmp/docker-mailserver/postfix-main.cf",
           "local/transport:/etc/postfix/transport",
+          "local/sender_blocklist:/etc/postfix/sender_blocklist:ro",
           "local/sender_whitelist:/etc/postfix/sender_whitelist:ro",
           "local/postfix-sender-login.pcre:/etc/postfix/postfix-sender-login.pcre:ro",
           "local/10-auth.conf:/etc/dovecot/conf.d/10-auth.conf:ro",
@@ -136,6 +137,7 @@ smtpd_sender_login_maps = pcre:/etc/postfix/postfix-sender-login.pcre
 # Allow only mailman senders (Mailman) to send as list addresses
 # and allow authenticated users/mynetworks before rejecting mismatches.
 smtpd_sender_restrictions =
+  check_sender_access texthash:/etc/postfix/sender_blocklist,
   check_sender_access texthash:/etc/postfix/sender_whitelist,
   permit_mynetworks,
   permit_sasl_authenticated,
@@ -152,6 +154,13 @@ anvil_rate_time_unit = 1d
 
 # This file is so that aliases resolve correctly
 virtual_alias_maps = texthash:/tmp/docker-mailserver/aliases
+EOH
+      }
+
+      template {
+        destination = "local/sender_blocklist"
+        data        = <<EOH
+ {{ key "mail/postfix/sender_blocklist" }}
 EOH
       }
 
