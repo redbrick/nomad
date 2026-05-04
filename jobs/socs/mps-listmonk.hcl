@@ -97,7 +97,7 @@ EOH
         command = "sh"
         args = [
           "-c",
-          "while ! pg_isready -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER}; do echo 'Waiting for DB...'; sleep 1; done; echo 'DB is ready!'"
+          "while ! pg_isready -h $DB_HOST -p $DB_PORT -U $DB_USER; do echo 'Waiting for DB...'; sleep 1; done; echo 'DB is ready!'"
         ]
       }
 
@@ -148,7 +148,7 @@ EOH
           type     = "script"
           name     = "postgres-ready"
           command  = "/bin/sh"
-          args     = ["-c", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+          args     = ["-c", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
           interval = "10s"
           timeout  = "2s"
         }
