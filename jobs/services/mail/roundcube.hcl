@@ -36,7 +36,6 @@ job "roundcube" {
         "traefik.enable=true",
         "traefik.http.routers.roundcube.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.roundcube.entrypoints=web,websecure",
-        "traefik.http.routers.roundcube.tls.certresolver=lets-encrypt",
       ]
     }
 
@@ -44,7 +43,7 @@ job "roundcube" {
       driver = "docker"
 
       config {
-        image    = "nginx:alpine"
+        image    = "nginx:1.30.2-alpine"
         ports    = ["http"]
         hostname = "${NOMAD_META_domain}"
         volumes = [
@@ -158,7 +157,7 @@ $config['managesieve_conn_options'] = [
 # show forwarding option on the UI
 $config['managesieve_forward'] = 1;
 EOH
-  }
+      }
     }
 
     task "roundcube-db" {

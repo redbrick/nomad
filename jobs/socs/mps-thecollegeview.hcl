@@ -40,7 +40,6 @@ job "mps-thecollegeview" {
         "traefik.enable=true",
         "traefik.http.routers.tcv.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.tcv.entrypoints=web,websecure",
-        "traefik.http.routers.tcv.tls.certresolver=lets-encrypt",
       ]
     }
 
@@ -49,7 +48,7 @@ job "mps-thecollegeview" {
       driver = "docker"
 
       config {
-        image = "nginx:alpine"
+        image = "nginx:1.30.2-alpine"
         ports = ["http"]
         volumes = [
           "local/nginx.conf:/etc/nginx/nginx.conf",

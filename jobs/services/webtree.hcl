@@ -35,7 +35,7 @@ job "webtree" {
     task "webtree-nginx" {
       driver = "docker"
       config {
-        image = "nginx:alpine"
+        image = "nginx:1.30.2-alpine"
         ports = ["http"]
         volumes = [
           "/storage/webtree:/webtree",

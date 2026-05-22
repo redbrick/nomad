@@ -40,7 +40,6 @@ job "style-thelook" {
         "traefik.enable=true",
         "traefik.http.routers.thelook.rule=Host(`${NOMAD_META_domain}`) || Host(`style.redbrick.dcu.ie`)",
         "traefik.http.routers.thelook.entrypoints=web,websecure",
-        "traefik.http.routers.thelook.tls.certresolver=lets-encrypt",
       ]
     }
 
@@ -49,7 +48,7 @@ job "style-thelook" {
       driver = "docker"
 
       config {
-        image = "nginx:alpine"
+        image = "nginx:1.30.2-alpine"
         ports = ["http"]
         volumes = [
           "local/nginx.conf:/etc/nginx/nginx.conf",
