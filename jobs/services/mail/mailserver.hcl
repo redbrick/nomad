@@ -1,7 +1,11 @@
 job "mailserver" {
   datacenters = ["aperture"]
   type        = "service"
-  node_pool   = "ingress"
+
+  constraint {
+    attribute = "${meta.ingress_vip_node}"
+    value     = "1"
+  }
 
   meta {
     tld    = "redbrick.dcu.ie"
@@ -16,36 +20,76 @@ job "mailserver" {
       }
 
       port "smtp" {
-        static = 25
+        to = 25
       }
 
       port "submissions" {
-        static = 465
+        to = 465
       }
 
       port "submission" {
-        static = 587
+        to = 587
       }
 
       port "imap" {
-        static = 143
+        to = 143
       }
 
       port "imaps" {
-        static = 993
+        to = 993
       }
 
       port "pop3" {
-        static = 110
+        to = 110
       }
 
       port "pop3s" {
-        static = 995
+        to = 995
       }
 
       port "managesieve" {
-        static = 4190
+        to = 4190
       }
+    }
+
+    service {
+      name = "mailserver-smtp"
+      port = "smtp"
+    }
+
+    service {
+      name = "mailserver-submissions"
+      port = "submissions"
+    }
+
+    service {
+      name = "mailserver-submission"
+      port = "submission"
+    }
+
+    service {
+      name = "mailserver-imap"
+      port = "imap"
+    }
+
+    service {
+      name = "mailserver-imaps"
+      port = "imaps"
+    }
+
+    service {
+      name = "mailserver-pop3"
+      port = "pop3"
+    }
+
+    service {
+      name = "mailserver-pop3s"
+      port = "pop3s"
+    }
+
+    service {
+      name = "mailserver-managesieve"
+      port = "managesieve"
     }
 
     task "whoami" {
@@ -57,7 +101,7 @@ job "mailserver" {
       }
 
       service {
-        name = "whoami"
+        name = "mail-http"
         port = "http"
 
         check {
@@ -71,8 +115,8 @@ job "mailserver" {
           "traefik.enable=true",
           "traefik.port=${NOMAD_PORT_http}",
           "traefik.http.routers.mail-http.rule=Host(`${NOMAD_META_domain}`)",
-          "traefik.http.routers.mail-http.entrypoints=web,websecure",
-          "traefik.http.routers.mail-http.tls.certresolver=lets-encrypt",
+          "traefik.http.routers.mail-http.entrypoints=websecure",
+          "traefik.http.routers.mail-http.tls=true",
         ]
       }
     }
@@ -81,8 +125,19 @@ job "mailserver" {
       driver = "docker"
 
       config {
-        image = "ghcr.io/docker-mailserver/docker-mailserver:latest"
-        ports = ["smtp", "submissions", "submission", "imap", "imaps", "pop3", "pop3s", "managesieve"]
+        image    = "ghcr.io/docker-mailserver/docker-mailserver:latest"
+        hostname = "mail.redbrick.dcu.ie"
+
+        ports = [
+          "smtp",
+          "submissions",
+          "submission",
+          "imap",
+          "imaps",
+          "pop3",
+          "pop3s",
+          "managesieve"
+        ]
 
         volumes = [
           # mount mailserver dirs
@@ -91,20 +146,22 @@ job "mailserver" {
           "/storage/nomad/mail/logs/:/var/log/mail/",
           "/storage/nomad/mail/config/:/tmp/docker-mailserver/",
 
-          # acme.json in read-only mode so certs can be generated
-          "/storage/nomad/traefik/acme/acme.json:/etc/letsencrypt/acme.json:ro",
+          # Use extracted wildcard PEM certs, not Traefik ACME JSON.
+          "/storage/nomad/traefik/certs/redbrick.dcu.ie:/etc/docker-mailserver/ssl/redbrick.dcu.ie:ro",
 
           "local/postfix-main.cf:/tmp/docker-mailserver/postfix-main.cf",
           "local/transport:/etc/postfix/transport",
+
+          # Add a blocklist and whitelist for senders to control who can send to us and who we will accept mail from.
           "local/sender_blocklist:/etc/postfix/sender_blocklist:ro",
           "local/sender_whitelist:/etc/postfix/sender_whitelist:ro",
           "local/postfix-sender-login.pcre:/etc/postfix/postfix-sender-login.pcre:ro",
           "local/10-auth.conf:/etc/dovecot/conf.d/10-auth.conf:ro",
           "local/aliases:/tmp/docker-mailserver/aliases:ro",
           "local/sasl_access:/etc/postfix/sasl_access:ro",
+          "local/99-proxy-protocol.conf:/etc/dovecot/conf.d/99-proxy-protocol.conf:ro",
 
           "/etc/localtime:/etc/localtime:ro",
-
           "/storage/home:/home/:ro",
 
           # Mount persistant master.cf to keep smtpd_client_restrictions settings across restarts
@@ -236,6 +293,40 @@ EOH
         destination = "local/sasl_access"
         data        = <<EOH
 {{ key "mail/postfix/sasl_access" }}
+EOH
+      }
+
+      template {
+        destination = "local/99-proxy-protocol.conf"
+        data        = <<EOH
+# Enable PROXY protocol support for mail traffic proxied by Traefik.
+haproxy_trusted_networks = 127.0.0.1/32 10.10.0.0/16 10.20.0.0/16 136.206.16.0/24
+
+service imap-login {
+  inet_listener imap {
+    haproxy = yes
+  }
+
+  inet_listener imaps {
+    haproxy = yes
+  }
+}
+
+service pop3-login {
+  inet_listener pop3 {
+    haproxy = yes
+  }
+
+  inet_listener pop3s {
+    haproxy = yes
+  }
+}
+
+service managesieve-login {
+  inet_listener sieve {
+    haproxy = yes
+  }
+}
 EOH
       }
 
