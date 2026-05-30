@@ -148,8 +148,8 @@ job "traefik" {
   [entryPoints.voice-udp]
     address = ":4503/udp"
 
-    [entryPoints.voice-udp.udp]
-      timeout = "15s"
+  [entryPoints.voice-udp.udp] # this will help reduce random dropouts in audio https://github.com/mumble-voip/mumble/issues/3550#issuecomment-441495977
+    timeout = "15s"
 
   [entryPoints.matrix]
     address = ":8448"
