@@ -1,20 +1,75 @@
 job "grafana" {
   datacenters = ["aperture"]
+  type        = "service"
 
-  type = "service"
+  meta {
+    domain = "grafana.redbrick.dcu.ie"
+  }
 
-  group "monitoring" {
+  group "database" {
+    count = 1
+
     network {
-      port "http" {
-        to = 3000
-      }
       port "db" {
         to = 5432
       }
     }
 
     service {
-      name = "grafana"
+      name = "grafana-db"
+      port = "db"
+
+      check {
+        name     = "postgres-tcp"
+        type     = "tcp"
+        port     = "db"
+        interval = "10s"
+        timeout  = "2s"
+      }
+    }
+
+    task "db" {
+      driver         = "docker"
+      kill_signal    = "SIGTERM" # SIGTERM instead of SIGKILL so database can shutdown safely
+      kill_timeout   = "30s"
+      shutdown_delay = "5s"
+
+      config {
+        image = "postgres:17-alpine"
+        ports = ["db"]
+
+        volumes = [
+          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/var/lib/postgresql/data"
+        ]
+      }
+
+      template {
+        data        = <<EOH
+POSTGRES_DB={{ key "grafana/db/name" }}
+POSTGRES_USER={{ key "grafana/db/user" }}
+POSTGRES_PASSWORD={{ key "grafana/db/password" }}
+EOH
+        destination = "local/db.env"
+        env         = true
+      }
+
+      resources {
+        cpu    = 500
+        memory = 512
+      }
+    }
+  }
+
+  group "web" {
+    count = 1
+    network {
+      port "http" {
+        to = 3000
+      }
+    }
+
+    service {
+      name = "grafana-rb"
       port = "http"
 
       check {
@@ -26,22 +81,51 @@ job "grafana" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.grafana.entrypoints=web,websecure",
-        "traefik.http.routers.grafana.rule=Host(`grafana.redbrick.dcu.ie`)",
-        "traefik.http.routers.grafana.tls=true",
-        "traefik.http.routers.grafana.tls.certresolver=lets-encrypt",
+        "traefik.http.routers.grafanarb.rule=Host(`${NOMAD_META_domain}`)",
+        "traefik.http.routers.grafanarb.entrypoints=web,websecure",
+        "traefik.http.routers.grafanarb.tls=true",
+        "traefik.http.routers.grafanarb.middlewares=grafana-embed-headers",
+        "traefik.http.middlewares.grafana-embed-headers.headers.contentSecurityPolicy=frame-ancestors https://status.redbrick.dcu.ie",
       ]
+    }
+
+    task "wait-for-db" {
+      driver = "docker"
+
+      lifecycle {
+        hook    = "prestart"
+        sidecar = false
+      }
+
+      config {
+        image   = "alpine:3.19"
+        command = "sh"
+        args = [
+          "-c",
+          "while ! nc -z $DB_HOST $DB_PORT; do echo 'Waiting for DB...'; sleep 1; done; echo 'DB is ready!'"
+        ]
+      }
+
+      template {
+        destination = "local/.env"
+        env         = true
+        change_mode = "restart"
+        data        = <<EOH
+{{- range service "grafana-db" }}
+DB_HOST={{ .Address }}
+DB_PORT={{ .Port }}
+{{- end }}
+EOH
+      }
+
+      resources {
+        cpu    = 50
+        memory = 64
+      }
     }
 
     task "grafana" {
       driver = "docker"
-      user   = "1001:1001"
-
-      env {
-        GF_AUTH_BASIC_ENABLED = "true"
-        GF_INSTALL_PLUGINS    = "grafana-piechart-panel"
-        GF_SERVER_ROOT_URL    = "https://grafana.redbrick.dcu.ie"
-      }
 
       config {
         image = "grafana/grafana"
@@ -56,12 +140,17 @@ job "grafana" {
       template {
         data        = <<EOH
 GF_DATABASE_TYPE=postgres
-GF_DATABASE_HOST={{ env "NOMAD_ADDR_db" }}
+GF_DATABASE_HOST={{ range service "grafana-db" }}{{ .Address }}:{{ .Port }}{{ end }}
 GF_DATABASE_NAME={{ key "grafana/db/name" }}
 GF_DATABASE_USER={{ key "grafana/db/user" }}
 GF_DATABASE_PASSWORD={{ key "grafana/db/password" }}
-GF_FEATURE_TOGGLES_ENABLE=publicDashboards
-GF_LOG_LEVEL=debug
+# GF_FEATURE_TOGGLES_ENABLE=publicDashboards
+GF_LOG_LEVEL=info
+GF_AUTH_BASIC_ENABLED=true
+GF_USERS_ALLOW_SIGN_UP=false
+GF_SECURITY_ALLOW_EMBEDDING=true
+GF_SERVER_ROOT_URL=https://{{ env "NOMAD_META_domain" }}
+
 EOH
         destination = "local/.env"
         env         = true
@@ -81,30 +170,10 @@ datasources:
 EOH
         destination = "local/datasources.yml"
       }
-    }
-    task "db" {
-      driver = "docker"
-
-      config {
-        image = "postgres:17-alpine"
-        ports = ["db"]
-
-        volumes = [
-          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/var/lib/postgresql/data",
-        ]
-      }
-
-      template {
-        data        = <<EOH
-POSTGRES_PASSWORD={{ key "grafana/db/password" }}
-POSTGRES_USER={{ key "grafana/db/user" }}
-POSTGRES_NAME={{ key "grafana/db/name" }}
-EOH
-        destination = "local/db.env"
-        env         = true
+      resources {
+        cpu    = 500
+        memory = 1024
       }
     }
   }
 }
-
-
