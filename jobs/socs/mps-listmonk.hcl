@@ -1,14 +1,13 @@
-job "su-listmonk" {
+job "mps-listmonk" {
   datacenters = ["aperture"]
   type        = "service"
 
   meta {
-    domain = "sulists.redbrick.dcu.ie"
+    domain = "mpslists.redbrick.dcu.ie"
   }
 
   group "listmonk" {
     network {
-      mode = "bridge"
       port "http" {}
     }
 
@@ -20,7 +19,7 @@ job "su-listmonk" {
     }
 
     service {
-      name = "su-listmonk"
+      name = "mps-listmonk"
       port = "http"
 
       check {
@@ -33,10 +32,10 @@ job "su-listmonk" {
       tags = [
         "traefik.enable=true",
         "traefik.port=${NOMAD_PORT_http}",
-        "traefik.http.routers.su-listmonk.entrypoints=web,websecure",
-        "traefik.http.routers.su-listmonk.rule=Host(`${NOMAD_META_domain}`)",
-        "traefik.http.routers.su-listmonk.tls=true",
-        "traefik.http.routers.su-listmonk.tls.certresolver=rb",
+        "traefik.http.routers.mps-listmonk.entrypoints=web,websecure",
+        "traefik.http.routers.mps-listmonk.rule=Host(`${NOMAD_META_domain}`)",
+        "traefik.http.routers.mps-listmonk.tls=true",
+        "traefik.http.routers.mps-listmonk.tls.certresolver=rb",
       ]
     }
 
@@ -67,10 +66,10 @@ job "su-listmonk" {
 LISTMONK_app__address     = 0.0.0.0:{{ env "NOMAD_PORT_http" }}
 LISTMONK_app__public_url  = {{ env "NOMAD_META_domain" }}
 
-LISTMONK_db__user         = {{ key "su/listmonk/db/username" }}
-LISTMONK_db__password     = {{ key "su/listmonk/db/password" }}
-LISTMONK_db__database     = {{ key "su/listmonk/db/name" }}
-{{- range service "su-listmonk-db" }}
+LISTMONK_db__user         = {{ key "mps/listmonk/db/username" }}
+LISTMONK_db__password     = {{ key "mps/listmonk/db/password" }}
+LISTMONK_db__database     = {{ key "mps/listmonk/db/name" }}
+{{- range service "mps-listmonk-db" }}
 LISTMONK_db__host         = {{ .Address }}
 LISTMONK_db__port         = {{ .Port }}
 {{- end }}
@@ -79,8 +78,8 @@ LISTMONK_db__max_open     = 25
 LISTMONK_db__max_idle     = 25
 LISTMONK_db__max_lifetime = 300s
 TZ                        = Etc/UTC
-LISTMONK_ADMIN_USER       = {{ key "su/listmonk/admin/username" }}
-LISTMONK_ADMIN_PASSWORD   = {{ key "su/listmonk/admin/password" }}
+LISTMONK_ADMIN_USER       = {{ key "mps/listmonk/admin/username" }}
+LISTMONK_ADMIN_PASSWORD   = {{ key "mps/listmonk/admin/password" }}
 EOH
       }
     }
@@ -106,11 +105,11 @@ EOH
         destination = "local/wait.env"
         env         = true
         data        = <<EOH
-{{- range service "su-listmonk-db" }}
+{{- range service "mps-listmonk-db" }}
 DB_HOST={{ .Address }}
 DB_PORT={{ .Port }}
 {{- end }}
-DB_USER={{ key "su/listmonk/db/username" }}
+DB_USER={{ key "mps/listmonk/db/username" }}
 EOH
       }
 
@@ -142,7 +141,7 @@ EOH
       shutdown_delay = "5s"
 
       service {
-        name = "su-listmonk-db"
+        name = "mps-listmonk-db"
         port = "db"
 
         check {
@@ -168,9 +167,9 @@ EOH
         destination = "local/db.env"
         env         = true
         data        = <<EOH
-POSTGRES_DB       = "{{ key "su/listmonk/db/name" }}"
-POSTGRES_USER     = "{{ key "su/listmonk/db/username" }}"
-POSTGRES_PASSWORD = "{{ key "su/listmonk/db/password" }}"
+POSTGRES_DB       = "{{ key "mps/listmonk/db/name" }}"
+POSTGRES_USER     = "{{ key "mps/listmonk/db/username" }}"
+POSTGRES_PASSWORD = "{{ key "mps/listmonk/db/password" }}"
 EOH
       }
     }

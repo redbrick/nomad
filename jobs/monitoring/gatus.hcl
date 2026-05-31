@@ -142,15 +142,6 @@ ui:
     size16x16: "https://redbrick.dcu.ie/assets/favicon.ico"
     size32x32: "https://redbrick.dcu.ie/assets/favicon.ico"
   dark-mode: on
-announcements:
-  - timestamp: 2026-05-08T12:00:00Z
-    type: warning
-    message: "We will be performing planned maintenance on all Redbrick Infrastructure starting this weekend (May 9th). During this time, some services may be unavailable or experience disruptions. Thank you for your understanding and patience. "
-    archived: false
-  - timestamp: 2026-05-21T12:00:00Z
-    type: information
-    message: "Infrastructure upgrades are complete, and we are in the process of restoring services. Please note that some services may take additional time to become fully available. We will provide an update once all services are operational."
-    archived: false
 
 storage:
   type: postgres

@@ -148,8 +148,8 @@ job "traefik" {
   [entryPoints.voice-udp]
     address = ":4503/udp"
 
-    [entryPoints.voice-udp.udp]
-      timeout = "15s"
+  [entryPoints.voice-udp.udp] # this will help reduce random dropouts in audio https://github.com/mumble-voip/mumble/issues/3550#issuecomment-441495977
+    timeout = "15s"
 
   [entryPoints.matrix]
     address = ":8448"
@@ -251,6 +251,8 @@ EOF
 #
 # Example:
 #   redirect/redbrick/wiki = https://wiki.redbrick.dcu.ie/
+
+ # --- Short-link redirects for redbrick.dcu.ie ---
 {{ range $pair := tree "redirect/redbrick" }}
 {{ $name := trimPrefix "redirect/redbrick/" $pair.Key }}
   [http.middlewares.redirect-{{ $name }}.redirectRegex]

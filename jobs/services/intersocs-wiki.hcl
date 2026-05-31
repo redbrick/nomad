@@ -1,15 +1,17 @@
-job "su-listmonk" {
+job "intersocs-wiki" {
   datacenters = ["aperture"]
   type        = "service"
 
   meta {
-    domain = "sulists.redbrick.dcu.ie"
+    domain  = "wiki.netsocs.ie"
+    domain2 = "wiki.intersocs.net"
   }
 
-  group "listmonk" {
+  group "web" {
     network {
-      mode = "bridge"
-      port "http" {}
+      port "http" {
+        to = 3000
+      }
     }
 
     update {
@@ -20,7 +22,7 @@ job "su-listmonk" {
     }
 
     service {
-      name = "su-listmonk"
+      name = "intersocs-wiki"
       port = "http"
 
       check {
@@ -33,30 +35,23 @@ job "su-listmonk" {
       tags = [
         "traefik.enable=true",
         "traefik.port=${NOMAD_PORT_http}",
-        "traefik.http.routers.su-listmonk.entrypoints=web,websecure",
-        "traefik.http.routers.su-listmonk.rule=Host(`${NOMAD_META_domain}`)",
-        "traefik.http.routers.su-listmonk.tls=true",
-        "traefik.http.routers.su-listmonk.tls.certresolver=rb",
+        "traefik.http.routers.intersocs-wiki.entrypoints=web,websecure",
+        "traefik.http.routers.intersocs-wiki.rule=Host(`${NOMAD_META_domain}`) || Host(`${NOMAD_META_domain2}`)",
+        "traefik.http.routers.intersocs-wiki.tls=true",
+        "traefik.http.routers.intersocs-wiki.tls.certresolver=lets-encrypt",
       ]
     }
 
-    task "app" {
+    task "wiki" {
       driver = "docker"
 
       config {
-        image = "listmonk/listmonk:latest"
+        image = "requarks/wiki:latest"
         ports = ["http"]
-
-        command = "sh"
-        args    = ["-c", "./listmonk --install --idempotent --yes --config '' && ./listmonk --upgrade --yes --config '' && ./listmonk --config ''"] # empty config so envvars are used instead
-
-        volumes = [
-          "/storage/nomad/${NOMAD_JOB_NAME}/uploads:/uploads",
-        ]
       }
 
       resources {
-        cpu    = 1000
+        cpu    = 800
         memory = 500
       }
 
@@ -64,23 +59,15 @@ job "su-listmonk" {
         destination = "local/.env"
         env         = true
         data        = <<EOH
-LISTMONK_app__address     = 0.0.0.0:{{ env "NOMAD_PORT_http" }}
-LISTMONK_app__public_url  = {{ env "NOMAD_META_domain" }}
-
-LISTMONK_db__user         = {{ key "su/listmonk/db/username" }}
-LISTMONK_db__password     = {{ key "su/listmonk/db/password" }}
-LISTMONK_db__database     = {{ key "su/listmonk/db/name" }}
-{{- range service "su-listmonk-db" }}
-LISTMONK_db__host         = {{ .Address }}
-LISTMONK_db__port         = {{ .Port }}
+DB_TYPE = postgres
+{{- range service "intersocs-wiki-db" }}
+DB_HOST = {{ .Address }}
+DB_PORT = {{ .Port }}
 {{- end }}
-LISTMONK_db__ssl_mode     = disable
-LISTMONK_db__max_open     = 25
-LISTMONK_db__max_idle     = 25
-LISTMONK_db__max_lifetime = 300s
-TZ                        = Etc/UTC
-LISTMONK_ADMIN_USER       = {{ key "su/listmonk/admin/username" }}
-LISTMONK_ADMIN_PASSWORD   = {{ key "su/listmonk/admin/password" }}
+
+DB_USER = {{ key "intersocs/wiki/db/user" }}
+DB_PASS = {{ key "intersocs/wiki/db/password" }}
+DB_NAME = {{ key "intersocs/wiki/db/name" }}
 EOH
       }
     }
@@ -106,11 +93,11 @@ EOH
         destination = "local/wait.env"
         env         = true
         data        = <<EOH
-{{- range service "su-listmonk-db" }}
-DB_HOST={{ .Address }}
-DB_PORT={{ .Port }}
+{{- range service "intersocs-wiki-db" }}
+DB_HOST = {{ .Address }}
+DB_PORT = {{ .Port }}
 {{- end }}
-DB_USER={{ key "su/listmonk/db/username" }}
+DB_USER = {{ key "intersocs/wiki/db/user" }}
 EOH
       }
 
@@ -118,7 +105,6 @@ EOH
         memory = 128
       }
     }
-
   }
 
   group "database" {
@@ -142,7 +128,7 @@ EOH
       shutdown_delay = "5s"
 
       service {
-        name = "su-listmonk-db"
+        name = "intersocs-wiki-db"
         port = "db"
 
         check {
@@ -168,9 +154,9 @@ EOH
         destination = "local/db.env"
         env         = true
         data        = <<EOH
-POSTGRES_DB       = "{{ key "su/listmonk/db/name" }}"
-POSTGRES_USER     = "{{ key "su/listmonk/db/username" }}"
-POSTGRES_PASSWORD = "{{ key "su/listmonk/db/password" }}"
+POSTGRES_DB       = "{{ key "intersocs/wiki/db/name" }}"
+POSTGRES_USER     = "{{ key "intersocs/wiki/db/user" }}"
+POSTGRES_PASSWORD = "{{ key "intersocs/wiki/db/password" }}"
 EOH
       }
     }

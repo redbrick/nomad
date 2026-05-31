@@ -50,6 +50,8 @@ job "hedgedoc" {
       }
 
       template {
+        destination = "local/.env"
+        env         = true
         data        = <<EOH
 CMD_DB_URL                  = "postgres://{{ key "hedgedoc/db/user" }}:{{ key "hedgedoc/db/password" }}@{{ env "NOMAD_ADDR_db" }}/{{ key "hedgedoc/db/name" }}"
 CMD_ALLOW_FREEURL           = "false"
@@ -60,7 +62,7 @@ CMD_USE_CDN                 = "true"
 CMD_PROTOCOL_USESSL         = "true"
 CMD_URL_ADDPORT             = "false"
 CMD_LOG_LEVEL               = "debug"
-CMD_ENABLE_STATS_API        = "true"
+CMD_ENABLE_STATS_API        = "false"
 
 # Accounts
 CMD_ALLOW_EMAIL_REGISTER    = "false"
@@ -92,8 +94,6 @@ CMD_IMAGE_UPLOAD_TYPE       = "imgur"
 CMD_IMGUR_CLIENTID          = "{{ key "hedgedoc/imgur/clientid" }}"
 CMD_IMGUR_CLIENTSECRET      = "{{ key "hedgedoc/imgur/clientsecret" }}"
 EOH
-        destination = "local/.env"
-        env         = true
       }
     }
 
@@ -110,13 +110,13 @@ EOH
       }
 
       template {
-        data        = <<EOH
-POSTGRES_PASSWORD={{ key "hedgedoc/db/password" }}
-POSTGRES_USER={{ key "hedgedoc/db/user" }}
-POSTGRES_NAME={{ key "hedgedoc/db/name" }}
-EOH
-        destination = "local/db.env"
+        destination = "local/.env"
         env         = true
+        data        = <<EOH
+POSTGRES_PASSWORD = {{ key "hedgedoc/db/password" }}
+POSTGRES_USER     = {{ key "hedgedoc/db/user" }}
+POSTGRES_NAME     = {{ key "hedgedoc/db/name" }}
+EOH
       }
     }
   }

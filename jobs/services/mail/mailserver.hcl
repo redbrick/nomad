@@ -100,10 +100,14 @@ job "mailserver" {
           "local/postfix-sender-login.pcre:/etc/postfix/postfix-sender-login.pcre:ro",
           "local/10-auth.conf:/etc/dovecot/conf.d/10-auth.conf:ro",
           "local/aliases:/tmp/docker-mailserver/aliases:ro",
+          "local/sasl_access:/etc/postfix/sasl_access:ro",
 
           "/etc/localtime:/etc/localtime:ro",
 
           "/storage/home:/home/:ro",
+
+          # Mount persistant master.cf to keep smtpd_client_restrictions settings across restarts
+          "/storage/nomad/mail/master.cf:/etc/postfix/master.cf:ro",
         ]
       }
 
@@ -140,8 +144,11 @@ smtpd_sender_restrictions =
   reject_unlisted_sender,
   reject_unauth_pipelining,
   reject_sender_login_mismatch,
-  warn_if_reject,
-  reject_unverified_sender
+
+# Rate limit outgoing mail to prevent spam (100/day)
+smtpd_client_message_rate_limit = 100
+smtpd_client_auth_rate_limit = 100
+anvil_rate_time_unit = 1d
 
 # This file is so that aliases resolve correctly
 virtual_alias_maps = texthash:/tmp/docker-mailserver/aliases
@@ -155,7 +162,6 @@ EOH
 
 # Allows mailman to spoof addresses
 mailman@{{ env "NOMAD_META_tld" }} OK
-mailman OK
 EOH
       }
 
@@ -214,6 +220,13 @@ auth_mechanisms = plain login
 auth_username_format = %Lu
 
 !include auth-ldap.conf.ext
+EOH
+      }
+
+      template {
+        destination = "local/sasl_access"
+        data        = <<EOH
+{{ key "mail/postfix/sasl_access" }}
 EOH
       }
 

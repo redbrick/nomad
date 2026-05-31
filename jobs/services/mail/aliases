@@ -84,6 +84,8 @@ founders@redbrick.dcu.ie	drjolt, wibble, sandman, fergus, swipe, hyper
 # Committee is a mailing list (handled by mailman)
 committee@redbrick.dcu.ie	committee@lists.redbrick.dcu.ie
 
+techweek@redbrick.dcu.ie  committee@redbrick.dcu.ie
+
 # HELP! requests.
 help@redbrick.dcu.ie	helpdesk@redbrick.dcu.ie
 support@redbrick.dcu.ie	helpdesk@redbrick.dcu.ie

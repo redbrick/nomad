@@ -65,6 +65,7 @@ job "mediawiki" {
         memory = 100
       }
       template {
+        destination = "local/nginx.conf"
         data        = <<EOH
 # user www-data www-data;
 error_log /dev/stderr error;
@@ -117,7 +118,6 @@ http {
     }
 }
 EOH
-        destination = "local/nginx.conf"
       }
     }
 
@@ -133,6 +133,7 @@ EOH
           "/storage/nomad/mediawiki/images:/var/www/html/images",
           "/storage/nomad/mediawiki/skins:/var/www/html/skins",
           "/storage/nomad/mediawiki/resources/assets:/var/www/html/Resources/assets",
+          "local/php.ini:/usr/local/etc/php/php.ini",
           "local/LocalSettings.php:/var/www/html/LocalSettings.php",
           "local/ldapprovider.json:/etc/mediawiki/ldapprovider.json"
         ]
@@ -143,8 +144,18 @@ EOH
         memory = 1200
       }
 
+      # php.ini file because php is ass and won't let you update this in LocalSettings.php
       template {
+        destination = "local/php.ini" 
         data = <<EOH
+post_max_size = 64M
+upload_max_filesize = 50M
+EOH
+      }
+
+      template {
+        destination = "local/ldapprovider.json"
+        data        = <<EOH
 {
   "Redbrick": {
     "connection": {
@@ -175,8 +186,6 @@ EOH
   }
 }
 EOH
-
-        destination = "local/ldapprovider.json"
       }
 
       template {
@@ -212,7 +221,8 @@ EOH
       }
 
       template {
-        data = <<EOH
+        destination = "local/conf.cnf"
+        data        = <<EOH
 [mysqld]
 # Ensure full UTF-8 support
 character-set-server = utf8mb4
@@ -246,8 +256,6 @@ long_query_time = 1
 # Network
 bind-address = 0.0.0.0
 EOH
-
-        destination = "local/conf.cnf"
       }
 
       resources {
@@ -256,15 +264,14 @@ EOH
       }
 
       template {
-        data = <<EOH
+        destination = "local/.env"
+        env         = true
+        data        = <<EOH
 MYSQL_DATABASE={{ key "mediawiki/db/name" }}
 MYSQL_USER={{ key "mediawiki/db/username" }}
 MYSQL_PASSWORD={{ key "mediawiki/db/password" }}
 MYSQL_RANDOM_ROOT_PASSWORD=yes
 EOH
-
-        destination = "local/.env"
-        env         = true
       }
     }
   }
