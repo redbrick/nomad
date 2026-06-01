@@ -46,26 +46,6 @@ scrape_configs:
     params:
       format: ['prometheus']
 
-  - job_name: 'container-metrics'
-    consul_sd_configs:
-      - server: 'consul.service.consul:8500'
-        tags: ['prometheus.enable=true']
-    metrics_path: /metrics
-    relabel_configs:
-      - source_labels: ['__meta_consul_service']
-        target_label: 'job'
-        replacement: 'consul-service'
-
-      - source_labels: ['__meta_consul_tags']
-        regex: '.*prometheus.path=([^,]+).*'
-        target_label: '__metrics_path__'
-        replacement: '/$1'
-
-      - source_labels: ['__meta_consul_tags']
-        regex: '.*prometheus.auth.bearer_token=([^,]+).*'
-        target_label: '__param_bearer_token_file'
-        replacement: '$1'
-
   - job_name: 'node-exporter'
     consul_sd_configs:
       - server: 'consul.service.consul:8500'
