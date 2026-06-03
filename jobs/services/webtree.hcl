@@ -239,6 +239,7 @@ EOH
 ; Mostly to improve performance and compatability with legacy webtree sites
 
 expose_php = Off
+disable_functions = "phpinfo, phpversion, php_uname"
 default_charset = "UTF-8"
 date.timezone = "Europe/Dublin"
 
