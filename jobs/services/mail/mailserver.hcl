@@ -217,7 +217,7 @@ EOH
       template {
         destination = "local/sender_blocklist"
         data        = <<EOH
- {{ key "mail/postfix/sender_blocklist" }}
+{{ key "mail/postfix/sender_blocklist" }}
 EOH
       }
 
