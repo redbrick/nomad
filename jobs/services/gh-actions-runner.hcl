@@ -29,6 +29,7 @@ job "github-actions-runner" {
 #!/bin/bash
 
 export RUNNER_ALLOW_RUNASROOT=1
+export ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true
 
 echo "Querying API for registration token..."
 
@@ -49,9 +50,9 @@ EOF
         destination = "local/bootstrap.sh"
       }
       artifact {
-        source = "https://github.com/actions/runner/releases/download/v2.320.0/actions-runner-linux-x64-2.320.0.tar.gz"
+        source = "https://github.com/actions/runner/releases/download/v2.335.1/actions-runner-linux-x64-2.335.1.tar.gz"
         options {
-          checksum = "sha256:93ac1b7ce743ee85b5d386f5c1787385ef07b3d7c728ff66ce0d3813d5f46900"
+          checksum = "sha256:4ef2f25285f0ae4477f1fe1e346db76d2f3ebf03824e2ddd1973a2819bf6c8cf"
         }
       }
     }
