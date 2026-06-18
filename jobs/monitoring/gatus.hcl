@@ -176,6 +176,13 @@ defaults_https: &defaults_https
     - "[STATUS] == 200"
     - "[CERTIFICATE_EXPIRATION] > 48h"
 
+defaults_shortlinks: &defaults_shortlinks
+  interval: 260s
+  alerts:
+    - type: discord
+  conditions:
+    - "[STATUS] == 200" 
+
 endpoints:
   # --- All Redbrick Monitors ---
   - name: Atlas
@@ -279,9 +286,9 @@ endpoints:
     url: "tcp://10.10.10.5:22"
     <<: *defaults_tcp
 
-  - name: Johnson
+  - name: Mirage
     group: Servers
-    url: "tcp://10.10.10.80:22"
+    url: "tcp://10.10.30.9:22"
     <<: *defaults_tcp
 
   - name: Chell
@@ -297,37 +304,37 @@ endpoints:
   - name: Discord Shortlink
     group: Short Links
     url: "https://discord.redbrick.dcu.ie"
-    <<: *defaults_https
+    <<: *defaults_shortlinks
 
   - name: Github Shortlink
     group: Short Links
     url: "https://github.redbrick.dcu.ie"
-    <<: *defaults_https
+    <<: *defaults_shortlinks
 
   - name: Instagram Shortlink
     group: Short Links
     url: "https://instagram.redbrick.dcu.ie"
-    <<: *defaults_https
+    <<: *defaults_shortlinks
 
   - name: Youtube Shortlink
     group: Short Links
     url: "https://youtube.redbrick.dcu.ie"
-    <<: *defaults_https
+    <<: *defaults_shortlinks
 
   - name: LinkedIn Shortlink
     group: Short Links
     url: "https://linkedin.redbrick.dcu.ie"
-    <<: *defaults_https
+    <<: *defaults_shortlinks
 
   - name: Twitch Shortlink
     group: Short Links
     url: "https://twitch.redbrick.dcu.ie"
-    <<: *defaults_https
+    <<: *defaults_shortlinks
 
   - name: Tiktok Shortlink
     group: Short Links
     url: "https://tiktok.redbrick.dcu.ie"
-    <<: *defaults_https
+    <<: *defaults_shortlinks
 EOH
       }
 
