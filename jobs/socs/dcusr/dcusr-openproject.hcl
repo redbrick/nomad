@@ -32,7 +32,6 @@ job "dcusr-openproject" {
         "traefik.http.routers.dcusr-openproject.entrypoints=web,websecure",
         "traefik.http.routers.dcusr-openproject.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.dcusr-openproject.tls=true",
-        "traefik.http.routers.dcusr-openproject.tls.certresolver=lets-encrypt",
       ]
     }
 
@@ -56,6 +55,7 @@ OPENPROJECT_HOST__NAME={{ env "NOMAD_META_domain" }}
 OPENPROJECT_HTTPS=true
 
 OPENPROJECT_SECRET_KEY_BASE={{ key "dcusr/openproject/secret_key_base" }}
+SECRET_KEY_BASE={{ key "dcusr/openproject/secret_key_base" }}
 
 EMAIL_DELIVERY_METHOD=smtp
 SMTP_ADDRESS={{ key "dcusr/openproject/smtp/address" }}
