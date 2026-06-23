@@ -121,6 +121,52 @@ job "mailserver" {
       }
     }
 
+    task "configure-mail-egress" {
+      driver = "raw_exec"
+
+      lifecycle {
+        hook    = "prestart"
+        sidecar = false
+      }
+
+      config {
+        command = "/bin/bash"
+        args = [
+          "-ec",
+          <<-EOF
+            MAIL_IP="136.206.16.50"
+            MAIL_INTERFACE="eno1"
+            DOCKER_SUBNET="172.17.0.0/16"
+
+            ip -4 address show dev "$MAIL_INTERFACE" |
+              grep -qE "[[:space:]]$MAIL_IP/" ||
+              ip address add "$MAIL_IP/32" dev "$MAIL_INTERFACE"
+
+            while iptables -t nat -C POSTROUTING \
+              -s "$DOCKER_SUBNET" \
+              -p tcp --dport 25 \
+              -j SNAT --to-source "$MAIL_IP" 2>/dev/null
+            do
+              iptables -t nat -D POSTROUTING \
+                -s "$DOCKER_SUBNET" \
+                -p tcp --dport 25 \
+                -j SNAT --to-source "$MAIL_IP"
+            done
+
+            iptables -t nat -I POSTROUTING 1 \
+              -s "$DOCKER_SUBNET" \
+              -p tcp --dport 25 \
+              -j SNAT --to-source "$MAIL_IP"
+          EOF
+        ]
+      }
+
+      resources {
+        cpu    = 50
+        memory = 32
+      }
+    }
+
     task "mail-server" {
       driver = "docker"
 
@@ -151,7 +197,6 @@ job "mailserver" {
 
           "local/postfix-main.cf:/tmp/docker-mailserver/postfix-main.cf",
           "local/transport:/etc/postfix/transport",
-
           # Add a blocklist and whitelist for senders to control who can send to us and who we will accept mail from.
           "local/sender_blocklist:/etc/postfix/sender_blocklist:ro",
           "local/sender_whitelist:/etc/postfix/sender_whitelist:ro",
@@ -300,6 +345,10 @@ EOH
         destination = "local/99-proxy-protocol.conf"
         data        = <<EOH
 # Enable PROXY protocol support for mail traffic proxied by Traefik.
+# This is additive: it does not replace the main Dovecot config.
+
+# Trust only Traefik/Nomad-side proxy source networks.
+# 10.20.0.2 appeared in Dovecot logs as the current proxy source.
 haproxy_trusted_networks = 127.0.0.1/32 10.10.0.0/16 10.20.0.0/16 136.206.16.0/24
 
 service imap-login {
