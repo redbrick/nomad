@@ -38,7 +38,7 @@ job "mediawiki" {
         "traefik.port=${NOMAD_PORT_http}",
         "traefik.http.routers.rbwiki.rule=Host(`${NOMAD_META_domain}`) || Host(`wiki.rb.dcu.ie`)",
         "traefik.http.routers.rbwiki.entrypoints=web,websecure",
-        "traefik.http.routers.rbwiki.tls.certresolver=rb",
+        "traefik.http.routers.rbwiki.tls.certresolver=lets-encrypt",
         "traefik.http.routers.rbwiki.middlewares=rbwiki-redirect-root, rbwiki-redirect-mw",
         "traefik.http.middlewares.rbwiki-redirect-root.redirectregex.regex=^https://wiki\\.redbrick\\.dcu\\.ie/?$",
         "traefik.http.middlewares.rbwiki-redirect-root.redirectregex.replacement=https://wiki.redbrick.dcu.ie/Main_Page",
@@ -65,7 +65,6 @@ job "mediawiki" {
         memory = 100
       }
       template {
-        destination = "local/nginx.conf"
         data        = <<EOH
 # user www-data www-data;
 error_log /dev/stderr error;
@@ -118,6 +117,7 @@ http {
     }
 }
 EOH
+        destination = "local/nginx.conf"
       }
     }
 
@@ -133,7 +133,6 @@ EOH
           "/storage/nomad/mediawiki/images:/var/www/html/images",
           "/storage/nomad/mediawiki/skins:/var/www/html/skins",
           "/storage/nomad/mediawiki/resources/assets:/var/www/html/Resources/assets",
-          "local/php.ini:/usr/local/etc/php/php.ini",
           "local/LocalSettings.php:/var/www/html/LocalSettings.php",
           "local/ldapprovider.json:/etc/mediawiki/ldapprovider.json"
         ]
@@ -144,48 +143,39 @@ EOH
         memory = 1200
       }
 
-      # php.ini file because php is ass and won't let you update this in LocalSettings.php
       template {
-        destination = "local/php.ini" 
         data = <<EOH
-post_max_size = 64M
-upload_max_filesize = 50M
-EOH
-      }
-
-      template {
-        destination = "local/ldapprovider.json"
-        data        = <<EOH
 {
-  "Redbrick": {
-    "connection": {
-      "server": "{{ range service "openldap-ldap" }}{{ .Address }}{{ end }}",
-      "port": "{{ range service "openldap-ldap" }}{{ .Port }}{{ end }}",
-      "user": "{{ key "mediawiki/ldap/user" }}",
-      "pass": "{{ key "mediawiki/ldap/password" }}",
-      "enctype": "clear",
-      "basedn": "o=redbrick,dc=redbrick,dc=dcu,dc=ie",
-      "groupbasedn": "ou=groups,o=redbrick,dc=redbrick,dc=dcu,dc=ie",
-      "userbasedn": "ou=accounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie",
-      "searchattribute": "uid",
-      "usernameattribute": "uid",
-      "realnameattribute": "cn",
-      "emailattribute": "mail",
-      "options": {
-        "LDAP_OPT_DEREF": 1
-      },
-      "grouprequest": "MediaWiki\\Extension\\LDAPProvider\\UserGroupsRequest\\UserMemberOf::factory"
-    },
+  "LDAP": {
     "authorization": {
       "rules": {
         "groups": {
           "required": []
         }
       }
+    },
+    "connection": {
+      "server": "{{ key "mediawiki/ldap/server" }}",
+      "user": "{{ key "mediawiki/ldap/user" }}",
+      "pass": "{{ key "mediawiki/ldap/password" }}",
+      "options": {
+        "LDAP_OPT_DEREF": 1
+      },
+      "grouprequest": "MediaWiki\\Extension\\LDAPProvider\\UserGroupsRequest\\GroupMemberUid::factory",
+      "basedn": "o=redbrick",
+      "groupbasedn": "ou=groups,o=redbrick",
+      "userbasedn": "ou=accounts,o=redbrick",
+      "searchattribute": "uid",
+      "searchstring": "uid=USER-NAME,ou=accounts,o=redbrick",
+      "usernameattribute": "uid",
+      "realnameattribute": "cn",
+      "emailattribute": "altmail"
     }
   }
 }
 EOH
+
+        destination = "local/ldapprovider.json"
       }
 
       template {
@@ -210,7 +200,7 @@ EOH
       driver = "docker"
 
       config {
-        image = "mariadb:11.4"
+        image = "mariadb"
         ports = ["db"]
 
         volumes = [
@@ -221,8 +211,7 @@ EOH
       }
 
       template {
-        destination = "local/conf.cnf"
-        data        = <<EOH
+        data = <<EOH
 [mysqld]
 # Ensure full UTF-8 support
 character-set-server = utf8mb4
@@ -256,22 +245,25 @@ long_query_time = 1
 # Network
 bind-address = 0.0.0.0
 EOH
+
+        destination = "local/conf.cnf"
       }
 
       resources {
         cpu    = 800
-        memory = 6144
+        memory = 2500
       }
 
       template {
-        destination = "local/.env"
-        env         = true
-        data        = <<EOH
+        data = <<EOH
 MYSQL_DATABASE={{ key "mediawiki/db/name" }}
 MYSQL_USER={{ key "mediawiki/db/username" }}
 MYSQL_PASSWORD={{ key "mediawiki/db/password" }}
 MYSQL_RANDOM_ROOT_PASSWORD=yes
 EOH
+
+        destination = "local/.env"
+        env         = true
       }
     }
   }

@@ -29,7 +29,6 @@ job "cands-room-bookings" {
         "traefik.enable=true",
         "traefik.http.routers.clubsandsocs-room-bookings.rule=Host(`rooms.rb.dcu.ie`)",
         "traefik.http.routers.clubsandsocs-room-bookings.entrypoints=web,websecure",
-        "traefik.http.routers.clubsandsocs-room-bookings.tls.certresolver=rb",
       ]
     }
 

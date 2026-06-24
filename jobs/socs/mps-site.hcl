@@ -15,18 +15,19 @@ job "mps-site" {
       name = "mps-django"
       port = "http"
 
-      check {
-        type     = "http"
-        path     = "/"
-        interval = "10s"
-        timeout  = "5s"
-      }
+      #check {
+      #  type     = "http"
+      #  path     = "/"
+      #  interval = "10s"
+      #  timeout  = "5s"
+      #}
 
       tags = [
         "traefik.enable=true",
         "traefik.port=${NOMAD_PORT_http}",
         "traefik.http.routers.mps-django.rule=Host(`mps.rb.dcu.ie`) || Host(`dcumps.ie`) || Host(`www.dcumps.ie`) || Host(`dcumps.com`) || Host(`www.dcumps.com`)",
         "traefik.http.routers.mps-django.entrypoints=web,websecure",
+        "traefik.http.routers.mps-django.tls=true",
         "traefik.http.routers.mps-django.tls.certresolver=lets-encrypt",
         "traefik.http.routers.mps-django.middlewares=mps-django-redirect-com",
         "traefik.http.middlewares.mps-django-redirect-com.redirectregex.regex=dcumps\\.com/(.*)",
@@ -58,7 +59,7 @@ EOH
       }
 
       resources {
-        cpu    = 300
+        cpu    = 800
         memory = 500
       }
     }

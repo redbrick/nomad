@@ -29,7 +29,6 @@ job "mixpost" {
         "traefik.enable=true",
         "traefik.http.routers.mixpost.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.mixpost.entrypoints=web,websecure",
-        "traefik.http.routers.mixpost.tls.certresolver=rb",
       ]
     }
 

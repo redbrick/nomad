@@ -148,8 +148,8 @@ job "traefik" {
   [entryPoints.voice-udp]
     address = ":4503/udp"
 
-  [entryPoints.voice-udp.udp] # this will help reduce random dropouts in audio https://github.com/mumble-voip/mumble/issues/3550#issuecomment-441495977
-    timeout = "15s"
+    [entryPoints.voice-udp.udp]
+      timeout = "15s"
 
   [entryPoints.matrix]
     address = ":8448"
@@ -251,8 +251,6 @@ EOF
 #
 # Example:
 #   redirect/redbrick/wiki = https://wiki.redbrick.dcu.ie/
-
- # --- Short-link redirects for redbrick.dcu.ie ---
 {{ range $pair := tree "redirect/redbrick" }}
 {{ $name := trimPrefix "redirect/redbrick/" $pair.Key }}
   [http.middlewares.redirect-{{ $name }}.redirectRegex]
@@ -260,15 +258,6 @@ EOF
     replacement = "{{ $pair.Value }}"
     permanent = true
 
-{{ end }}
-      
- # --- Short-link redirects for rb.dcu.ie ---
-{{ range $pair := tree "redirect/rb" }}
-{{ $name := trimPrefix "redirect/rb/" $pair.Key }}
-  [http.middlewares.redirect-rb-{{ $name }}.redirectRegex]
-    regex = ".*"
-    replacement = "{{ $pair.Value }}"
-    permanent = true
 {{ end }}
 
 # ---------------------------------------------------------------------------
@@ -294,7 +283,7 @@ EOF
 
   [http.routers.webtree.tls]
 
-# --- redbrick.dcu.ie short-link redirect routers ---
+# Short-link redirect routers.
 {{ range $pair := tree "redirect/redbrick" }}
 {{ $name := trimPrefix "redirect/redbrick/" $pair.Key }}
   [http.routers.{{ $name }}-redirect]
@@ -305,20 +294,6 @@ EOF
     priority = 50
 
     [http.routers.{{ $name }}-redirect.tls]
-
-{{ end }}
-
-# --- rb.dcu.ie short-link redirect routers ---
-{{ range $pair := tree "redirect/rb" }}
-{{ $name := trimPrefix "redirect/rb/" $pair.Key }}
-  [http.routers.{{ $name }}-rb-redirect]
-    rule = "Host(`{{ $name }}.rb.dcu.ie`)"
-    entryPoints = ["web", "websecure"]
-    middlewares = ["redirect-rb-{{ $name }}"]
-    service = "dummy-service"
-    priority = 50
-
-    [http.routers.{{ $name }}-rb-redirect.tls]
 
 {{ end }}
 

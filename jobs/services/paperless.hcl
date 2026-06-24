@@ -31,7 +31,6 @@ job "paperless" {
         "traefik.http.routers.paperless.rule=Host(`paperless.redbrick.dcu.ie`) || Host(`paperless.rb.dcu.ie`)",
         "traefik.http.routers.paperless.entrypoints=websecure",
         "traefik.http.routers.paperless.tls=true",
-        "traefik.http.routers.paperless.tls.certresolver=rb",
         "traefik.http.middlewares.paperless.headers.contentSecurityPolicy=default-src 'self'; img-src 'self' data:"
       ]
     }
@@ -64,7 +63,7 @@ PAPERLESS_SECRETKEY={{ key "paperless/secret_key" }}
 PAPERLESS_URL=https://paperless.redbrick.dcu.ie
 PAPERLESS_ADMIN_USER={{ key "paperless/admin/user" }}
 PAPERLESS_ADMIN_PASSWORD={{ key "paperless/admin/password" }}
-PAPERLESS_ALLOWED_HOSTS="paperless.redbrick.dcu.ie,paperless.rb.dcu.ie,10.10.0.4,10.10.0.5,10.10.0.6" # allow internal aperture IPs for health check
+PAPERLESS_ALLOWED_HOSTS="paperless.redbrick.dcu.ie,paperless.rb.dcu.ie,10.10.0.4,10.10.0.5,10.10.0.6,136.206.16.4,136.206.16.5,136.206.16.6" # allow internal + external aperture IPs for health check
 PAPERLESS_CONSUMER_POLLING=1
 EOH
         destination = "local/.env"

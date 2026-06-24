@@ -26,7 +26,6 @@ job "matrix-hydrogen" {
         "traefik.http.routers.matrix-hydrogen-web.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.matrix-hydrogen-web.entrypoints=websecure",
         "traefik.http.routers.matrix-hydrogen-web.tls=true",
-        "traefik.http.routers.matrix-hydrogen-web.tls.certresolver=rb",
       ]
 
       check {

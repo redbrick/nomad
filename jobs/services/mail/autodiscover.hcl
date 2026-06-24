@@ -32,7 +32,6 @@ job "autodiscover" {
         "traefik.enable=true",
         "traefik.http.routers.autodiscover.rule=Host(`autoconfig.${NOMAD_META_tld}`) || Host(`autodiscover.${NOMAD_META_tld}`)",
         "traefik.http.routers.autodiscover.entrypoints=web,websecure",
-        "traefik.http.routers.autodiscover.tls.certresolver=lets-encrypt",
       ]
     }
 

@@ -27,7 +27,6 @@ job "api" {
         "traefik.enable=true",
         "traefik.http.routers.api.rule=Host(`api.redbrick.dcu.ie`)",
         "traefik.http.routers.api.entrypoints=web,websecure",
-        "traefik.http.routers.api.tls.certresolver=rb",
       ]
     }
 

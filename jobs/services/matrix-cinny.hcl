@@ -24,7 +24,6 @@ job "matrix-cinny" {
         "traefik.http.routers.cinny.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.cinny.entrypoints=websecure",
         "traefik.http.routers.cinny.tls=true",
-        "traefik.http.routers.cinny.tls.certresolver=rb",
       ]
 
       check {
