@@ -251,6 +251,7 @@ EOF
 #
 # Example:
 #   redirect/redbrick/wiki = https://wiki.redbrick.dcu.ie/
+ # --- Short-link redirects for redbrick.dcu.ie ---
 {{ range $pair := tree "redirect/redbrick" }}
 {{ $name := trimPrefix "redirect/redbrick/" $pair.Key }}
   [http.middlewares.redirect-{{ $name }}.redirectRegex]
@@ -258,6 +259,15 @@ EOF
     replacement = "{{ $pair.Value }}"
     permanent = true
 
+{{ end }}
+      
+ # --- Short-link redirects for rb.dcu.ie ---
+{{ range $pair := tree "redirect/rb" }}
+{{ $name := trimPrefix "redirect/rb/" $pair.Key }}
+  [http.middlewares.redirect-rb-{{ $name }}.redirectRegex]
+    regex = ".*"
+    replacement = "{{ $pair.Value }}"
+    permanent = true
 {{ end }}
 
 # ---------------------------------------------------------------------------
@@ -283,7 +293,7 @@ EOF
 
   [http.routers.webtree.tls]
 
-# Short-link redirect routers.
+# --- redbrick.dcu.ie short-link redirect routers ---
 {{ range $pair := tree "redirect/redbrick" }}
 {{ $name := trimPrefix "redirect/redbrick/" $pair.Key }}
   [http.routers.{{ $name }}-redirect]
@@ -296,6 +306,21 @@ EOF
     [http.routers.{{ $name }}-redirect.tls]
 
 {{ end }}
+
+# --- rb.dcu.ie short-link redirect routers ---
+{{ range $pair := tree "redirect/rb" }}
+{{ $name := trimPrefix "redirect/rb/" $pair.Key }}
+  [http.routers.{{ $name }}-rb-redirect]
+    rule = "Host(`{{ $name }}.rb.dcu.ie`)"
+    entryPoints = ["web", "websecure"]
+    middlewares = ["redirect-rb-{{ $name }}"]
+    service = "dummy-service"
+    priority = 50
+
+    [http.routers.{{ $name }}-rb-redirect.tls]
+
+{{ end }}
+
 
 # Default TLS router.
 # This exists so Traefik can present an extracted cert for known Redbrick zones
