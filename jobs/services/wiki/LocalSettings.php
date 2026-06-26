@@ -176,3 +176,12 @@ $wgShowExceptionDetails = true;
 $wgShowDBErrorBacktrace = true;
 $wgShowSQLErrors = true;
 $wgDebugLogFile = "/dev/stderr";
+
+
+# Job queue configuration to use memory backend for this wiki
+$wgJobTypeConf = [
+    'default' => [
+        'class' => 'JobQueueMemory',
+        'wiki'  => $wgDBname
+    ]
+];

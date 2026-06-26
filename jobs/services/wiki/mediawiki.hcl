@@ -233,6 +233,7 @@ innodb_log_file_size = 512M
 innodb_flush_log_at_trx_commit = 1
 innodb_flush_method = O_DIRECT
 innodb_io_capacity = 200
+innodb_use_native_aio = 0
 tmp_table_size = 5242K
 max_heap_table_size = 5242K
 innodb_log_buffer_size = 16M
@@ -251,7 +252,7 @@ EOH
 
       resources {
         cpu    = 800
-        memory = 2500
+        memory = 6144
       }
 
       template {
