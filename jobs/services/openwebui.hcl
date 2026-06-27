@@ -25,7 +25,6 @@ job "open-webui" {
         "traefik.http.routers.open-webui.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.open-webui.entrypoints=websecure",
         "traefik.http.routers.open-webui.tls=true",
-        "traefik.http.routers.gatus.tls.certresolver=rb",
       ]
 
       check {
@@ -81,6 +80,12 @@ LDAP_SEARCH_BASE="{{ key "openwebui/ldap/basedn" }}"
 # --- Directory Schema Mapping ---
 LDAP_ATTRIBUTE_FOR_USERNAME="uid"
 LDAP_ATTRIBUTE_FOR_MAIL="mail"
+
+# --- Disable Signups---
+ENABLE_SIGNUP=False
+
+# --- Automatically allow LDAP users to use the system without manual approval ---
+DEFAULT_USER_ROLE=user
 EOH
 
         destination = "secrets/file.env"
