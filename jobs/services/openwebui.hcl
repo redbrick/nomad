@@ -76,7 +76,7 @@ EOH
     task "qdrant" {
       driver = "docker"
       config {
-        image   = "qdrant/qdrant:v1.12.0"
+        image   = "qdrant/qdrant:v1.17.0"
         ports   = ["qdrant_grpc", "qdrant_http"]
         volumes = ["/storage/nomad/${NOMAD_JOB_NAME}/qdrant_data:/qdrant/storage"]
       }
@@ -113,7 +113,7 @@ EOH
         image   = "redis:7-alpine"
         ports   = ["redis"]
         command = "redis-server"
-        args    = ["--timeout", "1800", "--maxclients", "10000"]
+        args    = ["--timeout", "1800", "--save", "30", "1", "--maxclients", "10000"]
       }
       resources {
         cpu    = 500
@@ -123,44 +123,7 @@ EOH
   }
 
   # =========================================================================
-  # (Prevents Concurrent Locks)
-  # =========================================================================
-  group "openwebui-migration" {
-    count = 1
-    
-    restart {
-      attempts = 0
-      mode     = "fail"
-    }
-
-    task "db-migration" {
-      driver = "docker"
-      
-      lifecycle {
-        hook    = "prestart"
-        sidecar = false
-      }
-
-      config {
-        image   = "ghcr.io/open-webui/open-webui:main"
-        command = "bash"
-        args    = ["-c", "cd /app/backend/open_webui && export PYTHONPATH=/app && echo 'Running DB Migrations...' && alembic upgrade head"] 
-      }
-
-      template {
-        data = <<EOH
-DATABASE_URL="{{ range service "openwebui-postgres" }}postgresql://{{ key "openwebui/db/user" }}:{{ key "openwebui/db/password" }}@{{ .Address }}:{{ .Port }}/openwebui{{ end }}"
-
-WEBUI_SECRET_KEY="{{ key "openwebui/secret_key" }}"
-EOH
-        destination = "secrets/migration.env"
-        env         = true
-      }
-    }
-  }
-
-  # =========================================================================
-  # Web UI Service
+  # Web UI Service & Integrated Lifecycle Migration
   # =========================================================================
   group "openwebui-web" {
     count = 3
@@ -197,6 +160,36 @@ EOH
       }
     }
 
+    # Runs and blocks the 'ui' task until the schema upgrade finishes cleanly
+    task "db-migration" {
+      driver = "docker"
+
+      lifecycle {
+        hook    = "prestart"
+        sidecar = false
+      }
+
+      config {
+        image   = "ghcr.io/open-webui/open-webui:main"
+        command = "bash"
+        args    = ["-c", "cd /app/backend/open_webui && export PYTHONPATH=/app && echo 'Running DB Migrations...' && alembic upgrade head"] 
+      }
+
+      template {
+        data = <<EOH
+DATABASE_URL="{{ range service "openwebui-postgres" }}postgresql://{{ key "openwebui/db/user" }}:{{ key "openwebui/db/password" }}@{{ .Address }}:{{ .Port }}/openwebui{{ end }}"
+WEBUI_SECRET_KEY="{{ key "openwebui/secret_key" }}"
+EOH
+        destination = "secrets/migration.env"
+        env         = true
+      }
+
+      resources {
+        cpu    = 1000
+        memory = 2048
+      }
+    }
+
     task "ui" {
       driver = "docker"
 
@@ -215,6 +208,9 @@ EOH
 OLLAMA_BASE_URLS="{{ key "ollama/base_urls" }}"
 ENABLE_OLLAMA_NODES="true;true;true;true"
 
+# --- Disable OpenAI API Key Usage ---
+ENABLE_OPENAI_API_KEY="false"
+
 # --- Shared Cryptographic Token pulled from Consul ---
 WEBUI_SECRET_KEY="{{ key "openwebui/secret_key" }}"
 
@@ -230,7 +226,7 @@ QDRANT_URI="http://{{ .Address }}:{{ .Port }}"
 {{ end }}
 
 # --- Shared State Matrix (Redis Broker Alignment) ---
-ENABLE_WEBSOCKET_SUPPORT="true"
+ENABLE_WEBSOCKET_SUPPORT=True
 WEBSOCKET_MANAGER="redis"
 REDIS_URL="{{ range service "openwebui-redis" }}redis://{{ .Address }}:{{ .Port }}/0{{ end }}"
 WEBSOCKET_REDIS_URL="{{ range service "openwebui-redis" }}redis://{{ .Address }}:{{ .Port }}/1{{ end }}"
@@ -238,10 +234,11 @@ REDIS_HEALTH_CHECK_INTERVAL=60
 REDIS_SOCKET_CONNECT_TIMEOUT=5
 
 # --- SearXNG Live Search ---
-ENABLE_RAG_WEB_SEARCH="true"
-ENABLE_SEARCH_FILTER="true"
-RAG_WEB_SEARCH_ENGINE="searxng"
-SEARXNG_QUERY_URL="https://search.redbrick.dcu.ie/search?q=<query>"
+ENABLE_WEB_SEARCH=True
+WEB_SEARCH_ENGINE="searxng"
+SEARXNG_QUERY_URL="https://search.redbrick.dcu.ie/search?q=<query>&format=json"
+WEB_SEARCH_RESULT_COUNT=3
+WEB_SEARCH_CONCURRENT_REQUESTS=1
 
 # --- Performance Guardrails for Multi-User Deployment ---
 ENABLE_REALTIME_CHAT_SAVE="false"
