@@ -185,3 +185,6 @@ $wgJobTypeConf = [
         'wiki'  => $wgDBname
     ]
 ];
+
+
+$wgSessionCacheType = CACHE_DB; // Forces session safety in the DB if Memcached isn't built yet

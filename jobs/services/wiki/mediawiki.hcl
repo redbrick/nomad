@@ -85,6 +85,13 @@ http {
       root /var/www/html;
       index index.php index.html index.htm;
 
+      # Trust all potential Traefik load balancer hosts
+      set_real_ip_from 136.206.16.4;
+      set_real_ip_from 136.206.16.5;
+      set_real_ip_from 136.206.16.6;
+      real_ip_header X-Forwarded-For;
+      real_ip_recursive on;
+
       client_max_body_size 5m;
       client_body_timeout 60;
 
@@ -106,9 +113,17 @@ http {
       # Pass the PHP scripts to FastCGI server
       location ~ \.php$ {
         include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        
+        # FIXED: Hardcode the target path to match PHP-FPM's internal structure exactly
+        fastcgi_param SCRIPT_FILENAME /var/www/html$fastcgi_script_name;
+        
         fastcgi_pass {{ env "NOMAD_HOST_ADDR_fpm" }};
         fastcgi_index index.php;
+
+        # Keep proxy parameters active
+        fastcgi_param REMOTE_ADDR $http_x_real_ip;
+        fastcgi_param HTTP_X_FORWARDED_FOR $http_x_forwarded_for;
+        fastcgi_param HTTPS "on";
       }
 
       location ~ /\.ht {
@@ -228,7 +243,7 @@ innodb_default_row_format = dynamic
 max_connections = 100
 key_buffer_size = 2G
 query_cache_size = 0
-innodb_buffer_pool_size = 6G
+innodb_buffer_pool_size = 5G
 innodb_log_file_size = 512M
 innodb_flush_log_at_trx_commit = 1
 innodb_flush_method = O_DIRECT
