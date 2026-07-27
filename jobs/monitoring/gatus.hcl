@@ -163,6 +163,13 @@ defaults_tcp: &defaults_tcp
   conditions:
       - "[CONNECTED] == true"
 
+defaults_udp: &defaults_udp
+  interval: 60s
+  alerts:
+      - type: discord
+  conditions:
+      - "[CONNECTED] == true"
+
 defaults: &defaults
   interval: 60s
   alerts:
@@ -177,7 +184,7 @@ defaults_https: &defaults_https
     - "[CERTIFICATE_EXPIRATION] > 48h"
 
 defaults_shortlinks: &defaults_shortlinks
-  interval: 180s
+  interval: 60m
   alerts:
     - type: discord
   conditions:
@@ -300,6 +307,16 @@ endpoints:
     group: Game Servers
     url: "tcp://vanilla-mc.rb.dcu.ie:25565"
     <<: *defaults_tcp
+
+  - name: Palworld Dedicated Server (Game Port)
+    group: Game Servers
+    url: "udp://redbrick.dcu.ie:8211"
+    <<: *defaults_udp
+
+  - name: Palworld Dedicated Server (Query Port)
+    group: Game Servers
+    url: "udp://redbrick.dcu.ie:27015"
+    <<: *defaults_udp
 
   - name: Discord Shortlink
     group: Short Links
