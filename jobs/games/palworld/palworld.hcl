@@ -11,66 +11,43 @@ job "palworld-server" {
     count = 1
 
     network {
-      mode = "host"
+      mode = "bridge"
 
       port "game" {
-        static = 8211
-        to     = 8211
+        to = 8211
       }
       port "query" {
-        static = 27015
-        to     = 27015
+        to = 27015
       }
     }
 
-    task "routing-forward" {
-      driver = "raw_exec"
+    service {
+      name = "palworld-game"
+      port = "game"
+      task = "server"
+
+      tags = [
+        "traefik.enable=true",
+        "traefik.udp.routers.palworld-game.entrypoints=palworld-game",
+      ]
+    }
+
+    service {
+      name = "palworld-query"
+      port = "query"
+      task = "server"
       
-      lifecycle {
-        hook    = "prestart"
-        sidecar = false
-      }
-
-      config {
-        command = "/bin/sh"
-        args    = ["-c", <<EOF
-VIP="136.206.16.50"
-HOST_IP="136.206.16.4"
-
-echo "Flushing old Palworld experiment hooks directly from host kernel..."
-iptables-legacy -t nat -D POSTROUTING -p udp --sport 8211 -j SNAT --to-source "$VIP" 2>/dev/null || true
-iptables-legacy -t nat -D POSTROUTING -p udp --sport 27015 -j SNAT --to-source "$VIP" 2>/dev/null || true
-
-# Clean up previous DNAT instances if rebuilding task to prevent rule duplication
-iptables-legacy -t nat -D PREROUTING -d "$VIP" -p udp --dport 8211 -j DNAT --to-destination "$HOST_IP":8211 2>/dev/null || true
-iptables-legacy -t nat -D PREROUTING -d "$VIP" -p udp --dport 27015 -j DNAT --to-destination "$HOST_IP":27015 2>/dev/null || true
-iptables-legacy -t nat -D OUTPUT -d "$VIP" -p udp --dport 8211 -j DNAT --to-destination "$HOST_IP":8211 2>/dev/null || true
-iptables-legacy -t nat -D OUTPUT -d "$VIP" -p udp --dport 27015 -j DNAT --to-destination "$HOST_IP":27015 2>/dev/null || true
-
-echo "Applying fresh PREROUTING and OUTPUT DNAT rules natively..."
-iptables-legacy -t nat -A PREROUTING -d "$VIP" -p udp --dport 8211 -j DNAT --to-destination "$HOST_IP":8211
-iptables-legacy -t nat -A PREROUTING -d "$VIP" -p udp --dport 27015 -j DNAT --to-destination "$HOST_IP":27015
-iptables-legacy -t nat -A OUTPUT -d "$VIP" -p udp --dport 8211 -j DNAT --to-destination "$HOST_IP":8211
-iptables-legacy -t nat -A OUTPUT -d "$VIP" -p udp --dport 27015 -j DNAT --to-destination "$HOST_IP":27015
-
-echo "Host routing pipeline successfully optimized for DNAT."
-EOF
-        ]
-      }
-
-      resources {
-        cpu    = 50
-        memory = 16
-      }
+      tags = [
+        "traefik.enable=true",
+        "traefik.udp.routers.palworld-query.entrypoints=palworld-query",
+      ]
     }
-
 
     task "server" {
       driver = "docker"
 
       config {
-        image        = "thijsvanloef/palworld-server-docker:latest"
-        network_mode = "host"
+        image = "thijsvanloef/palworld-server-docker:latest"
 
         volumes = [
           "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}:/palworld"
@@ -84,19 +61,20 @@ EOF
         ENABLE_PERF_THREADING_ARGS = "true"
         RCON_ENABLED               = "true"
         RCON_PORT                  = "25575"
-
         IS_MULTIPLAY               = "true"
+        PUID                       = "1000"
+        PGID                       = "1000"
+        UPDATE_ON_BOOT             = "true"
+        BACKUP_ENABLED             = "true"
+        BACKUP_CRON_EXPRESSION     = "0 */1 * * *"
 
-        PUID = "1000"
-        PGID = "1000"
+        # Note: Fixed variable typo below (changed AUTO_UPDATES_ENABLED to AUTO_UPDATE_ENABLED to match image standard)
+        AUTO_UPDATE_ENABLED         = "true"
+        AUTO_UPDATE_CRON_EXPRESSION = "0 * * * *"
+        AUTO_UPDATE_WARN_MINUTES    = "30"
 
-        UPDATE_ON_BOOT         = "true"
-        BACKUP_ENABLED         = "true"
-        BACKUP_CRON_EXPRESSION = "0 */1 * * *"
-
-        SERVER_IP                  = "136.206.16.4"
-        PUBLIC_IP                  = "136.206.16.4"
-
+        SERVER_IP          = "0.0.0.0"
+        PUBLIC_IP          = "136.206.16.50"
         SERVER_NAME        = "Redbrick Palworld Server"
         SERVER_DESCRIPTION = "..."
         LOG_LEVEL          = "INFO"
@@ -111,7 +89,7 @@ EOH
       }
 
       resources {
-        cpu    = 4000  
+        cpu    = 4000
         memory = 32768
       }
     }

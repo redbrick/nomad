@@ -59,6 +59,14 @@ job "traefik" {
       port "managesieve" {
         static = 4190
       }
+
+      port "palworld-game" {
+        static = 8211
+      }
+
+      port "palworld-query" {
+        static = 27015
+      }
     }
 
     service {
@@ -177,6 +185,17 @@ job "traefik" {
 
   [entryPoints.managesieve]
     address = "136.206.16.50:4190"
+  
+  [entryPoints.palworld-game]
+    address = "136.206.16.50:8211/udp"
+    [entryPoints.palworld-game.udp]
+      timeout = "30s"
+
+  [entryPoints.palworld-query]
+    address = "136.206.16.50:27015/udp"
+    [entryPoints.palworld-query.udp]
+      timeout = "30s"
+
 
 [tls.options]
   [tls.options.default]
