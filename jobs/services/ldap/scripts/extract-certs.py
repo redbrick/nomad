@@ -126,7 +126,7 @@ def main() -> int:
 
             # Also copy it to the storage mount
             dest_ca = copy_cert_dir / "server.crt"
-            if not dest_ca.exists():
+            if copy_cert_dir.exists():
                 shutil.copy2(str(crt), str(dest_ca))
                 log(f"  Also copied fullchain.pem -> {dest_ca} (storage mount)")
             log(f"=== ACME CERT EXTRACT SUCCESS ===")
