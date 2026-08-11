@@ -136,7 +136,7 @@ LDAP_ENABLE_TLS=yes
 # TLS Certificate Paths (explicit — Bitnami validation checks all three)
 LDAP_TLS_CERT_FILE=/bitnami/openldap/certs/server.crt
 LDAP_TLS_KEY_FILE=/bitnami/openldap/certs/server.key
-LDAP_TLS_CA_FILE=/bitnami/openldap/certs/server.crt
+LDAP_TLS_CA_FILE=/bitnami/openldap/certs/CA.crt
 
 # Schemas
 LDAP_ADD_SCHEMAS=yes
