@@ -52,17 +52,52 @@ job "openldap" {
       port = "ldaps"
     }
 
+    task "acme-cert-extract" {
+      driver = "docker"
+
+      lifecycle {
+        hook    = "prestart"
+        sidecar = false
+      }
+
+      config {
+        image   = "python:3-alpine"
+        command = "python3"
+        args = [
+          "/local/extract-certs.py",
+          "/traefik-certs",
+          "/bitnami/openldap/certs",
+          "/bitnami/certs"
+        ]
+
+        volumes = [
+          "/storage/nomad/${NOMAD_JOB_NAME}/openldap/:/bitnami/openldap",
+          "/storage/nomad/traefik/certs/rb.dcu.ie/:/traefik-certs:ro",
+          "/storage/ca/ldap/:/bitnami/certs:rw",
+        ]
+      }
+
+      resources {
+        cpu    = 50
+        memory = 64
+      }
+
+      template {
+        data        = file("./scripts/extract-certs.py")
+        destination = "local/extract-certs.py"
+      }
+    }
+
     task "openldap" {
       driver = "docker"
 
       config {
         image = "bitnamilegacy/openldap:latest"
         ports = ["ldap", "ldaps"]
-
-
         volumes = [
           "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}/:/bitnami/openldap",
           "local/schemas/:/bitnami/openldap/schemas/",
+          "local/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d/",
           "local/ldifs/:/bitnami/openldap/ldifs/",
         ]
       }
@@ -96,6 +131,12 @@ LDAP_GROUP_DN=ou=groups,o=redbrick,dc=redbrick,dc=dcu,dc=ie
 
 # Security
 LDAP_ALLOW_ANON_BINDING=no
+LDAP_ENABLE_TLS=yes
+
+# TLS Certificate Paths (explicit — Bitnami validation checks all three)
+LDAP_TLS_CERT_FILE=/bitnami/openldap/certs/server.crt
+LDAP_TLS_KEY_FILE=/bitnami/openldap/certs/server.key
+LDAP_TLS_CA_FILE=/bitnami/openldap/certs/server.crt
 
 # Schemas
 LDAP_ADD_SCHEMAS=yes
@@ -120,28 +161,27 @@ BITNAMI_DEBUG=true
 
 # ====================================== MODULES ======================================
 # Access Logging
-# LDAP_ENABLE_ACCESSLOG=yes
-#
-# LDAP_ACCESSLOG_ADMIN_USERNAME={{ key "ldap/admin/username" }}
-# LDAP_ACCESSLOG_ADMIN_PASSWORD={{ key "ldap/admin/password" }}
-# LDAP_ACCESSLOG_DB=cn=accesslog
-# LDAP_ACCESSLOG_LOGOPS=all
-# LDAP_ACCESSLOG_LOGSUCCESS=TRUE
-# LDAP_ACCESSLOG_LOGPURGE=30+00:00 3+00:00
-# LDAP_ACCESSLOG_LOGOLD=(objectClass=*)
-# LDAP_ACCESSLOG_LOGOLDATTR=objectClass
-#
-#
-# PPolicy
-# LDAP_CONFIGURE_PPOLICY=yes
-# LDAP_PPOLICY_USE_LOCKOUT=yes
-# LDAP_PPOLICY_HASH_CLEARTEXT=yes
+LDAP_ENABLE_ACCESSLOG=yes
+LDAP_ACCESSLOG_ADMIN_USERNAME={{ key "ldap/admin/username" }}
+LDAP_ACCESSLOG_ADMIN_PASSWORD={{ key "ldap/admin/password" }}
+LDAP_ACCESSLOG_DB=cn=accesslog
+LDAP_ACCESSLOG_LOGOPS=all
+LDAP_ACCESSLOG_LOGSUCCESS=TRUE
+LDAP_ACCESSLOG_LOGPURGE=30+00:00 3+00:00
+LDAP_ACCESSLOG_LOGOLD=(objectClass=*)
+LDAP_ACCESSLOG_LOGOLDATTR=objectClass
+
+# Policy
+# LDAP_CONFIGURE_PPOLICY=no
+# LDAP_PPOLICY_USE_LOCKOUT=no
+# LDAP_PPOLICY_HASH_CLEARTEXT=no
 
 
 
 EOH
         destination = "local/.env"
         env         = true
+        change_mode = "restart"
       }
 
 
@@ -155,26 +195,29 @@ EOH
         destination = "local/schemas/04-redbrick.ldif"
       }
 
-
       template {
-        data        = file("./ldifs/redbrick-structure.ldif")
-        destination = "local/ldifs/redbrick-structure.ldif"
+        data        = file("./ldifs/00-modules.ldif")
+        destination = "local/docker-entrypoint-initdb.d/00-modules.ldif"
       }
 
       template {
-        data        = file("./scripts/01-memberOf.sh")
-        destination = "local/scripts/01-memberOf.sh"
+        data        = file("./ldifs/01-memberOf.ldif")
+        destination = "local/docker-entrypoint-initdb.d/01-memberOf.ldif"
       }
 
-      # template {
-      #   data        = file("./scripts/acls.sh")
-      #   destination = "local/scripts/acls.sh"
-      # }
+      template {
+        data        = file("./scripts/apply-config.sh")
+        destination = "local/docker-entrypoint-initdb.d/apply-config.sh"
+      }
     }
-
 
     task "lam" {
       driver = "docker"
+
+      lifecycle {
+        hook    = "prestart"
+        sidecar = true
+      }
 
       config {
         image = "ghcr.io/ldapaccountmanager/lam:stable"
