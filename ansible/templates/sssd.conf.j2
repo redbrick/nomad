@@ -1,0 +1,57 @@
+[sssd]
+config_file_version = 2
+services = nss, pam
+domains = LDAP
+
+[nss]
+filter_users = root,named,avahi,haldaemon,dbus,radiusd,news,nscd
+filter_groups =
+
+[pam]
+
+[domain/LDAP]
+id_provider = ldap
+auth_provider = ldap
+chpass_provider = ldap
+sudo_provider = none
+enumerate = true
+# ignore_group_members = true
+cache_credentials = false
+ldap_schema = rfc2307bis
+ldap_uri = ldaps://ldap.rb.dcu.ie:636
+ldap_search_base = o=redbrick,dc=redbrick,dc=dcu,dc=ie
+ldap_user_search_base = ou=accounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+ldap_user_object_class = brickie
+ldap_user_name = uid
+
+ldap_group_search_base = ou=groups,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+ldap_group_object_class = groupOfNames
+ldap_group_name = cn
+ldap_group_nesting_level = 2
+
+ldap_id_use_start_tls = false
+ldap_tls_reqcert = demand
+ldap_tls_cacert = /etc/ssl/certs/ca-certificates.crt
+ldap_default_bind_dn =  uid=loginboxes,ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
+ldap_default_authtok_type = password
+ldap_default_authtok = <authtoken>
+access_provider = ldap
+ldap_access_filter = (objectClass=brickie)
+
+min_id = 1
+max_id = 0
+ldap_user_uuid = entryUUID
+ldap_user_shell = loginShell
+ldap_user_home_directory = homeDirectory
+ldap_user_uid_number = uidNumber
+ldap_user_gid_number = gidNumber
+
+ldap_group_gid_number = gidNumber
+ldap_group_uuid = entryUUID
+ldap_group_member = memberUid
+
+use_fully_qualified_names = false
+ldap_access_order = filter
+
+ldap_auth_disable_tls_never_use_in_production = false
+debug_level=6

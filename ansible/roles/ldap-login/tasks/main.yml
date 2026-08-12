@@ -1,0 +1,50 @@
+---
+- name: Deploy sssd.conf
+  become: true
+  ansible.builtin.template:
+    src: sssd.conf.j2
+    dest: /etc/sssd/sssd.conf
+    owner: root
+    group: root
+    mode: '0600'
+  notify: Restart sssd
+
+- name: Deploy nsswitch.conf
+  become: true
+  ansible.builtin.template:
+    src: nsswitch.conf.j2
+    dest: /etc/nsswitch.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart sssd
+
+- name: Deploy pam-configs profiles
+  become: true
+  ansible.builtin.copy:
+    src: "pam/{{ item }}"
+    dest: "/usr/share/pam-configs/{{ item }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - sss
+    - unix
+    - systemd
+    - wtmpdb
+    - pwquality
+  notify: Run pam-auth-update
+
+- name: Enable and start sssd
+  become: true
+  ansible.builtin.service:
+    name: sssd
+    state: started
+    enabled: true
+
+- name: Ensure sshd is enabled and running
+  become: true
+  ansible.builtin.service:
+    name: sshd
+    state: started
+    enabled: true

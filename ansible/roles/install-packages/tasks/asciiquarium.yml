@@ -1,0 +1,20 @@
+---
+- name: Install asciiquarium dependencies
+  become: true
+  ansible.builtin.apt:
+    name: 
+      - libcurses-perl
+      - cpanminus
+    state: present
+
+- name: Install Term::Animation
+  become: true
+  community.general.cpanm:
+    name: Term::Animation
+
+- name: Download asciiquarium
+  become: true
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/cmatsuoka/asciiquarium/refs/heads/master/asciiquarium
+    dest: /usr/local/bin/asciiquarium
+    mode: 0755
