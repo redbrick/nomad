@@ -140,7 +140,7 @@ EOH
       driver = "docker"
 
       config {
-        image = "ghcr.io/wizzdom/mediawiki-fpm-ldap-alpine:latest"
+        image = "ghcr.io/redbrick/mediawiki-fpm-ldap-alpine:latest"
         ports = ["fpm"]
 
         volumes = [
@@ -161,7 +161,7 @@ EOH
       template {
         data = <<EOH
 {
-  "LDAP": {
+  "Redbrick": {
     "authorization": {
       "rules": {
         "groups": {
@@ -170,18 +170,18 @@ EOH
       }
     },
     "connection": {
-      "server": "{{ key "mediawiki/ldap/server" }}",
+      "server": "{{ range service "openldap-ldap" }}{{ .Address }}{{ end }}",
+      "port": "{{ range service "openldap-ldap" }}{{ .Port }}{{ end }}",
       "user": "{{ key "mediawiki/ldap/user" }}",
       "pass": "{{ key "mediawiki/ldap/password" }}",
       "options": {
         "LDAP_OPT_DEREF": 1
       },
       "grouprequest": "MediaWiki\\Extension\\LDAPProvider\\UserGroupsRequest\\GroupMemberUid::factory",
-      "basedn": "o=redbrick",
-      "groupbasedn": "ou=groups,o=redbrick",
-      "userbasedn": "ou=accounts,o=redbrick",
+      "basedn": "{{ key "mediawiki/ldap/basedn" }}",
+      "groupbasedn": "ou=groups,{{ key "mediawiki/ldap/basedn" }}",
+      "userbasedn": "ou=accounts,{{ key "mediawiki/ldap/basedn" }}",
       "searchattribute": "uid",
-      "searchstring": "uid=USER-NAME,ou=accounts,o=redbrick",
       "usernameattribute": "uid",
       "realnameattribute": "cn",
       "emailattribute": "altmail"

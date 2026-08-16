@@ -4,6 +4,8 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 	exit;
 }
 
+$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+
 $wgSitename = "Redbrick Wiki";
 
 $wgScriptPath = "";
@@ -92,7 +94,7 @@ $wgDefaultMobileSkin = 'vector-2022';
 wfLoadSkin( 'Vector' );
 wfLoadSkin( 'Citizen' );
 wfLoadSkin( 'Timeless' );
-wfLoadSkin( 'MinervaNeue' );
+// wfLoadSkin( 'MinervaNeue' );
 wfLoadSkin( 'Medik' );
 
 $wgCitizenThemeColor = "#a81e22";
@@ -134,7 +136,7 @@ wfLoadExtension( 'WikiEditor' );
 wfLoadExtension( 'MobileFrontend' );
 
 
-$LDAPProviderDomainConfigs = "/etc/mediawiki/ldapprovider.json";
+$wgLDAPProviderDomainConfigs = "/etc/mediawiki/ldapprovider.json";
 
 $wgPluggableAuth_Config['Redbrick Log In'] = [
     'plugin' => 'LDAPAuthentication2',
@@ -179,12 +181,11 @@ $wgDebugLogFile = "/dev/stderr";
 
 
 # Job queue configuration to use memory backend for this wiki
-$wgJobTypeConf = [
-    'default' => [
-        'class' => 'JobQueueMemory',
-        'wiki'  => $wgDBname
-    ]
-];
-
+// $wgJobTypeConf = [
+//     'default' => [
+//         'class' => 'JobQueueMemory',
+//         'wiki'  => $wgDBname
+//     ]
+// ];
 
 $wgSessionCacheType = CACHE_DB; // Forces session safety in the DB if Memcached isn't built yet
