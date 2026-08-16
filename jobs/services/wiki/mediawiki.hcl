@@ -86,9 +86,7 @@ http {
       index index.php index.html index.htm;
 
       # Trust all potential Traefik load balancer hosts
-      set_real_ip_from 136.206.16.4;
-      set_real_ip_from 136.206.16.5;
-      set_real_ip_from 136.206.16.6;
+      set_real_ip_from 136.206.16.0/24;
       real_ip_header X-Forwarded-For;
       real_ip_recursive on;
 
@@ -121,8 +119,8 @@ http {
         fastcgi_index index.php;
 
         # Keep proxy parameters active
-        fastcgi_param REMOTE_ADDR $http_x_real_ip;
-        fastcgi_param HTTP_X_FORWARDED_FOR $http_x_forwarded_for;
+        fastcgi_param REMOTE_ADDR $remote_addr;
+        fastcgi_param HTTP_X_FORWARDED_FOR $proxy_add_x_forwarded_for;
         fastcgi_param HTTPS "on";
       }
 

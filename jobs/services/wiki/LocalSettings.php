@@ -4,7 +4,15 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 	exit;
 }
 
-$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+# Look for the real user IP in the proxy header
+if ( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+    # Extract the first IP in the chain (the actual visitor)
+    $ipList = explode( ',', $_SERVER['HTTP_X_FORWARDED_FOR'] );
+    $_SERVER['REMOTE_ADDR'] = trim( $ipList[0] );
+}
+
+# Tell MediaWiki to trust proxy headers
+$wgUsePrivateIPs = true;
 
 $wgSitename = "Redbrick Wiki";
 
