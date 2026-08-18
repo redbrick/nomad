@@ -24,7 +24,7 @@ TRUENAS_API_KEY = os.environ["TRUENAS_API_KEY"]
 TRUENAS_URL = os.environ["TRUENAS_URL"]
 TRUENAS_API_URL = f"https://{TRUENAS_URL}/api/v2.0/pool/dataset/set_quota"
 
-TRUENAS_DATASET = os.environ.get("TRUENAS_DATASET", "storage/home")
+TRUENAS_DATASETS = ["storage/home", "storage/webtree"]
 
 TRUENAS_INSECURE_SKIP_VERIFY = (
     os.environ.get("TRUENAS_INSECURE_SKIP_VERIFY", "true").lower()
@@ -84,48 +84,50 @@ def apply_quota_batch(quotas, ssl_context):
             f"maximum is {TRUENAS_QUOTA_BATCH_SIZE}"
         )
 
-    payload = {
-        "dataset": TRUENAS_DATASET,
-        "quotas": quotas,
-    }
+    for dataset in TRUENAS_DATASETS:
 
-    request = urllib.request.Request(
-        TRUENAS_API_URL,
-        data=json.dumps(payload).encode("utf-8"),
-        method="POST",
-        headers={
-            "Authorization": f"Bearer {TRUENAS_API_KEY}",
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        },
-    )
+        payload = {
+            "dataset": dataset,
+            "quotas": quotas,
+        }
 
-    try:
-        with urllib.request.urlopen(
-            request,
-            timeout=60,
-            context=ssl_context,
-        ) as response:
-            # Read the response so HTTP connection resources are released.
-            response.read()
+        request = urllib.request.Request(
+            TRUENAS_API_URL,
+            data=json.dumps(payload).encode("utf-8"),
+            method="POST",
+            headers={
+                "Authorization": f"Bearer {TRUENAS_API_KEY}",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+        )
 
-            if not 200 <= response.status < 300:
-                raise RuntimeError(
-                    f"TrueNAS returned unexpected HTTP status {response.status}"
-                )
+        try:
+            with urllib.request.urlopen(
+                request,
+                timeout=60,
+                context=ssl_context,
+            ) as response:
+                # Read the response so HTTP connection resources are released.
+                response.read()
 
-    except urllib.error.HTTPError as error:
-        response_body = error.read().decode("utf-8", errors="replace")
+                if not 200 <= response.status < 300:
+                    raise RuntimeError(
+                        f"TrueNAS returned unexpected HTTP status {response.status}"
+                    )
 
-        raise RuntimeError(
-            f"TrueNAS quota API request failed with HTTP {error.code}: "
-            f"{response_body}"
-        ) from error
+        except urllib.error.HTTPError as error:
+            response_body = error.read().decode("utf-8", errors="replace")
 
-    except urllib.error.URLError as error:
-        raise RuntimeError(
-            f"Could not reach TrueNAS quota API at {TRUENAS_API_URL}: {error}"
-        ) from error
+            raise RuntimeError(
+                f"TrueNAS quota API request failed with HTTP {error.code}: "
+                f"{response_body}"
+            ) from error
+
+        except urllib.error.URLError as error:
+            raise RuntimeError(
+                f"Could not reach TrueNAS quota API at {TRUENAS_API_URL}: {error}"
+            ) from error
 
 
 def sync_quotas():
