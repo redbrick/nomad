@@ -27,12 +27,11 @@ import os
 import subprocess
 import sys
 import time
-import json
 import requests
 
 LOG_PATH = "/var/log/mail/mail.log"
 TOP_N = int(os.environ.get("TOP_N", "30"))
-WEBHOOK_URL = "{{key "mail/monitor/webhookurl"}}"
+WEBHOOK_URL = "{{key "mail/monitor/webhookurl" }}"
 STATE_FILE = os.environ.get("STATE_FILE", "/alloc/top_sasl_prev.txt")
 INTERVAL_SECONDS = int(os.environ.get("INTERVAL_SECONDS", "60"))
 
@@ -89,13 +88,15 @@ def main():
         time.sleep(INTERVAL_SECONDS)
         continue
 
-      if cur_norm != prev:
-        try:
-          post_webhook(cur if cur.strip() else "(no sasl_username matches)")
-          write_prev(cur)
-          prev = cur_norm
-        except Exception as e:
-          print(f"Webhook failed, will retry next interval: {e}", file=sys.stderr)
+
+      if int(cur_norm.split("\n")[0].split(" ")[0]) >= 1000:
+        if cur_norm != prev:
+          try:
+            post_webhook(cur if cur.strip() else "(no sasl_username matches)")
+            write_prev(cur)
+            prev = cur_norm
+          except Exception as e:
+            print(f"Webhook failed, will retry next interval: {e}", file=sys.stderr)
 
       time.sleep(INTERVAL_SECONDS)
 
