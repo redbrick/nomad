@@ -446,23 +446,28 @@ EOF
   directory = "/dynamic"
   watch     = true
 
-[certificatesResolvers.rb.acme]
-  email   = "elected-admins@redbrick.dcu.ie"
-  storage = "/acme/acme-dns.json"
+[certificatesResolvers]
 
-  [certificatesResolvers.rb.acme.dnsChallenge]
-    provider = "rfc2136"
-    resolvers = ["1.1.1.1:53", "8.8.8.8:53"]
+  [certificatesResolvers.rb]
+    [certificatesResolvers.rb.acme]
+      email   = "elected-admins@redbrick.dcu.ie"
+      storage = "/acme/acme-dns.json"
 
-    [certificatesResolvers.rb.acme.dnsChallenge.propagation]
-      delayBeforeChecks = "60s"
+      [certificatesResolvers.rb.acme.dnsChallenge]
+        provider  = "rfc2136"
+        resolvers = ["1.1.1.1:53", "8.8.8.8:53"]
 
-[certificatesResolvers.lets-encrypt.acme]
-  email   = "elected-admins@redbrick.dcu.ie"
-  storage = "/acme/acme-http.json"
+  [certificatesResolvers.rb.acme.dnsChallenge.propagation]
+    delayBeforeChecks = "60s"
+    disableANSChecks  = true
 
-  [certificatesResolvers.lets-encrypt.acme.httpChallenge]
-    entryPoint = "web"
+  [certificatesResolvers.lets-encrypt]
+    [certificatesResolvers.lets-encrypt.acme]
+      email   = "elected-admins@redbrick.dcu.ie"
+      storage = "/acme/acme-http.json"
+
+      [certificatesResolvers.lets-encrypt.acme.httpChallenge]
+        entryPoint = "web"
 
 [log]
   level = "INFO"
