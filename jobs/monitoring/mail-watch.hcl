@@ -79,20 +79,25 @@ def main():
     prev = read_prev()
 
     while True:
-      try:
-        cur = get_top()
-        # Normalize and sort lines for comparison
-        cur_norm = "\n".join(sorted(line.rstrip() for line in cur.splitlines() if line.strip()))
-      except subprocess.CalledProcessError as e:
-        print(f"Command failed, will retry:\n{e.output}", file=sys.stderr)
-        time.sleep(INTERVAL_SECONDS)
-        continue
+      cur = get_top()
 
+      # Preserve command order for deciding whether the top count exceeds threshold.
+      cur_lines = [line.rstrip() for line in cur.splitlines() if line.strip()]
 
-      if int(cur_norm.split("\n")[0].split(" ")[0]) >= 1000:
-        if cur_norm != prev:
+      # Sort only for state comparison, if ordering should not matter there.
+      cur_norm = "\n".join(sorted(cur_lines))
+
+      if cur_lines:
+        try:
+          top_count = int(cur_lines[0].split()[0])
+        except (IndexError, ValueError):
+          print(f"Unexpected command output: {cur_lines[0]!r}", file=sys.stderr)
+          time.sleep(INTERVAL_SECONDS)
+          continue
+
+        if top_count >= 1000 and cur_norm != prev:
           try:
-            post_webhook(cur if cur.strip() else "(no sasl_username matches)")
+            post_webhook(cur)
             write_prev(cur)
             prev = cur_norm
           except Exception as e:
