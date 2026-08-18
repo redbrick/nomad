@@ -130,7 +130,6 @@ LDAP_USER_DN=ou=accounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie
 LDAP_GROUP_DN=ou=groups,o=redbrick,dc=redbrick,dc=dcu,dc=ie
 
 # Security
-LDAP_ALLOW_ANON_BINDING=no
 LDAP_ENABLE_TLS=yes
 
 # TLS Certificate Paths (explicit — Bitnami validation checks all three)
