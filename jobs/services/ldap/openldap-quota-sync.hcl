@@ -32,7 +32,7 @@ job "openldap-quota-sync" {
         args = [<<EOS
 set -eu
 
-python -m pip install --no-cache-dir ldap3
+python -m pip install --no-cache-dir websocket-client ldap3
 
 exec python "${NOMAD_TASK_DIR}/truenas-quota-sync.py"
 EOS
