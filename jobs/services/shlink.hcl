@@ -34,7 +34,6 @@ job "shlink" {
           "traefik.http.routers.shlink-api.entrypoints=web,websecure",
           "traefik.http.routers.shlink-api.rule=Host(`s.rb.dcu.ie`)",
           "traefik.http.routers.shlink-api.tls=true",
-          "traefik.http.routers.shlink-api.tls.certresolver=rb",
         ]
       }
 
@@ -93,7 +92,6 @@ EOH
           "traefik.http.routers.shlink-web.entrypoints=web,websecure",
           "traefik.http.routers.shlink-web.rule=Host(`shlink.redbrick.dcu.ie`)",
           "traefik.http.routers.shlink-web.tls=true",
-          "traefik.http.routers.shlink-web.tls.certresolver=rb",
         ]
       }
 

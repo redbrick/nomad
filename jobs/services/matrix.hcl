@@ -30,7 +30,6 @@ job "matrix" {
         "traefik.http.routers.synapse.rule=Host(`${NOMAD_META_domain}`) && (PathPrefix(`/_matrix`) || PathPrefix(`/_synapse`))",
         "traefik.http.routers.synapse.entrypoints=websecure",
         "traefik.http.routers.synapse.tls=true",
-        "traefik.http.routers.synapse.tls.certresolver=rb",
         "traefik.http.routers.synapse.priority=200",
         "traefik.http.routers.synapse-client-wellknown.rule=Host(`${NOMAD_META_main}`) && Path(`/.well-known/matrix/client`)",
         "traefik.http.routers.synapse-client-wellknown.entrypoints=websecure",
@@ -59,7 +58,6 @@ job "matrix" {
         "traefik.http.routers.synapse-federation.rule=Host(`${NOMAD_META_main}`)",
         "traefik.http.routers.synapse-federation.entrypoints=matrix",
         "traefik.http.routers.synapse-federation.tls=true",
-        "traefik.http.routers.synapse-federation.tls.certresolver=rb",
       ]
     }
 

@@ -35,7 +35,6 @@ job "mps-listmonk" {
         "traefik.http.routers.mps-listmonk.entrypoints=web,websecure",
         "traefik.http.routers.mps-listmonk.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.mps-listmonk.tls=true",
-        "traefik.http.routers.mps-listmonk.tls.certresolver=rb",
       ]
     }
 

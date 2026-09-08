@@ -30,7 +30,6 @@ job "matrix-discord-bridge" {
         "traefik.http.routers.matrix-discord-bridge.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.matrix-discord-bridge.entrypoints=websecure",
         "traefik.http.routers.matrix-discord-bridge.tls=true",
-        "traefik.http.routers.matrix-discord-bridge.tls.certresolver=rb",
       ]
     }
 

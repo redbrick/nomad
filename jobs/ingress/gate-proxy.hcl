@@ -1,11 +1,8 @@
 job "gate-proxy" {
   datacenters = ["aperture"]
-  node_pool   = "ingress"
-  type        = "service"
+  type        = "system"
 
   group "gate-proxy" {
-    count = 1
-
     network {
       port "mc" {
         static = 25565
@@ -28,7 +25,7 @@ job "gate-proxy" {
       config {
         image = "ghcr.io/minekube/gate"
         ports = ["mc"]
-
+				network_mode = "host"
         volumes = [
           "local/config.yaml:/config.yaml"
         ]

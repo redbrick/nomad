@@ -27,7 +27,6 @@ job "matrix-element" {
         "traefik.http.routers.element.rule=Host(`${NOMAD_META_domain}`) || Host(`${NOMAD_META_alt}`)",
         "traefik.http.routers.element.entrypoints=websecure",
         "traefik.http.routers.element.tls=true",
-        "traefik.http.routers.element.tls.certresolver=rb",
       ]
 
       check {

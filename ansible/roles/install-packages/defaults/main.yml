@@ -1,0 +1,36 @@
+apt_packages:
+  - fastfetch
+  - fortune
+  - figlet
+  - cowsay
+  - lolcat
+  - toilet
+  - chafa 
+  - ansiweather
+  - cmatrix
+  - bastet
+  - ninvaders
+  - bsdgames
+  - dopewars 
+  - asciinema
+  - vim
+  - neovim
+  - tmux
+  - eza
+  - ripgrep
+  - fzf
+  - sl
+  - irssi
+  - glirc
+  - zsh
+  - kitty
+  - libchafa-dev
+  - imagemagick
+  - sssd
+  - sssd-ldap
+  - libpam-sss
+  - libnss-sss
+  - ldap-utils
+  - ca-certificates
+apt_install_packages: true
+apt_update_packages: true

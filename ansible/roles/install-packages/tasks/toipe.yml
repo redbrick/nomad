@@ -1,0 +1,46 @@
+---
+- name: Create toipe directory
+  become: true
+  ansible.builtin.file:
+    path: /usr/local/share/toipe
+    state: directory
+    mode: "0755"
+
+- name: Download tar.gz release
+  become: true
+  ansible.builtin.get_url:
+    url: https://github.com/Samyak2/toipe/releases/download/v0.5.0/toipe_v0.5.0_x86_64-unknown-linux-musl.tar.gz
+    checksum: sha256:bb9917aabda223d33ea1affc403ce4abb2a1810de5d4de2ef88e5bbee684164b
+    dest: /tmp/toipe.tar.gz
+    mode: "0644"
+
+- name: Create install directory
+  become: true
+  ansible.builtin.file:
+    path: /usr/local/share/toipe
+    state: directory
+    mode: "0755"
+
+- name: Extract archive
+  become: true
+  ansible.builtin.unarchive:
+    src: /tmp/toipe.tar.gz
+    dest: /usr/local/share/toipe
+    remote_src: true
+    creates: /usr/local/share/toipe/toipe
+  when: not ansible_check_mode
+
+- name: Symlink binary
+  become: true
+  ansible.builtin.file:
+    src: /usr/local/share/toipe/toipe
+    dest: /usr/local/bin/toipe
+    state: link
+  when: not ansible_check_mode
+
+- name: Remove downloaded archive
+  become: true
+  ansible.builtin.file:
+    path: /tmp/toipe.tar.gz
+    state: absent
+  when: not ansible_check_mode

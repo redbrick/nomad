@@ -35,7 +35,6 @@ job "mailman" {
         "traefik.enable=true",
         "traefik.http.routers.mailman.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.mailman.entrypoints=web,websecure",
-        "traefik.http.routers.mailman.tls.certresolver=lets-encrypt",
       ]
     }
 

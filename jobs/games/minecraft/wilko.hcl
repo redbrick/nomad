@@ -34,7 +34,6 @@ job "minecraft-wilko" {
         "traefik.enable=true",
         "traefik.http.routers.wilko-mc-dynmap.rule=Host(`wilko-mc.rb.dcu.ie`)",
         "traefik.http.routers.wilko-mc-dynmap.entrypoints=web,websecure",
-        "traefik.http.routers.wilko-mc-dynmap.tls.certresolver=rb",
       ]
     }
 

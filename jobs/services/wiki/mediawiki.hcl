@@ -38,7 +38,7 @@ job "mediawiki" {
         "traefik.port=${NOMAD_PORT_http}",
         "traefik.http.routers.rbwiki.rule=Host(`${NOMAD_META_domain}`) || Host(`wiki.rb.dcu.ie`)",
         "traefik.http.routers.rbwiki.entrypoints=web,websecure",
-        "traefik.http.routers.rbwiki.tls.certresolver=rb",
+        "traefik.http.routers.rbwiki.tls.certresolver=lets-encrypt",
         "traefik.http.routers.rbwiki.middlewares=rbwiki-redirect-root, rbwiki-redirect-mw",
         "traefik.http.middlewares.rbwiki-redirect-root.redirectregex.regex=^https://wiki\\.redbrick\\.dcu\\.ie/?$",
         "traefik.http.middlewares.rbwiki-redirect-root.redirectregex.replacement=https://wiki.redbrick.dcu.ie/Main_Page",
@@ -65,7 +65,6 @@ job "mediawiki" {
         memory = 100
       }
       template {
-        destination = "local/nginx.conf"
         data        = <<EOH
 # user www-data www-data;
 error_log /dev/stderr error;
@@ -85,6 +84,11 @@ http {
       listen [::]:80;
       root /var/www/html;
       index index.php index.html index.htm;
+
+      # Trust all potential Traefik load balancer hosts
+      set_real_ip_from 136.206.16.0/24;
+      real_ip_header X-Forwarded-For;
+      real_ip_recursive on;
 
       client_max_body_size 5m;
       client_body_timeout 60;
@@ -107,9 +111,17 @@ http {
       # Pass the PHP scripts to FastCGI server
       location ~ \.php$ {
         include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        
+        # FIXED: Hardcode the target path to match PHP-FPM's internal structure exactly
+        fastcgi_param SCRIPT_FILENAME /var/www/html$fastcgi_script_name;
+        
         fastcgi_pass {{ env "NOMAD_HOST_ADDR_fpm" }};
         fastcgi_index index.php;
+
+        # Keep proxy parameters active
+        fastcgi_param REMOTE_ADDR $remote_addr;
+        fastcgi_param HTTP_X_FORWARDED_FOR $proxy_add_x_forwarded_for;
+        fastcgi_param HTTPS "on";
       }
 
       location ~ /\.ht {
@@ -118,6 +130,7 @@ http {
     }
 }
 EOH
+        destination = "local/nginx.conf"
       }
     }
 
@@ -125,7 +138,7 @@ EOH
       driver = "docker"
 
       config {
-        image = "ghcr.io/wizzdom/mediawiki-fpm-ldap-alpine:latest"
+        image = "ghcr.io/redbrick/mediawiki-fpm-ldap-alpine:latest"
         ports = ["fpm"]
 
         volumes = [
@@ -133,7 +146,6 @@ EOH
           "/storage/nomad/mediawiki/images:/var/www/html/images",
           "/storage/nomad/mediawiki/skins:/var/www/html/skins",
           "/storage/nomad/mediawiki/resources/assets:/var/www/html/Resources/assets",
-          "local/php.ini:/usr/local/etc/php/php.ini",
           "local/LocalSettings.php:/var/www/html/LocalSettings.php",
           "local/ldapprovider.json:/etc/mediawiki/ldapprovider.json"
         ]
@@ -144,48 +156,39 @@ EOH
         memory = 1200
       }
 
-      # php.ini file because php is ass and won't let you update this in LocalSettings.php
       template {
-        destination = "local/php.ini" 
         data = <<EOH
-post_max_size = 64M
-upload_max_filesize = 50M
-EOH
-      }
-
-      template {
-        destination = "local/ldapprovider.json"
-        data        = <<EOH
 {
   "Redbrick": {
-    "connection": {
-      "server": "{{ range service "openldap-ldap" }}{{ .Address }}{{ end }}",
-      "port": "{{ range service "openldap-ldap" }}{{ .Port }}{{ end }}",
-      "user": "{{ key "mediawiki/ldap/user" }}",
-      "pass": "{{ key "mediawiki/ldap/password" }}",
-      "enctype": "clear",
-      "basedn": "o=redbrick,dc=redbrick,dc=dcu,dc=ie",
-      "groupbasedn": "ou=groups,o=redbrick,dc=redbrick,dc=dcu,dc=ie",
-      "userbasedn": "ou=accounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie",
-      "searchattribute": "uid",
-      "usernameattribute": "uid",
-      "realnameattribute": "cn",
-      "emailattribute": "mail",
-      "options": {
-        "LDAP_OPT_DEREF": 1
-      },
-      "grouprequest": "MediaWiki\\Extension\\LDAPProvider\\UserGroupsRequest\\UserMemberOf::factory"
-    },
     "authorization": {
       "rules": {
         "groups": {
           "required": []
         }
       }
+    },
+    "connection": {
+      "server": "{{ range service "openldap-ldap" }}{{ .Address }}{{ end }}",
+      "port": "{{ range service "openldap-ldap" }}{{ .Port }}{{ end }}",
+      "user": "{{ key "mediawiki/ldap/user" }}",
+      "pass": "{{ key "mediawiki/ldap/password" }}",
+      "options": {
+        "LDAP_OPT_DEREF": 1
+      },
+      "grouprequest": "MediaWiki\\Extension\\LDAPProvider\\UserGroupsRequest\\GroupMemberUid::factory",
+      "basedn": "{{ key "mediawiki/ldap/basedn" }}",
+      "groupbasedn": "ou=groups,{{ key "mediawiki/ldap/basedn" }}",
+      "userbasedn": "ou=accounts,{{ key "mediawiki/ldap/basedn" }}",
+      "searchattribute": "uid",
+      "usernameattribute": "uid",
+      "realnameattribute": "cn",
+      "emailattribute": "altmail"
     }
   }
 }
 EOH
+
+        destination = "local/ldapprovider.json"
       }
 
       template {
@@ -210,7 +213,7 @@ EOH
       driver = "docker"
 
       config {
-        image = "mariadb:11.4"
+        image = "mariadb"
         ports = ["db"]
 
         volumes = [
@@ -221,8 +224,7 @@ EOH
       }
 
       template {
-        destination = "local/conf.cnf"
-        data        = <<EOH
+        data = <<EOH
 [mysqld]
 # Ensure full UTF-8 support
 character-set-server = utf8mb4
@@ -239,11 +241,12 @@ innodb_default_row_format = dynamic
 max_connections = 100
 key_buffer_size = 2G
 query_cache_size = 0
-innodb_buffer_pool_size = 6G
+innodb_buffer_pool_size = 5G
 innodb_log_file_size = 512M
 innodb_flush_log_at_trx_commit = 1
 innodb_flush_method = O_DIRECT
 innodb_io_capacity = 200
+innodb_use_native_aio = 0
 tmp_table_size = 5242K
 max_heap_table_size = 5242K
 innodb_log_buffer_size = 16M
@@ -256,6 +259,8 @@ long_query_time = 1
 # Network
 bind-address = 0.0.0.0
 EOH
+
+        destination = "local/conf.cnf"
       }
 
       resources {
@@ -264,14 +269,15 @@ EOH
       }
 
       template {
-        destination = "local/.env"
-        env         = true
-        data        = <<EOH
+        data = <<EOH
 MYSQL_DATABASE={{ key "mediawiki/db/name" }}
 MYSQL_USER={{ key "mediawiki/db/username" }}
 MYSQL_PASSWORD={{ key "mediawiki/db/password" }}
 MYSQL_RANDOM_ROOT_PASSWORD=yes
 EOH
+
+        destination = "local/.env"
+        env         = true
       }
     }
   }

@@ -1,0 +1,10 @@
+- name: Restart sssd
+  become: true
+  ansible.builtin.service:
+    name: sssd
+    state: restarted
+
+- name: Run pam-auth-update
+  become: true
+  ansible.builtin.command:
+    cmd: pam-auth-update --enable sss unix systemd wtmpdb pwquality

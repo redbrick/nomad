@@ -34,7 +34,6 @@ job "hedgedoc" {
         "traefik.port=${NOMAD_PORT_http}",
         "traefik.http.routers.md.entrypoints=web,websecure",
         "traefik.http.routers.md.rule=Host(`md.redbrick.dcu.ie`) || Host(`md.rb.dcu.ie`)",
-        "traefik.http.routers.md.tls.certresolver=rb",
       ]
     }
 

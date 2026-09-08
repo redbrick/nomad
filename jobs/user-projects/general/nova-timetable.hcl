@@ -55,7 +55,6 @@ job "nova-timetable" {
           "traefik.port=${NOMAD_PORT_frontend}",
           "traefik.http.routers.nova-timetable-frontend.rule=Host(`${NOMAD_META_domain}`)",
           "traefik.http.routers.nova-timetable-frontend.entrypoints=web,websecure",
-          "traefik.http.routers.nova-timetable-frontend.tls.certresolver=rb",
         ]
       }
     }
@@ -90,7 +89,6 @@ job "nova-timetable" {
           "traefik.port=${NOMAD_PORT_backend}",
           "traefik.http.routers.nova-timetable-backend.rule=Host(`${NOMAD_META_domain}`) && PathPrefix(`/api`)",
           "traefik.http.routers.nova-timetable-backend.entrypoints=web,websecure",
-          "traefik.http.routers.nova-timetable-backend.tls.certresolver=rb",
         ]
       }
 

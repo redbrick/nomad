@@ -27,12 +27,11 @@ import os
 import subprocess
 import sys
 import time
-import json
 import requests
 
 LOG_PATH = "/var/log/mail/mail.log"
 TOP_N = int(os.environ.get("TOP_N", "30"))
-WEBHOOK_URL = "{{key "mail/monitor/webhookurl"}}"
+WEBHOOK_URL = "{{key "mail/monitor/webhookurl" }}"
 STATE_FILE = os.environ.get("STATE_FILE", "/alloc/top_sasl_prev.txt")
 INTERVAL_SECONDS = int(os.environ.get("INTERVAL_SECONDS", "60"))
 
@@ -80,22 +79,29 @@ def main():
     prev = read_prev()
 
     while True:
-      try:
-        cur = get_top()
-        # Normalize and sort lines for comparison
-        cur_norm = "\n".join(sorted(line.rstrip() for line in cur.splitlines() if line.strip()))
-      except subprocess.CalledProcessError as e:
-        print(f"Command failed, will retry:\n{e.output}", file=sys.stderr)
-        time.sleep(INTERVAL_SECONDS)
-        continue
+      cur = get_top()
 
-      if cur_norm != prev:
+      # Preserve command order for deciding whether the top count exceeds threshold.
+      cur_lines = [line.rstrip() for line in cur.splitlines() if line.strip()]
+
+      # Sort only for state comparison, if ordering should not matter there.
+      cur_norm = "\n".join(sorted(cur_lines))
+
+      if cur_lines:
         try:
-          post_webhook(cur if cur.strip() else "(no sasl_username matches)")
-          write_prev(cur)
-          prev = cur_norm
-        except Exception as e:
-          print(f"Webhook failed, will retry next interval: {e}", file=sys.stderr)
+          top_count = int(cur_lines[0].split()[0])
+        except (IndexError, ValueError):
+          print(f"Unexpected command output: {cur_lines[0]!r}", file=sys.stderr)
+          time.sleep(INTERVAL_SECONDS)
+          continue
+
+        if top_count >= 1000 and cur_norm != prev:
+          try:
+            post_webhook(cur)
+            write_prev(cur)
+            prev = cur_norm
+          except Exception as e:
+            print(f"Webhook failed, will retry next interval: {e}", file=sys.stderr)
 
       time.sleep(INTERVAL_SECONDS)
 
