@@ -203,6 +203,8 @@ EOH
       }
 
       template {
+        destination = "secrets/file.env"
+        env         = true
         data = <<EOH
 # --- Core Backend Configurations ---
 OLLAMA_BASE_URLS="{{ key "ollama/base_urls" }}"
@@ -246,6 +248,9 @@ WEBUI_JWT_EXPIRATION_TIME="168h"
 UVICORN_WORKERS=1 
 DATABASE_USER_ACTIVE_STATUS_UPDATE_INTERVAL=300
 ENABLE_PERSISTENT_CONFIG="false"
+ENABLE_API_KEYS="true"
+ENABLE_API_KEYS_ENDPOINT_RESTRICTIONS="false"
+ENV="dev" # enables the swagger ui
 
 # --- LDAP Core Server Settings ---
 ENABLE_LDAP="true"
@@ -274,9 +279,6 @@ THREAD_POOL_SIZE=2000
 ENABLE_SIGNUP="false"
 DEFAULT_USER_ROLE="user"
 EOH
-
-        destination = "secrets/file.env"
-        env         = true
       }
 
       resources {
