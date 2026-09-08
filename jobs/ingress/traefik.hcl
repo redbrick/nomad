@@ -59,6 +59,14 @@ job "traefik" {
       port "managesieve" {
         static = 4190
       }
+
+      port "palworld-game" {
+        static = 8211
+      }
+
+      port "palworld-query" {
+        static = 27015
+      }
     }
 
     service {
@@ -148,8 +156,8 @@ job "traefik" {
   [entryPoints.voice-udp]
     address = ":4503/udp"
 
-  [entryPoints.voice-udp.udp] # this will help reduce random dropouts in audio https://github.com/mumble-voip/mumble/issues/3550#issuecomment-441495977
-    timeout = "15s"
+    [entryPoints.voice-udp.udp]
+      timeout = "15s" # this will help reduce random dropouts in audio https://github.com/mumble-voip/mumble/issues/3550#issuecomment-441495977
 
   [entryPoints.matrix]
     address = ":8448"
@@ -177,6 +185,17 @@ job "traefik" {
 
   [entryPoints.managesieve]
     address = "136.206.16.50:4190"
+  
+  [entryPoints.palworld-game]
+    address = "136.206.16.50:8211/udp"
+    [entryPoints.palworld-game.udp]
+      timeout = "30s"
+
+  [entryPoints.palworld-query]
+    address = "136.206.16.50:27015/udp"
+    [entryPoints.palworld-query.udp]
+      timeout = "30s"
+
 
 [tls.options]
   [tls.options.default]
@@ -251,7 +270,6 @@ EOF
 #
 # Example:
 #   redirect/redbrick/wiki = https://wiki.redbrick.dcu.ie/
-
  # --- Short-link redirects for redbrick.dcu.ie ---
 {{ range $pair := tree "redirect/redbrick" }}
 {{ $name := trimPrefix "redirect/redbrick/" $pair.Key }}
@@ -321,6 +339,7 @@ EOF
     [http.routers.{{ $name }}-rb-redirect.tls]
 
 {{ end }}
+
 
 # Default TLS router.
 # This exists so Traefik can present an extracted cert for known Redbrick zones

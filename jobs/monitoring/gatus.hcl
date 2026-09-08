@@ -3,7 +3,7 @@ job "gatus" {
   type        = "service"
 
   meta {
-    domain = "status.redbrick.dcu.ie"
+    domain = "gatus.redbrick.dcu.ie"
   }
 
   group "db-web" {
@@ -163,6 +163,13 @@ defaults_tcp: &defaults_tcp
   conditions:
       - "[CONNECTED] == true"
 
+defaults_udp: &defaults_udp
+  interval: 60s
+  alerts:
+      - type: discord
+  conditions:
+      - "[CONNECTED] == true"
+
 defaults: &defaults
   interval: 60s
   alerts:
@@ -175,6 +182,13 @@ defaults_https: &defaults_https
   conditions:
     - "[STATUS] == 200"
     - "[CERTIFICATE_EXPIRATION] > 48h"
+
+defaults_shortlinks: &defaults_shortlinks
+  interval: 60m
+  alerts:
+    - type: discord
+  conditions:
+    - "[STATUS] == 200" 
 
 endpoints:
   # --- All Redbrick Monitors ---
@@ -193,7 +207,7 @@ endpoints:
     url: "https://api.redbrick.dcu.ie"
     <<: *defaults_https
 
-  - name: Better Timetable
+  - name: Timetable Sync
     group: Services
     url: "https://timetable.redbrick.dcu.ie"
     <<: *defaults_https
@@ -264,11 +278,6 @@ endpoints:
     url: "https://outline.solarracing.ie"
     <<: *defaults_https
 
-  - name: Plume (on RB)
-    group: Other Socs
-    url: "https://cspp.rb.dcu.ie"
-    <<: *defaults_https
-
   - name: Amikon Website
     group: Other Socs
     url: "https://amikon.me"
@@ -276,27 +285,22 @@ endpoints:
 
   - name: Glados
     group: Servers
-    url: "tcp://10.10.0.4:22"
+    url: "tcp://10.10.10.4:22"
     <<: *defaults_tcp
 
   - name: Wheatley
     group: Servers
-    url: "tcp://10.10.0.5:22"
+    url: "tcp://10.10.10.5:22"
     <<: *defaults_tcp
 
-  - name: Bastion VM
+  - name: Mirage
     group: Servers
-    url: "tcp://136.206.16.50:2269"
-    <<: *defaults_tcp
-
-  - name: Johnson
-    group: Servers
-    url: "tcp://10.10.0.7:22"
+    url: "tcp://10.10.30.9:22"
     <<: *defaults_tcp
 
   - name: Chell
     group: Servers
-    url: "tcp://10.10.0.6:22"
+    url: "tcp://10.10.10.6:22"
     <<: *defaults_tcp
 
   - name: Minecraft Vanilla
@@ -304,40 +308,50 @@ endpoints:
     url: "tcp://vanilla-mc.rb.dcu.ie:25565"
     <<: *defaults_tcp
 
+  - name: Palworld Dedicated Server (Game Port)
+    group: Game Servers
+    url: "udp://redbrick.dcu.ie:8211"
+    <<: *defaults_udp
+
+  - name: Palworld Dedicated Server (Query Port)
+    group: Game Servers
+    url: "udp://redbrick.dcu.ie:27015"
+    <<: *defaults_udp
+
   - name: Discord Shortlink
     group: Short Links
     url: "https://discord.redbrick.dcu.ie"
-    <<: *defaults_https
+    <<: *defaults_shortlinks
 
   - name: Github Shortlink
     group: Short Links
     url: "https://github.redbrick.dcu.ie"
-    <<: *defaults_https
+    <<: *defaults_shortlinks
 
   - name: Instagram Shortlink
     group: Short Links
     url: "https://instagram.redbrick.dcu.ie"
-    <<: *defaults_https
+    <<: *defaults_shortlinks
 
   - name: Youtube Shortlink
     group: Short Links
     url: "https://youtube.redbrick.dcu.ie"
-    <<: *defaults_https
+    <<: *defaults_shortlinks
 
   - name: LinkedIn Shortlink
     group: Short Links
     url: "https://linkedin.redbrick.dcu.ie"
-    <<: *defaults_https
+    <<: *defaults_shortlinks
 
   - name: Twitch Shortlink
     group: Short Links
     url: "https://twitch.redbrick.dcu.ie"
-    <<: *defaults_https
+    <<: *defaults_shortlinks
 
   - name: Tiktok Shortlink
     group: Short Links
     url: "https://tiktok.redbrick.dcu.ie"
-    <<: *defaults_https
+    <<: *defaults_shortlinks
 EOH
       }
 

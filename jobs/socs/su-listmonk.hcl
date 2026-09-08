@@ -36,7 +36,6 @@ job "su-listmonk" {
         "traefik.http.routers.su-listmonk.entrypoints=web,websecure",
         "traefik.http.routers.su-listmonk.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.su-listmonk.tls=true",
-        "traefik.http.routers.su-listmonk.tls.certresolver=rb",
       ]
     }
 

@@ -38,7 +38,6 @@ job "intersocs-wiki" {
         "traefik.http.routers.intersocs-wiki.entrypoints=web,websecure",
         "traefik.http.routers.intersocs-wiki.rule=Host(`${NOMAD_META_domain}`) || Host(`${NOMAD_META_domain2}`)",
         "traefik.http.routers.intersocs-wiki.tls=true",
-        "traefik.http.routers.intersocs-wiki.tls.certresolver=lets-encrypt",
       ]
     }
 

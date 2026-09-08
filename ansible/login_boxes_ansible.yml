@@ -1,0 +1,10 @@
+---
+- name: Install packages
+  hosts: login
+  roles:
+    - { role: install-packages }
+
+- name: Configure login
+  hosts: login
+  roles:
+    - { role: ldap-login }

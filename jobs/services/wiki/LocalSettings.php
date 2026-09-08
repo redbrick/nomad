@@ -4,6 +4,16 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 	exit;
 }
 
+# Look for the real user IP in the proxy header
+if ( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+    # Extract the first IP in the chain (the actual visitor)
+    $ipList = explode( ',', $_SERVER['HTTP_X_FORWARDED_FOR'] );
+    $_SERVER['REMOTE_ADDR'] = trim( $ipList[0] );
+}
+
+# Tell MediaWiki to trust proxy headers
+$wgUsePrivateIPs = true;
+
 $wgSitename = "Redbrick Wiki";
 
 $wgScriptPath = "";
@@ -92,7 +102,7 @@ $wgDefaultMobileSkin = 'vector-2022';
 wfLoadSkin( 'Vector' );
 wfLoadSkin( 'Citizen' );
 wfLoadSkin( 'Timeless' );
-wfLoadSkin( 'MinervaNeue' );
+// wfLoadSkin( 'MinervaNeue' );
 wfLoadSkin( 'Medik' );
 
 $wgCitizenThemeColor = "#a81e22";
@@ -134,7 +144,7 @@ wfLoadExtension( 'WikiEditor' );
 wfLoadExtension( 'MobileFrontend' );
 
 
-$LDAPProviderDomainConfigs = "/etc/mediawiki/ldapprovider.json";
+$wgLDAPProviderDomainConfigs = "/etc/mediawiki/ldapprovider.json";
 
 $wgPluggableAuth_Config['Redbrick Log In'] = [
     'plugin' => 'LDAPAuthentication2',
@@ -176,3 +186,14 @@ $wgShowExceptionDetails = true;
 $wgShowDBErrorBacktrace = true;
 $wgShowSQLErrors = true;
 $wgDebugLogFile = "/dev/stderr";
+
+
+# Job queue configuration to use memory backend for this wiki
+// $wgJobTypeConf = [
+//     'default' => [
+//         'class' => 'JobQueueMemory',
+//         'wiki'  => $wgDBname
+//     ]
+// ];
+
+$wgSessionCacheType = CACHE_DB; // Forces session safety in the DB if Memcached isn't built yet

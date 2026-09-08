@@ -37,7 +37,6 @@ job "linkstack" {
         "traefik.enable=true",
         "traefik.http.routers.linkstack.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.linkstack.entrypoints=web,websecure",
-        "traefik.http.routers.linkstack.tls.certresolver=rb",
         "traefik.http.routers.linkstack.tls=true",
       ]
     }

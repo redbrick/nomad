@@ -1,10 +1,5 @@
 job "ams-amikon" {
   datacenters = ["aperture"]
-
-  meta {
-    run_uuid = "${uuidv4()}"
-  }
-
   type = "service"
 
   group "ams-amikon" {
@@ -27,13 +22,8 @@ job "ams-amikon" {
       }
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.ams-amikon.rule=Host(`amikon.me`) || Host(`www.amikon.me`) || Host(`amikon.rb.dcu.ie`)",
+        "traefik.http.routers.ams-amikon.rule=Host(`amikon.me`) || Host(`www.amikon.me`)",
         "traefik.http.routers.ams-amikon.entrypoints=web,websecure",
-        "traefik.http.routers.ams-amikon.tls.certresolver=lets-encrypt",
-        "traefik.http.routers.ams-amikon.middlewares=amikon-www-redirect",
-        "traefik.http.middlewares.amikon-www-redirect.redirectregex.regex=^https?://www.amikon.me/(.*)",
-        "traefik.http.middlewares.amikon-www-redirect.redirectregex.replacement=https://amikon.me/$${1}",
-        "traefik.http.middlewares.amikon-www-redirect.redirectregex.permanent=true",
       ]
     }
 
@@ -47,13 +37,13 @@ job "ams-amikon" {
       }
 
       template {
-        data        = <<EOF
-      EMAIL={{ key "ams/amikon/email/user" }}
-      EMAIL_PASS={{ key "ams/amikon/email/password" }}
-      TO_EMAIL={{ key "ams/amikon/email/to" }}
-      EOF
         destination = ".env"
         env         = true
+        data        = <<EOF
+EMAIL={{ key "ams/amikon/email/user" }}
+EMAIL_PASS={{ key "ams/amikon/email/password" }}
+TO_EMAIL={{ key "ams/amikon/email/to" }}
+EOF
       }
 
       resources {

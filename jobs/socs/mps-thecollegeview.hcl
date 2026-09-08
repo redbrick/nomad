@@ -40,7 +40,6 @@ job "mps-thecollegeview" {
         "traefik.enable=true",
         "traefik.http.routers.tcv.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.tcv.entrypoints=web,websecure",
-        "traefik.http.routers.tcv.tls.certresolver=lets-encrypt",
       ]
     }
 

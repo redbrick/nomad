@@ -35,7 +35,6 @@ job "searxng" {
         "traefik.http.routers.searxng.entrypoints=web,websecure",
         "traefik.http.routers.searxng.rule=Host(`${NOMAD_META_domain}`)",
         "traefik.http.routers.searxng.tls=true",
-        "traefik.http.routers.searxng.tls.certresolver=rb",
       ]
     }
 

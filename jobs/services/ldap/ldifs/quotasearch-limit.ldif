@@ -1,0 +1,4 @@
+dn: olcDatabase={2}mdb,cn=config
+changetype: modify
+add: olcLimits
+olcLimits: dn.exact="uid=quotasearch,ou=serviceAccounts,o=redbrick,dc=redbrick,dc=dcu,dc=ie" size=unlimited size.pr=500 size.prtotal=unlimited

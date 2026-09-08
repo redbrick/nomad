@@ -37,7 +37,6 @@ job "dcufm" {
         "traefik.tcp.routers.icecast-stream.rule=HostSNI(`dcufm.redbrick.dcu.ie`)",
         "traefik.tcp.routers.icecast-stream.entrypoints=web,websecure",
         "traefik.tcp.routers.icecast-stream.tls=true",
-        "traefik.tcp.routers.icecast-stream.tls.certresolver=rb",
       ]
     }
 
