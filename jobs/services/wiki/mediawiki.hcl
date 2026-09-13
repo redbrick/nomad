@@ -12,13 +12,16 @@ job "mediawiki" {
     network {
       mode = "bridge"
       port "http" {
-        to = 80
+        to = 8080
       }
       port "fpm" {
         to = 9000
       }
       port "db" {
         to = 3306
+      }
+      port "nginx" {
+        to = 80
       }
     }
 
@@ -47,11 +50,34 @@ job "mediawiki" {
       ]
     }
 
+    task "rbwiki-anubis" {
+      driver = "docker"
+      config {
+        image = "ghcr.io/techarohq/anubis:latest"
+        ports = ["http"]
+      }
+      resources {
+        cpu    = 500
+        memory = 8192
+      }
+      template {
+        destination = "local/.env"
+        env         = true
+        data        = <<EOH
+BIND=:8080
+DIFFICULTY=4
+SERVE_ROBOTS_TXT=true
+TARGET=http://{{ env "NOMAD_ADDR_nginx" }}
+EOH
+      }
+
+    }
+
     task "rbwiki-nginx" {
       driver = "docker"
       config {
         image = "nginx:alpine"
-        ports = ["http"]
+        ports = ["nginx"]
         volumes = [
           "local/nginx.conf:/etc/nginx/nginx.conf",
           "/storage/nomad/mediawiki/extensions:/var/www/html/extensions",
