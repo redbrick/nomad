@@ -171,7 +171,7 @@ job "mailserver" {
       driver = "docker"
 
       config {
-        image    = "ghcr.io/docker-mailserver/docker-mailserver:latest"
+        image    = "ghcr.io/docker-mailserver/docker-mailserver:16.0.1"
         hostname = "mail.redbrick.dcu.ie"
 
         ports = [
@@ -322,13 +322,13 @@ auth_cache_ttl = 1 hour
 auth_cache_negative_ttl = 1 hour
 
 # Set domain for login names without a domain specified
-auth_default_realm = {{ env "NOMAD_META_tld" }}
+auth_default_domain = {{ env "NOMAD_META_tld" }}
 
 # only use plain username/password auth - OK since everything is over TLS
 auth_mechanisms = plain login
 
 # Don't strip domain from username. Means that mail_location can reference %d
-auth_username_format = %Lu
+auth_username_format = %%{user | lower}
 
 !include auth-ldap.conf.ext
 EOH

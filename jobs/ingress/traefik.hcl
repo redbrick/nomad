@@ -67,6 +67,10 @@ job "traefik" {
       port "palworld-query" {
         static = 27015
       }
+
+      port "ssh" {
+        static = 22
+      }
     }
 
     service {
@@ -196,6 +200,8 @@ job "traefik" {
     [entryPoints.palworld-query.udp]
       timeout = "30s"
 
+  [entryPoints.ssh]
+    address = "136.206.16.50:22"
 
 [tls.options]
   [tls.options.default]

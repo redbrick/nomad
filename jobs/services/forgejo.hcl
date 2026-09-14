@@ -13,6 +13,7 @@ job "forgejo" {
       }
 
       port "ssh" {
+        to = 22
       }
 
       port "db" {
@@ -51,11 +52,10 @@ job "forgejo" {
       # }
 
       tags = [
-        "traefik.tcp.routers.forgejo-ssh.rule=HostSNI(`git.redbrick.dcu.ie`)",
+        "traefik.enable=true",
+        "traefik.tcp.routers.forgejo-ssh.rule=HostSNI(`*`)",
         "traefik.tcp.routers.forgejo-ssh.entrypoints=ssh",
         "traefik.tcp.routers.forgejo-ssh.service=forgejo-ssh",
-        "traefik.tcp.services.forgejo-ssh.loadbalancer.server.port=${NOMAD_PORT_ssh}",
-        "traefik.tcp.services.forgejo-ssh.loadbalancer.proxyProtocol.version=2",
       ]
     }
 
@@ -100,8 +100,8 @@ FORGEJO__server__SSH_DOMAIN = git.redbrick.dcu.ie
 FORGEJO__server__HTTP_PORT = 3000
 FORGEJO__server__ROOT_URL = https://git.redbrick.dcu.ie/
 FORGEJO__server__DISABLE_SSH = false
+FORGEJO__SERVER__SSH_DOMAIN = git.redbrick.dcu.ie
 FORGEJO__server__SSH_PORT = 22
-FORGEJO__server__SSH_LISTEN_PORT = {{ env "NOMAD_PORT_ssh" }}
 FORGEJO__server__LFS_START_SERVER = true
 FORGEJO__server__LFS_JWT_SECRET = {{ key "forgejo/server/jwt_secret" }}
 FORGEJO__server__OFFLINE_MODE = false
@@ -137,7 +137,7 @@ FORGEJO__security__PASSWORD_HASH_ALGO = argon2
 FORGEJO__service__DISABLE_REGISTRATION = true
 FORGEJO__service__REQUIRE_SIGNIN_VIEW = false
 FORGEJO__service__REGISTER_EMAIL_CONFIRM = false
-FORGEJO__service__ENABLE_NOTIFY_MAIL = false
+FORGEJO__service__ENABLE_NOTIFY_MAIL = true
 FORGEJO__service__ALLOW_ONLY_EXTERNAL_REGISTRATION = false
 FORGEJO__service__ENABLE_CAPTCHA = false
 FORGEJO__service__DEFAULT_KEEP_EMAIL_PRIVATE = true
@@ -148,11 +148,11 @@ FORGEJO__service__NO_REPLY_ADDRESS = noreply.redbrick.dcu.ie
 FORGEJO__lfs__PATH = /data/git/lfs
 
 FORGEJO__mailer__ENABLED = true
-FORGEJO__mailer__SMTP_ADDR = 192.168.0.158
-FORGEJO__mailer__SMTP_PORT = 587
-FORGEJO__mailer__FROM = "Redbrick Git" <git@redbrick.dcu.ie>
-FORGEJO__mailer__USER =
-FORGEJO__mailer__PASSWD =
+FORGEJO__mailer__SMTP_ADDR = {{ key "forgejo/smtp/address" }}
+FORGEJO__mailer__SMTP_PORT = {{ key "forgejo/smtp/port" }}
+FORGEJO__mailer__FROM = "Redbrick Git" <forgejo@redbrick.dcu.ie>
+FORGEJO__mailer__USER = {{ key "forgejo/smtp/username" }}
+FORGEJO__mailer__PASSWD = {{ key "forgejo/smtp/password" }}
 
 FORGEJO__openid__ENABLE_OPENID_SIGNIN = false
 FORGEJO__openid__ENABLE_OPENID_SIGNUP = false
