@@ -558,8 +558,8 @@ EOF
       template {
         destination = "local/crowdsec-bouncer-key"
         data        = <<-EOF
-      {{ key "crowdsec/traefik_bouncer_key" }}
-      EOF
+        {{ key "crowdsec/traefik_bouncer_key" }}
+        EOF
       }
 
       resources {
@@ -588,11 +588,11 @@ EOF
       template {
         destination = "local/acquis.yaml"
         data        = <<EOH
-filenames:
-  - /var/log/traefik/access.log
-labels:
-  type: traefik
-  EOH
+        filenames:
+          - /var/log/traefik/access.log
+        labels:
+          type: traefik
+        EOH
       }
 
       template {
