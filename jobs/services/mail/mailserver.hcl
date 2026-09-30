@@ -327,7 +327,7 @@ auth_default_domain = {{ env "NOMAD_META_tld" }}
 # only use plain username/password auth - OK since everything is over TLS
 auth_mechanisms = plain login
 
-# Don't strip domain from username. Means that mail_location can reference %d
+# Normalize usernames without stripping their domain.
 auth_username_format = %%{user | lower}
 
 !include auth-ldap.conf.ext
