@@ -114,6 +114,9 @@ job "traefik" {
           "/storage/nomad/traefik/certs:/certs:ro",
 
           "/storage/nomad/traefik/access.log:/access.log",
+
+          # Bouncer key for crowdsec waf
+          "local/crowdsec-bouncer-key:/etc/traefik/crowdsec/BOUNCER_KEY_traefik:ro",
         ]
       }
 
@@ -189,7 +192,7 @@ job "traefik" {
 
   [entryPoints.managesieve]
     address = "136.206.16.50:4190"
-  
+
   [entryPoints.palworld-game]
     address = "136.206.16.50:8211/udp"
     [entryPoints.palworld-game.udp]
@@ -241,6 +244,10 @@ job "traefik" {
 
 [log]
   level = "INFO"
+
+[experimental.plugins.bouncer]
+  moduleName = "github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
+  version = "v1.4.5"
 EOF
       }
 
@@ -270,6 +277,21 @@ EOF
     scheme = "https"
     permanent = true
 
+{{ range service "crowdsec-lapi" }}
+{{ range service "crowdsec-appsec" }}
+  [http.middlewares.crowdsec.plugin.bouncer]
+    enabled = true
+    crowdsecMode = "stream"
+    crowdsecLapiScheme = "http"
+    crowdsecLapiHost = "{{ with service "crowdsec-lapi" }}{{ with index . 0 }}{{ .Address }}:{{ .Port }}{{ end }}{{ end }}"
+    crowdsecLapiKeyFile = "/etc/traefik/crowdsec/BOUNCER_KEY_traefik"
+    crowdsecAppsecEnabled = true
+    crowdsecAppsecHost = "{{ with service "crowdsec-appsec" }}{{ with index . 0 }}{{ .Address }}:{{ .Port }}{{ end }}{{ end }}"
+    crowdsecAppsecFailureBlock = true
+    crowdsecAppsecUnreachableBlock = true
+{{ end }}
+{{ end }}
+
 # Short-link redirects.
 # Add entries in Consul KV under:
 #   redirect/redbrick/<subdomain>
@@ -285,7 +307,7 @@ EOF
     permanent = true
 
 {{ end }}
-      
+
  # --- Short-link redirects for rb.dcu.ie ---
 {{ range $pair := tree "redirect/rb" }}
 {{ $name := trimPrefix "redirect/rb/" $pair.Key }}
@@ -533,9 +555,64 @@ EOF
 EOF
       }
 
+      template {
+        destination = "local/crowdsec-bouncer-key"
+        data        = <<-EOF
+        {{ key "crowdsec/traefik_bouncer_key" }}
+        EOF
+      }
+
       resources {
         cpu    = 500
         memory = 512
+      }
+    }
+
+    task "crowdsec-agent" {
+      driver = "docker"
+
+      lifecycle {
+        hook    = "poststart"
+        sidecar = true
+      }
+
+      config {
+        image = "crowdsecurity/crowdsec:latest"
+        volumes = [
+          "/storage/nomad/traefik/access.log:/var/log/traefik/access.log:ro",
+          "/storage/nomad/${NOMAD_JOB_NAME}/${NOMAD_TASK_NAME}-${NOMAD_ALLOC_INDEX}:/var/lib/crowdsec/data",
+          "local/acquis.yaml:/etc/crowdsec/acquis.yaml"
+        ]
+      }
+
+      template {
+        destination = "local/acquis.yaml"
+        data        = <<EOH
+        filenames:
+          - /var/log/traefik/access.log
+        labels:
+          type: traefik
+        EOH
+      }
+
+      template {
+        destination = "local/.env"
+        env         = true
+        data        = <<-EOH
+        AGENT_USERNAME=traefik-agent-{{ env "NOMAD_ALLOC_INDEX" }}
+        AGENT_PASSWORD={{ key "crowdsec/agents/shared_password" }}
+        DISABLE_LOCAL_API="true"
+        COLLECTIONS="crowdsecurity/traefik crowdsecurity/base-http-scenarios crowdsecurity/appsec-crs"
+        {{- range service "crowdsec-lapi"}}
+        LOCAL_API_URL="http://crowdsec-lapi.service.consul:{{ .Port }}"
+        {{- end}}
+        TZ=Europe/Dublin
+        EOH
+      }
+
+      resources {
+        cpu    = 200
+        memory = 128
       }
     }
   }
