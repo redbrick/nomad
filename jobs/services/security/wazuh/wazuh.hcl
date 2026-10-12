@@ -103,6 +103,7 @@ job "wazuh" {
           "/storage/nomad/${NOMAD_JOB_NAME}/certs/wazuh.manager.pem:/etc/ssl/filebeat.pem:ro",
           "/storage/nomad/${NOMAD_JOB_NAME}/certs/wazuh.manager-key.pem:/etc/ssl/filebeat.key:ro",
           "local/wazuh_manager.conf:/wazuh-config-mount/etc/ossec.conf:ro",
+          "local/authd.pass:/var/ossec/etc/authd.pass:ro",
         ]
       }
 
@@ -121,6 +122,13 @@ SSL_KEY=/etc/ssl/filebeat.key
 API_USERNAME=wazuh-wui
 API_PASSWORD={{ key "wazuh/api/password" }}
 EOH
+      }
+      template {
+        data = <<EOH
+"{{ key "wazuh/machines/password" }}"
+EOH
+
+        destination = "local/authd.pass"
       }
 
       service {
@@ -251,18 +259,6 @@ DASHBOARD_PASSWORD={{ key "wazuh/dashboard/password" }}
 API_USERNAME=wazuh-wui
 API_PASSWORD={{ key "wazuh/api/password" }}
 EOH
-      }
-
-      service {
-        name = "wazuh-dashboard"
-        port = "dashboard"
-
-        check {
-          type     = "http"
-          path     = "/api/status"
-          interval = "10s"
-          timeout  = "5s"
-        }
       }
 
       resources {
