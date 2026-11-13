@@ -132,7 +132,7 @@ EOH
         data        = <<EOH
 AUTHENTIK_SECRET_KEY={{ key "socs/authentik/secret/key" }}
 
-AUTHENTIK_LISTEN__TRUSTED_PROXY_CIDRS=136.206.16.0/24,10.10.10.0/24,172.17.0.0/16
+AUTHENTIK_LISTEN__TRUSTED_PROXY_CIDRS={{ key "socs/authentik/proxy/trusted_cidrs" }}
 
 AUTHENTIK_ERROR_REPORTING__ENABLED=false
 AUTHENTIK_DISABLE_UPDATE_CHECK=false
