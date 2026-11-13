@@ -770,7 +770,7 @@ entries:
     group: ''
     meta_description: solarracing.ie website analytics
     meta_hide: false
-    meta_icon: https://plausible.io/assets/images/icon/apple-touch-icon.png
+    meta_icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/webp/plausible.webp
     meta_launch_url: {{ key "socs/dcusr/authentik/plausible/launch_url" | toJSON }}
     meta_publisher: Plausible
     name: Plausible (Website Analytics)
