@@ -14,9 +14,6 @@
 # Editing: change the object here, redeploy the job. The worker re-applies the
 # blueprint whenever the rendered file changes. Objects defined here are owned
 # by this file, so UI edits to them are overwritten on the next apply.
-#
-# The telemetry SSO objects (Grafana, EMQX, InfluxDB) are in a separate
-# blueprint on the host volume and are not managed here.
 version: 1
 metadata:
   name: dcusr - authentik configuration
@@ -763,6 +760,23 @@ entries:
     policy_engine_mode: any
     provider: !Find [authentik_providers_oauth2.oauth2provider, [name, Seafile OAuth Provider]]
   id: e043
+# Link-only app (no provider). Launch URL holds the Plausible share key, so it
+# lives in Consul, not here.
+- model: authentik_core.application
+  identifiers:
+    slug: plausible
+  attrs:
+    backchannel_providers: []
+    group: ''
+    meta_description: solarracing.ie website analytics
+    meta_hide: false
+    meta_icon: https://plausible.io/favicon.ico
+    meta_launch_url: {{ key "socs/dcusr/authentik/plausible/launch_url" | toJSON }}
+    meta_publisher: Plausible
+    name: Plausible
+    open_in_new_tab: true
+    policy_engine_mode: any
+  id: e084
 - model: authentik_policies.policybinding
   identifiers:
     target: !KeyOf 'e043'
@@ -943,6 +957,18 @@ entries:
     policy: null
     timeout: 30
   id: e059
+- model: authentik_policies.policybinding
+  identifiers:
+    target: !KeyOf 'e084'
+    group: !Find [authentik_core.group, [name, {{ key "socs/dcusr/authentik/groups/website-admin" | toJSON }}]]
+    order: 0
+  attrs:
+    enabled: true
+    failure_result: false
+    negate: false
+    policy: null
+    timeout: 30
+  id: e085
 - model: authentik_policies.policybinding
   identifiers:
     target: !KeyOf 'e041'
