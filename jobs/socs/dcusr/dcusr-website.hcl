@@ -1,4 +1,4 @@
-job "dcusr" {
+job "dcusr-website" {
   datacenters = ["aperture"]
   type        = "service"
 
@@ -65,64 +65,64 @@ job "dcusr" {
         destination = "local/.env"
         env         = true
         data        = <<EOH
-DOCKER_USER={{ key "dcusr/ghcr/username" }}
-DOCKER_PASS={{ key "dcusr/ghcr/password" }}
+DOCKER_USER={{ key "socs/dcusr/ghcr/username" }}
+DOCKER_PASS={{ key "socs/dcusr/ghcr/password" }}
 
 NEXT_PUBLIC_SITE_URL=https://{{ env "NOMAD_META_domain" }}
 
 AUTH_URL=https://{{ env "NOMAD_META_domain" }}
 AUTH_TRUST_HOST=true
-AUTH_SECRET={{ key "socs/dcusr-dev/auth/secret" }}
+AUTH_SECRET={{ key "socs/dcusr/website/auth/secret" }}
 
-AUTH_AUTHENTIK_ISSUER={{ key "dcusr/oidc/issuer" }}
-AUTH_AUTHENTIK_ID={{ key "dcusr/oidc/client/id" }}
-AUTH_AUTHENTIK_SECRET={{ key "dcusr/oidc/client/secret" }}
+AUTH_AUTHENTIK_ISSUER={{ key "socs/dcusr/website/oidc/issuer" }}
+AUTH_AUTHENTIK_ID={{ key "socs/dcusr/website/oidc/client/id" }}
+AUTH_AUTHENTIK_SECRET={{ key "socs/dcusr/website/oidc/client/secret" }}
 
 # Authentik group names mapped to app roles (defaults shown)
-AUTHENTIK_ADMIN_GROUP={{ key "dcusr/oidc/admin" }}
-AUTHENTIK_EDITOR_GROUP={{ key "dcusr/oidc/editor" }}
-AUTHENTIK_VIEWER_GROUP={{ key "dcusr/oidc/viewer" }}
+AUTHENTIK_ADMIN_GROUP={{ key "socs/dcusr/website/oidc/admin" }}
+AUTHENTIK_EDITOR_GROUP={{ key "socs/dcusr/website/oidc/editor" }}
+AUTHENTIK_VIEWER_GROUP={{ key "socs/dcusr/website/oidc/viewer" }}
 
-PREVIEW_SECRET={{ key "socs/dcusr-dev/preview/secret" }}
+PREVIEW_SECRET={{ key "socs/dcusr/website/preview/secret" }}
 
 {{ range service "dcusr-db"  -}}
-DATABASE_URL=postgresql://{{ key "socs/dcusr-dev/db/user" | urlquery }}:{{ key "socs/dcusr-dev/db/password" | urlquery }}@{{ .Address }}:{{ .Port }}/{{ key "socs/dcusr-dev/db/name" | urlquery }}?schema=public
+DATABASE_URL=postgresql://{{ key "socs/dcusr/website/db/user" | urlquery }}:{{ key "socs/dcusr/website/db/password" | urlquery }}@{{ .Address }}:{{ .Port }}/{{ key "socs/dcusr/website/db/name" | urlquery }}?schema=public
 {{- end }}
 
-MINIO_ENDPOINT={{ key "socs/dcusr-dev/minio/url" }}
-MINIO_PORT={{ key "socs/dcusr-dev/minio/port" }}
-MINIO_ACCESS_KEY="{{ key "socs/dcusr-dev/minio/access/key" }}"
-MINIO_SECRET_KEY="{{ key "socs/dcusr-dev/minio/secret/key" }}"
-MINIO_BUCKET={{ key "socs/dcusr-dev/minio/bucket" }}
+MINIO_ENDPOINT={{ key "socs/dcusr/website/minio/url" }}
+MINIO_PORT={{ key "socs/dcusr/website/minio/port" }}
+MINIO_ACCESS_KEY="{{ key "socs/dcusr/website/minio/access/key" }}"
+MINIO_SECRET_KEY="{{ key "socs/dcusr/website/minio/secret/key" }}"
+MINIO_BUCKET={{ key "socs/dcusr/website/minio/bucket" }}
 MINIO_USE_SSL=true
-MINIO_PUBLIC_BASE_URL={{ key "socs/dcusr-dev/minio/base/url" }}
+MINIO_PUBLIC_BASE_URL={{ key "socs/dcusr/website/minio/base/url" }}
 MINIO_REGION=ie-redbrick
 
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=465
-SMTP_USER={{ key "socs/dcusr-dev/smtp/user" }}
-SMTP_PASS={{ key "socs/dcusr-dev/smtp/password" }}
-MAIL_FROM="{{ key "socs/dcusr-dev/mail/from" }}"
-MAIL_TO={{ key "socs/dcusr-dev/mail/to" }}
+SMTP_USER={{ key "socs/dcusr/website/smtp/user" }}
+SMTP_PASS={{ key "socs/dcusr/website/smtp/password" }}
+MAIL_FROM="{{ key "socs/dcusr/website/mail/from" }}"
+MAIL_TO={{ key "socs/dcusr/website/mail/to" }}
 SMTP_SECURE=true
 SMTP_REJECT_UNAUTHORIZED=true
 
 MAIL_BRAND="DCU Solar Racing"
 
-PLAUSIBLE_BASE_URL={{ key "socs/dcusr-dev/plausible/url" }}
+PLAUSIBLE_BASE_URL={{ key "socs/dcusr/website/plausible/url" }}
 
 NEXT_PUBLIC_RECAPTCHA_SITE_KEY={{ key "socs/dcusr/captcha/site/key"}}
 RECAPTCHA_SECRET={{ key "socs/dcusr/captcha/secret/key" }}
 RECAPTCHA_MIN_SCORE=0.5
 
 # Salt for hashing visitor IPs; empty falls back to AUTH_SECRET
-ANALYTICS_SALT={{ keyOrDefault "socs/dcusr-dev/analytics/salt" "" }}
+ANALYTICS_SALT={{ keyOrDefault "socs/dcusr/website/analytics/salt" "" }}
 
 # Search engine pings on content changes; empty turns IndexNow off
-INDEXNOW_KEY={{ keyOrDefault "socs/dcusr-dev/indexnow/key" "" }}
+INDEXNOW_KEY={{ keyOrDefault "socs/dcusr/website/indexnow/key" "" }}
 
 # Partner address search in admin; empty uses OpenStreetMap
-GOOGLE_MAPS_API_KEY={{ keyOrDefault "socs/dcusr-dev/google/maps/key" "" }}
+GOOGLE_MAPS_API_KEY={{ keyOrDefault "socs/dcusr/website/google/maps/key" "" }}
 
 # Data retention in days
 ANALYTICS_RETENTION_DAYS=425
@@ -247,9 +247,9 @@ EOH
         destination = "local/.env"
         env         = true
         data        = <<EOH
-POSTGRES_DB={{ key "socs/dcusr-dev/db/name" }}
-POSTGRES_USER={{ key "socs/dcusr-dev/db/user" }}
-POSTGRES_PASSWORD={{ key "socs/dcusr-dev/db/password" }}
+POSTGRES_DB={{ key "socs/dcusr/website/db/name" }}
+POSTGRES_USER={{ key "socs/dcusr/website/db/user" }}
+POSTGRES_PASSWORD={{ key "socs/dcusr/website/db/password" }}
 EOH
       }
     }

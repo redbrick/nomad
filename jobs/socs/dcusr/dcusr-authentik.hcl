@@ -1,4 +1,4 @@
-job "authentik" {
+job "dcusr-authentik" {
   datacenters = ["aperture"]
   type        = "service"
 
@@ -130,25 +130,25 @@ EOH
         destination = "local/.env"
         env         = true
         data        = <<EOH
-AUTHENTIK_SECRET_KEY={{ key "socs/authentik/secret/key" }}
+AUTHENTIK_SECRET_KEY={{ key "socs/dcusr/authentik/secret/key" }}
 
-AUTHENTIK_LISTEN__TRUSTED_PROXY_CIDRS={{ key "socs/authentik/proxy/trusted_cidrs" }}
+AUTHENTIK_LISTEN__TRUSTED_PROXY_CIDRS={{ key "socs/dcusr/authentik/proxy/trusted_cidrs" }}
 
 AUTHENTIK_ERROR_REPORTING__ENABLED=false
 AUTHENTIK_DISABLE_UPDATE_CHECK=false
 AUTHENTIK_AVATARS=initials
 
-AUTHENTIK_BOOTSTRAP_EMAIL={{ key "socs/authentik/bootstrap/email" }}
-AUTHENTIK_BOOTSTRAP_PASSWORD={{ key "socs/authentik/bootstrap/password" }}
-AUTHENTIK_BOOTSTRAP_TOKEN={{ key "socs/authentik/bootstrap/token" }}
+AUTHENTIK_BOOTSTRAP_EMAIL={{ key "socs/dcusr/authentik/bootstrap/email" }}
+AUTHENTIK_BOOTSTRAP_PASSWORD={{ key "socs/dcusr/authentik/bootstrap/password" }}
+AUTHENTIK_BOOTSTRAP_TOKEN={{ key "socs/dcusr/authentik/bootstrap/token" }}
 
 {{ range service "authentik-db" -}}
 AUTHENTIK_POSTGRESQL__HOST={{ .Address }}
 AUTHENTIK_POSTGRESQL__PORT={{ .Port }}
 {{- end }}
-AUTHENTIK_POSTGRESQL__NAME={{ key "socs/authentik/db/name" }}
-AUTHENTIK_POSTGRESQL__USER={{ key "socs/authentik/db/user" }}
-AUTHENTIK_POSTGRESQL__PASSWORD={{ key "socs/authentik/db/password" }}
+AUTHENTIK_POSTGRESQL__NAME={{ key "socs/dcusr/authentik/db/name" }}
+AUTHENTIK_POSTGRESQL__USER={{ key "socs/dcusr/authentik/db/user" }}
+AUTHENTIK_POSTGRESQL__PASSWORD={{ key "socs/dcusr/authentik/db/password" }}
 
 {{ range service "authentik-redis" -}}
 AUTHENTIK_REDIS__HOST={{ .Address }}
@@ -184,14 +184,26 @@ EOH
           "/storage/nomad/${NOMAD_JOB_NAME}/media:/media",
           "/storage/nomad/${NOMAD_JOB_NAME}/templates:/templates",
           "/storage/nomad/${NOMAD_JOB_NAME}/blueprints:/blueprints/custom",
+          # Config-as-code blueprint, rendered from authentik-blueprints/ below
+          "secrets/blueprints:/blueprints/dcusr:ro",
         ]
+      }
+
+      # authentik configuration (groups, roles, apps, providers, flows, brand).
+      # Group/role names and OAuth client credentials are filled from Consul.
+      # The worker re-applies the blueprint whenever the rendered file changes.
+      template {
+        data        = file("authentik-blueprints/dcusr.yaml.tpl")
+        destination = "secrets/blueprints/dcusr.yaml"
+        perms       = "0644"
+        change_mode = "noop"
       }
 
       template {
         destination = "local/.env"
         env         = true
         data        = <<EOH
-AUTHENTIK_SECRET_KEY={{ key "socs/authentik/secret/key" }}
+AUTHENTIK_SECRET_KEY={{ key "socs/dcusr/authentik/secret/key" }}
 
 AUTHENTIK_ERROR_REPORTING__ENABLED=false
 AUTHENTIK_DISABLE_UPDATE_CHECK=true
@@ -200,9 +212,9 @@ AUTHENTIK_DISABLE_UPDATE_CHECK=true
 AUTHENTIK_POSTGRESQL__HOST={{ .Address }}
 AUTHENTIK_POSTGRESQL__PORT={{ .Port }}
 {{- end }}
-AUTHENTIK_POSTGRESQL__NAME={{ key "socs/authentik/db/name" }}
-AUTHENTIK_POSTGRESQL__USER={{ key "socs/authentik/db/user" }}
-AUTHENTIK_POSTGRESQL__PASSWORD={{ key "socs/authentik/db/password" }}
+AUTHENTIK_POSTGRESQL__NAME={{ key "socs/dcusr/authentik/db/name" }}
+AUTHENTIK_POSTGRESQL__USER={{ key "socs/dcusr/authentik/db/user" }}
+AUTHENTIK_POSTGRESQL__PASSWORD={{ key "socs/dcusr/authentik/db/password" }}
 
 {{ range service "authentik-redis" -}}
 AUTHENTIK_REDIS__HOST={{ .Address }}
@@ -273,9 +285,9 @@ EOH
         destination = "local/.env"
         env         = true
         data        = <<EOH
-POSTGRES_DB={{ key "socs/authentik/db/name" }}
-POSTGRES_USER={{ key "socs/authentik/db/user" }}
-POSTGRES_PASSWORD={{ key "socs/authentik/db/password" }}
+POSTGRES_DB={{ key "socs/dcusr/authentik/db/name" }}
+POSTGRES_USER={{ key "socs/dcusr/authentik/db/user" }}
+POSTGRES_PASSWORD={{ key "socs/dcusr/authentik/db/password" }}
 EOH
       }
 

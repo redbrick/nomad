@@ -1,4 +1,4 @@
-job "seafile" {
+job "dcusr-seafile" {
   datacenters = ["aperture"]
   type        = "service"
 
@@ -75,10 +75,10 @@ job "seafile" {
         destination = "local/.env"
         env         = true
         data        = <<EOH
-MYSQL_DATABASE={{ key "seafile/db/name" }}
-MYSQL_USER={{ key "seafile/db/user" }}
-MYSQL_PASSWORD={{ key "seafile/db/password" }}
-MYSQL_ROOT_PASSWORD={{ key "seafile/db/root/password" }}
+MYSQL_DATABASE={{ key "socs/dcusr/seafile/db/name" }}
+MYSQL_USER={{ key "socs/dcusr/seafile/db/user" }}
+MYSQL_PASSWORD={{ key "socs/dcusr/seafile/db/password" }}
+MYSQL_ROOT_PASSWORD={{ key "socs/dcusr/seafile/db/root/password" }}
 MYSQL_LOG_CONSOLE=true
 MARIADB_AUTO_UPGRADE=1
 EOH
@@ -121,9 +121,9 @@ EOH
         data        = <<EOH
 SEAFILE_MYSQL_DB_HOST=127.0.0.1
 SEAFILE_MYSQL_DB_PORT=3306
-SEAFILE_MYSQL_DB_USER={{ key "seafile/db/user" }}
-SEAFILE_MYSQL_DB_PASSWORD={{ key "seafile/db/password" }}
-INIT_SEAFILE_MYSQL_ROOT_PASSWORD={{ key "seafile/db/root/password" }}
+SEAFILE_MYSQL_DB_USER={{ key "socs/dcusr/seafile/db/user" }}
+SEAFILE_MYSQL_DB_PASSWORD={{ key "socs/dcusr/seafile/db/password" }}
+INIT_SEAFILE_MYSQL_ROOT_PASSWORD={{ key "socs/dcusr/seafile/db/root/password" }}
 
 SEAFILE_MYSQL_DB_CCNET_DB_NAME=ccnet_db
 SEAFILE_MYSQL_DB_SEAFILE_DB_NAME=seafile_db
@@ -131,14 +131,14 @@ SEAFILE_MYSQL_DB_SEAHUB_DB_NAME=seahub_db
 
 TIME_ZONE=Europe/Dublin
 
-INIT_SEAFILE_ADMIN_EMAIL={{ key "seafile/admin/email" }}
-INIT_SEAFILE_ADMIN_PASSWORD={{ key "seafile/admin/password" }}
+INIT_SEAFILE_ADMIN_EMAIL={{ key "socs/dcusr/seafile/admin/email" }}
+INIT_SEAFILE_ADMIN_PASSWORD={{ key "socs/dcusr/seafile/admin/password" }}
 
 SEAFILE_SERVER_HOSTNAME={{ env "NOMAD_META_domain" }}
 SEAFILE_SERVER_PROTOCOL=https
 
 NON_ROOT=false
-JWT_PRIVATE_KEY={{ key "seafile/jwt/key" }}
+JWT_PRIVATE_KEY={{ key "socs/dcusr/seafile/jwt/key" }}
 
 SEAFILE_LOG_TO_STDOUT=true
 
@@ -208,13 +208,13 @@ sed -i "/$MARKER/,\$d" "$CONF"
 
 cat >> "$CONF" <<EOF
 $MARKER
-EMAIL_USE_TLS = {{ key "seafile/smtp/use_tls" }}
-EMAIL_HOST = "{{ key "seafile/smtp/host" }}"
-EMAIL_PORT = {{ key "seafile/smtp/port" }}
-EMAIL_HOST_USER = "{{ key "seafile/smtp/user" }}"
-EMAIL_HOST_PASSWORD = "{{ key "seafile/smtp/password" }}"
-DEFAULT_FROM_EMAIL = "{{ key "seafile/smtp/from" }}"
-SERVER_EMAIL = "{{ key "seafile/smtp/from" }}"
+EMAIL_USE_TLS = {{ key "socs/dcusr/seafile/smtp/use_tls" }}
+EMAIL_HOST = "{{ key "socs/dcusr/seafile/smtp/host" }}"
+EMAIL_PORT = {{ key "socs/dcusr/seafile/smtp/port" }}
+EMAIL_HOST_USER = "{{ key "socs/dcusr/seafile/smtp/user" }}"
+EMAIL_HOST_PASSWORD = "{{ key "socs/dcusr/seafile/smtp/password" }}"
+DEFAULT_FROM_EMAIL = "{{ key "socs/dcusr/seafile/smtp/from" }}"
+SERVER_EMAIL = "{{ key "socs/dcusr/seafile/smtp/from" }}"
 
 ENABLE_OAUTH = True
 OAUTH_CREATE_UNKNOWN_USER = True
@@ -267,13 +267,13 @@ EOH
         data        = <<EOH
 SEAFILE_MYSQL_DB_HOST=127.0.0.1
 SEAFILE_MYSQL_DB_PORT=3306
-SEAFILE_MYSQL_DB_USER={{ key "seafile/db/user" }}
-SEAFILE_MYSQL_DB_PASSWORD={{ key "seafile/db/password" }}
+SEAFILE_MYSQL_DB_USER={{ key "socs/dcusr/seafile/db/user" }}
+SEAFILE_MYSQL_DB_PASSWORD={{ key "socs/dcusr/seafile/db/password" }}
 
 SEAFILE_MYSQL_DB_CCNET_DB_NAME=ccnet_db
 SEAFILE_MYSQL_DB_SEAFILE_DB_NAME=seafile_db
 
-JWT_PRIVATE_KEY={{ key "seafile/jwt/key" }}
+JWT_PRIVATE_KEY={{ key "socs/dcusr/seafile/jwt/key" }}
 SEAFILE_LOG_TO_STDOUT=false
 NOTIFICATION_SERVER_LOG_LEVEL=info
 
@@ -333,7 +333,7 @@ EOH
         env         = true
         data        = <<EOH
 JWT_ENABLED=true
-JWT_SECRET={{ key "seafile/onlyoffice/jwt/secret" }}
+JWT_SECRET={{ key "socs/dcusr/seafile/onlyoffice/jwt/secret" }}
 EOH
       }
 
