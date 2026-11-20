@@ -72,8 +72,13 @@ job "forgejo-global-runner" {
         ]
       }
 
-      env {
-        DOCKER_HOST = "tcp://127.0.0.1:2375"
+      template {
+        destination = "local/.env"
+        env         = true
+        change_mode = "restart"
+        data        = <<EOH
+DOCKER_HOST = "tcp://127.0.0.1:2375"
+EOH
       }
 
       template {
@@ -121,7 +126,7 @@ container:
   force_rebuild: false
 
 host:
-  workdir_parent:
+  workdir_parent: /tmp/forgejo-runner-act
 
 server:
   connections:
@@ -132,7 +137,6 @@ server:
 
 EOH
       }
-
 
       resources {
         cpu    = 1000
