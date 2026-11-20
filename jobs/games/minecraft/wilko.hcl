@@ -72,7 +72,7 @@ RCON_PASSWORD     = "{{ key "games/mc/wilko-mc/rcon/password" }}"
 SPAWN_PROTECTION  = "0"
 OPS               = "CatcherOfFish,flyhighdragon"
 SPIGET_RESOURCES = 34315 # Vault
-MODRINTH_PROJECTS = worldedit,dynmap:ImNNT17B,stairsit,multiverse-core,datapack:veinminer,essentialsx,essentialsx-chat-module,essentialsx-spawn,autotreechop,backpack-plus,luckperms
+MODRINTH_PROJECTS = worldedit:2YDdVDmG,dynmap:ImNNT17B,stairsit,multiverse-core,datapack:veinminer,essentialsx,essentialsx-chat-module,essentialsx-spawn,autotreechop,backpack-plus,luckperms
 EOF
       }
     }
